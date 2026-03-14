@@ -1,0 +1,123 @@
+.hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* let clicks reach the canvas underneath */
+  z-index: 10;
+}
+
+/* ---- Stats panel (top-left) ---- */
+.panel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(15, 15, 19, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  pointer-events: auto;
+  min-width: 160px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sceneName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+/* HP bar */
+.hpBar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-surface-alt);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.hpFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* ---- Controls (top-right) ---- */
+.controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: rgba(15, 15, 19, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.btn:hover {
+  background: var(--color-surface-alt);
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btnDanger:hover {
+  border-color: var(--color-danger);
+}
+
+/* ---- Pause overlay ---- */
+.pauseOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.pauseOverlay span {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.08);
+  user-select: none;
+}
