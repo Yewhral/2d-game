@@ -15,6 +15,9 @@ import { Preloader } from "./scenes/Preloader";
 export function createGame(parent: HTMLDivElement): Phaser.Game {
   const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
+    render: {
+      pixelArt: true,
+    },
     width: 800,
     height: 600,
     parent,
@@ -26,7 +29,7 @@ export function createGame(parent: HTMLDivElement): Phaser.Game {
     physics: {
       default: "arcade",
       arcade: {
-        gravity: { x: 0, y: 300 },
+        gravity: { x: 0, y: 0 },
         debug: import.meta.env.DEV,
       },
     },

@@ -27,7 +27,9 @@ export class Preloader extends Phaser.Scene {
   }
 
   preload() {
-    this.load.setPath("assets");
+    this.load.setPath("gameAssets");
+    this.load.image('grass-img', 'grass.png');
+    this.load.tilemapTiledJSON('grass-json', 'grass.json');
 
     // ----------------------------------------------------------------
     // Add your real asset loads here, e.g.:
