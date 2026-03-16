@@ -2,7 +2,7 @@
  * GameScene — top-down gameplay scene.
  *
  * Controls:
- *   Arrow keys / WASD → move in 4 directions
+ *   Arrow keys / WASD → move in 8 directions
  *   E                 → interact with nearby objects
  *
  * Two-way EventBus integration:
@@ -14,8 +14,8 @@ import Phaser from "phaser";
 import { EventBus } from "../EventBus";
 
 // ---- tuning ----------------------------------------------------------------
-const PLAYER_SPEED = 160;
-const PLAYER_SIZE = 24; // half-extents for physics body
+const PLAYER_SPEED = 180;
+// const PLAYER_SIZE = 16; // half-extents for physics body
 const INTERACT_RADIUS = 50;
 // const TILE = 32; // grid cell size
 
@@ -35,8 +35,7 @@ export class GameScene extends Phaser.Scene {
   private isPaused = false;
 
   // --- scene objects ---------------------------------------------------------
-  private player!: Phaser.Physics.Arcade.Image;
-  private playerGfx!: Phaser.GameObjects.Container;
+  private player!: Phaser.Physics.Arcade.Sprite;
   private walls!: Phaser.Physics.Arcade.StaticGroup;
   private interactables: InteractableObject[] = [];
   private hint!: Phaser.GameObjects.Text;
@@ -60,14 +59,29 @@ export class GameScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     // ---- floor ---------------------------------------------------------------
-    const map = this.make.tilemap({ key: 'grass-json' });
+    const map = this.make.tilemap({ key: 'land-and-tree-and-house-json' });
     const tileset = map.addTilesetImage('grass', 'grass-img');
-    if (tileset) {
-      const layer = map.createLayer('Tile Layer 1', tileset, 0, 0);
-      console.log('layers:', layer);
+    const tileset2 = map.addTilesetImage('tree', 'tree-img');
+    const tileset3 = map.addTilesetImage('cloud', 'cloud-img');
+    const tileset4 = map.addTilesetImage('house', 'house-img');
+    const tileset5 = map.addTilesetImage('barracks', 'barracks-img');
+    let layer: Phaser.Tilemaps.TilemapLayer | null = null;
+    let layer2: Phaser.Tilemaps.TilemapLayer | null = null;
+    let layer3: Phaser.Tilemaps.TilemapLayer | null = null;
+    const obstaclesTilesetList = [tileset2, tileset4, tileset5] as Phaser.Tilemaps.Tileset[];
+    const cloudsTilesetList = [tileset3, tileset5] as Phaser.Tilemaps.Tileset[];
+    if (tileset && tileset2 && tileset3 && tileset4 && tileset5) {
+      layer = map.createLayer('Land', tileset, 0, 0);
+      layer2 = map.createLayer('Obstacles', obstaclesTilesetList, 0, 0);
+      layer3 = map.createLayer('Clouds', cloudsTilesetList, 0, 0);
+
+      layer?.setDepth(0);
+      layer2?.setDepth(10);
+      layer3?.setDepth(30);
+      console.log('layers:', layer, layer2);
       console.log('tilesets:', map.tilesets);
     } else {
-      console.error("Tileset 'Grass' not found in JSON or image 'grass-tiles-img' not loaded.");
+      console.error("Tileset not found in JSON or images not loaded.");
     }
 
     // ---- walls ---------------------------------------------------------------
@@ -75,17 +89,36 @@ export class GameScene extends Phaser.Scene {
     this.buildWalls(width, height);
 
     // ---- player --------------------------------------------------------------
-    // The physics object is invisible; we sync a visible Container to it.
-    this.player = this.physics.add.image(width / 2, height / 2, "__DEFAULT");
-    this.player.setVisible(false);
-    this.player.setCollideWorldBounds(true);
-    (this.player.body as Phaser.Physics.Arcade.Body).setSize(PLAYER_SIZE, PLAYER_SIZE);
+    const directions = ['up', 'ne', 'right', 'se', 'down', 'sw', 'left', 'nw'];
+    directions.forEach((dir, index) => {
+        this.anims.create({
+            key: `walk-${dir}`,
+            frames: [
+                { key: 'player', frame: 72 + index },
+                { key: 'player', frame: 80 + index },
+                { key: 'player', frame: 88 + index }
+            ],
+            frameRate: 10,
+            repeat: -1
+        });
+    });
 
-    // Visual: filled circle + direction indicator
-    this.playerGfx = this.add.container(width / 2, height / 2).setDepth(10);
-    const body = this.add.circle(0, 0, PLAYER_SIZE / 2, 0x4ade80);
-    const eye = this.add.circle(0, -PLAYER_SIZE / 4, 4, 0x0f0f13);
-    this.playerGfx.add([body, eye]);
+    this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 76);
+    this.player.setScale(3); 
+    this.player.setDepth(20);
+    if(this.player.body) {
+      this.player.body.setSize(10, 6);
+      this.player.body.setOffset(3, 18);
+    }
+    this.player.setCollideWorldBounds(true);
+
+    if (layer && layer2) {
+      layer.setCollisionByProperty({ collides: true });
+      layer2.setCollisionByProperty({ collides: true });
+
+      this.physics.add.collider(this.player, layer);
+      this.physics.add.collider(this.player, layer2);
+    }
 
     // ---- interactable objects -----------------------------------------------
     this.buildInteractables(width, height);
@@ -141,7 +174,6 @@ export class GameScene extends Phaser.Scene {
     if (this.isPaused || !this.cursors) return;
 
     this.handleMovement();
-    this.syncPlayerVisual();
     this.updateInteractHint();
     this.handleInteract();
   }
@@ -154,8 +186,9 @@ export class GameScene extends Phaser.Scene {
 
   // ---- private helpers ------------------------------------------------------
 
-  private handleMovement() {
+private handleMovement() {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const speed = PLAYER_SPEED;
 
     const left = this.cursors.left.isDown || this.wasd.left.isDown;
     const right = this.cursors.right.isDown || this.wasd.right.isDown;
@@ -165,37 +198,46 @@ export class GameScene extends Phaser.Scene {
     let vx = 0;
     let vy = 0;
 
-    if (left) vx = -PLAYER_SPEED;
-    else if (right) vx = PLAYER_SPEED;
-    if (up) vy = -PLAYER_SPEED;
-    else if (down) vy = PLAYER_SPEED;
+    if (left) vx = -1;
+    else if (right) vx = 1;
 
-    // Normalise diagonal speed
-    if (vx !== 0 && vy !== 0) {
-      const factor = 1 / Math.SQRT2;
-      vx *= factor;
-      vy *= factor;
-    }
+    if (up) vy = -1;
+    else if (down) vy = 1;
 
-    body.setVelocity(vx, vy);
-
-    // Rotate the eye dot toward movement direction
     if (vx !== 0 || vy !== 0) {
-      const angle = Math.atan2(vy, vx) + Math.PI / 2; // offset so "up" = 0°
-      this.playerGfx.setRotation(angle);
-    }
-  }
+      const vector = new Phaser.Math.Vector2(vx, vy).normalize().scale(speed);
+      body.setVelocity(vector.x, vector.y);
 
-  private syncPlayerVisual() {
-    this.playerGfx.setPosition(this.player.x, this.player.y);
-  }
+      let animKey = 'walk-down';
+
+      if (vy < 0) {
+        if (vx > 0) animKey = 'walk-ne';
+        else if (vx < 0) animKey = 'walk-nw';
+        else animKey = 'walk-up';
+      } else if (vy > 0) {
+        if (vx > 0) animKey = 'walk-se';
+        else if (vx < 0) animKey = 'walk-sw';
+        else animKey = 'walk-down';
+      } else {
+        if (vx > 0) animKey = 'walk-right';
+        else if (vx < 0) animKey = 'walk-left';
+      }
+
+      this.player.anims.play(animKey, true);
+    } else {
+      body.setVelocity(0, 0);
+      this.player.anims.stop();
+    }
+}
 
   private updateInteractHint() {
     const nearest = this.nearestInteractable();
     if (nearest) {
-      this.hint.setText("Press [E] to interact");
+      this.hint?.setText("Press [E] to interact");
+      this.hint.setVisible(true);
     } else {
-      this.hint.setText("");
+      this.hint?.setText('');
+      this.hint.setVisible(false);
     }
   }
 
@@ -232,18 +274,13 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Inner obstacles — a few rooms / pillars
-    const pillars = [
-      { x: 150, y: 150, w: 40, h: 40 },
-      { x: 650, y: 150, w: 40, h: 40 },
-      { x: 150, y: 450, w: 40, h: 40 },
-      { x: 650, y: 450, w: 40, h: 40 },
-      // horizontal wall with gap
-      { x: 280, y: 300, w: 160, h: 16 },
-      { x: 520, y: 300, w: 160, h: 16 },
-    ];
-    for (const { x, y, w, h } of pillars) {
-      this.addWall(x, y, w, h);
-    }
+    // const pillars = [
+    //   // horizontal wall with gap
+    //   { x: 280, y: 300, w: 160, h: 16 },
+    // ];
+    // for (const { x, y, w, h } of pillars) {
+    //   this.addWall(x, y, w, h);
+    // }
   }
 
   private addWall(x: number, y: number, w: number, h: number) {
