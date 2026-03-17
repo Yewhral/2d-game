@@ -18,8 +18,8 @@ export function createGame(parent: HTMLDivElement): Phaser.Game {
     render: {
       pixelArt: true,
     },
-    width: 800,
-    height: 600,
+    width: 960,
+    height: 640,
     parent,
     backgroundColor: "#0f0f13",
     scale: {

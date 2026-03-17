@@ -16,6 +16,7 @@ export function GameHUD() {
   const [scene, setScene] = useState("—");
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
+  const [dialog, setDialog] = useState<{ npc: string; text: string } | null>(null);
 
   // Subscribe to Phaser events
   useGameEvent(
@@ -34,6 +35,10 @@ export function GameHUD() {
     "player-health-changed",
     useCallback(({ current, max }) => setHealth({ current, max }), []),
   );
+  useGameEvent(
+    "npc-dialog",
+    useCallback((payload) => setDialog(payload ?? null), []),
+  );
 
   const handleTogglePause = () => {
     EventBus.emit("ui:toggle-pause", undefined);
@@ -45,6 +50,12 @@ export function GameHUD() {
     setPaused(false);
     setScore(0);
     setHealth({ current: 100, max: 100 });
+    setDialog(null);
+  };
+
+  const handleCloseDialog = () => {
+    setDialog(null);
+    EventBus.emit("npc-dialog", null);
   };
 
   const hpPct = Math.max(0, (health.current / health.max) * 100);
@@ -101,6 +112,30 @@ export function GameHUD() {
           <span>PAUSED</span>
         </div>
       )}
+
+      {/* NPC dialog bubble */}
+      {dialog && (
+        <div className={styles.dialogOverlay}>
+          <div className={styles.dialogBox}>
+            <div className={styles.dialogPortrait}>⚔️</div>
+            <div className={styles.dialogContent}>
+              <span className={styles.dialogNpcName}>{dialog.npc}</span>
+              <p className={styles.dialogText}>{dialog.text}</p>
+            </div>
+            <button
+              id="btn-close-dialog"
+              type="button"
+              className={styles.dialogClose}
+              onClick={handleCloseDialog}
+              title="Close (E)"
+            >
+              ✕
+            </button>
+          </div>
+          <span className={styles.dialogHint}>Press [E] to close</span>
+        </div>
+      )}
     </div>
   );
 }
+

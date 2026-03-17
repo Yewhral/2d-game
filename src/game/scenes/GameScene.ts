@@ -28,6 +28,14 @@ interface InteractableObject {
   collected: boolean;
 }
 
+interface NpcObject {
+  sprite: Phaser.GameObjects.Sprite;
+  x: number;
+  y: number;
+  name: string;
+  onInteract: () => void;
+}
+
 export class GameScene extends Phaser.Scene {
   // --- state -----------------------------------------------------------------
   private score = 0;
@@ -38,7 +46,9 @@ export class GameScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private walls!: Phaser.Physics.Arcade.StaticGroup;
   private interactables: InteractableObject[] = [];
+  private npcs: NpcObject[] = [];
   private hint!: Phaser.GameObjects.Text;
+  private dialogOpen = false;
 
   // --- input -----------------------------------------------------------------
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -59,21 +69,21 @@ export class GameScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     // ---- floor ---------------------------------------------------------------
-    const map = this.make.tilemap({ key: 'land-and-tree-and-house-json' });
+    const map = this.make.tilemap({ key: '16-json' });
     const tileset = map.addTilesetImage('grass', 'grass-img');
-    const tileset2 = map.addTilesetImage('tree', 'tree-img');
-    const tileset3 = map.addTilesetImage('cloud', 'cloud-img');
-    const tileset4 = map.addTilesetImage('house', 'house-img');
+    // const tileset2 = map.addTilesetImage('tree', 'tree-img');
+    // const tileset3 = map.addTilesetImage('cloud', 'cloud-img');
+    // const tileset4 = map.addTilesetImage('house', 'house-img');
     const tileset5 = map.addTilesetImage('barracks', 'barracks-img');
     let layer: Phaser.Tilemaps.TilemapLayer | null = null;
     let layer2: Phaser.Tilemaps.TilemapLayer | null = null;
     let layer3: Phaser.Tilemaps.TilemapLayer | null = null;
-    const obstaclesTilesetList = [tileset2, tileset4, tileset5] as Phaser.Tilemaps.Tileset[];
-    const cloudsTilesetList = [tileset3, tileset5] as Phaser.Tilemaps.Tileset[];
-    if (tileset && tileset2 && tileset3 && tileset4 && tileset5) {
-      layer = map.createLayer('Land', tileset, 0, 0);
+    const obstaclesTilesetList = [tileset5] as Phaser.Tilemaps.Tileset[];
+    const overheadTilesList = [tileset5] as Phaser.Tilemaps.Tileset[];
+    if (tileset && tileset5) {
+      layer = map.createLayer('Ground', tileset, 0, 0);
       layer2 = map.createLayer('Obstacles', obstaclesTilesetList, 0, 0);
-      layer3 = map.createLayer('Clouds', cloudsTilesetList, 0, 0);
+      layer3 = map.createLayer('Overhead', overheadTilesList, 0, 0);
 
       layer?.setDepth(0);
       layer2?.setDepth(10);
@@ -113,8 +123,8 @@ export class GameScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
 
     if (layer && layer2) {
-      layer.setCollisionByProperty({ collides: true });
-      layer2.setCollisionByProperty({ collides: true });
+      layer.setCollisionByProperty({ collides: '1' });
+      layer2.setCollisionByProperty({ collides: '1' });
 
       this.physics.add.collider(this.player, layer);
       this.physics.add.collider(this.player, layer2);
@@ -122,6 +132,10 @@ export class GameScene extends Phaser.Scene {
 
     // ---- interactable objects -----------------------------------------------
     this.buildInteractables(width, height);
+
+    // ---- NPC: Purple Warrior on tile row 10 (map line 16) -------------------
+    // Tile row 10, column 10  → world x = 10*32 + 16 = 336, y = 10*32 + 16 = 336
+    this.addPurpleWarrior(336, 336);
 
     // ---- hint text -----------------------------------------------------------
     this.hint = this.add
@@ -232,19 +246,42 @@ private handleMovement() {
 
   private updateInteractHint() {
     const nearest = this.nearestInteractable();
-    if (nearest) {
-      this.hint?.setText("Press [E] to interact");
+    const nearestNpc = this.nearestNpc();
+    if (nearest || nearestNpc) {
+      if (this.dialogOpen) {
+        this.hint?.setText('');
+        this.hint.setVisible(false);
+      } else {
+        this.hint?.setText(`Press [E] to ${nearestNpc ? 'talk' : 'interact'}`);
+      }
       this.hint.setVisible(true);
     } else {
-      this.hint?.setText('');
-      this.hint.setVisible(false);
+      if (this.dialogOpen) {
+        // still show close hint even when walking away
+        this.hint?.setText("Press [E] to close dialog");
+        this.hint.setVisible(true);
+      } else {
+        this.hint?.setText('');
+        this.hint.setVisible(false);
+      }
     }
   }
 
   private handleInteract() {
     if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
+      // If dialog is open, close it first
+      if (this.dialogOpen) {
+        this.dialogOpen = false;
+        EventBus.emit('npc-dialog', null);
+        return;
+      }
       const target = this.nearestInteractable();
-      if (target) target.onInteract();
+      if (target) {
+        target.onInteract();
+        return;
+      }
+      const npc = this.nearestNpc();
+      if (npc) npc.onInteract();
     }
   }
 
@@ -253,6 +290,14 @@ private handleMovement() {
       if (obj.collected) continue;
       const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, obj.gfx.x, obj.gfx.y);
       if (dist <= INTERACT_RADIUS) return obj;
+    }
+    return null;
+  }
+
+  private nearestNpc(): NpcObject | null {
+    for (const npc of this.npcs) {
+      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, npc.x, npc.y);
+      if (dist <= INTERACT_RADIUS) return npc;
     }
     return null;
   }
@@ -433,5 +478,33 @@ private handleMovement() {
     };
 
     this.interactables.push(item);
+  }
+
+  // ---- Purple Warrior NPC ---------------------------------------------------
+  private addPurpleWarrior(x: number, y: number) {
+    // Static sprite: frame 0 only, no animation
+    const sprite = this.physics.add.sprite(x, y, 'purple-warrior-idle', 0);
+    const body = sprite.body as Phaser.Physics.Arcade.StaticBody;
+    sprite.setScale(0.75); 
+    body.setSize(35, 35);
+    body.setOffset(80, 85);
+    sprite.setDepth(18);    // above land/obstacles, below HUD
+    sprite.setFlipX(false);
+    sprite.setImmovable(true);
+    
+    this.physics.add.collider(this.player, sprite);
+
+    const npc: NpcObject = {
+      sprite,
+      x,
+      y,
+      name: 'Purple Warrior',
+      onInteract: () => {
+        this.dialogOpen = true;
+        EventBus.emit('npc-dialog', { npc: 'Purple Warrior', text: 'hey' });
+      },
+    };
+
+    this.npcs.push(npc);
   }
 }

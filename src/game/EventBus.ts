@@ -38,6 +38,9 @@ export type GameEvents = {
 
   /** React → Phaser: toggle pause state. */
   "ui:toggle-pause": undefined;
+
+  /** Phaser → React: an NPC started/stopped speaking. */
+  "npc-dialog": { npc: string; text: string } | null;
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();
