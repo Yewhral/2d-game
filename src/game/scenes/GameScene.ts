@@ -18,6 +18,7 @@ const PLAYER_SPEED = 180;
 const INTERACT_RADIUS = 50;
 const NPCS_LAYER = 'Npcs';
 const MARKERS_LAYER = 'Markers';
+const FADE_DURATION = 350;
 
 // ---- NPC registry ----------------------------------------------------------
 // Maps npcId (set as a custom property on Tiled objects) → visual + dialog data.
@@ -76,6 +77,8 @@ export class GameScene extends Phaser.Scene {
   private score = 0;
   private health = { current: 100, max: 100 };
   private isPaused = false;
+  private isTransitioning = false;
+  private currentMapKey = '';
 
   // --- map -------------------------------------------------------------------
   private map!: Phaser.Tilemaps.Tilemap;
@@ -83,6 +86,8 @@ export class GameScene extends Phaser.Scene {
   private obstaclesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private overheadLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private mapColliders: Phaser.Physics.Arcade.Collider[] = [];
+  private exitZones!: Phaser.Physics.Arcade.StaticGroup;
+  private activeExitZone: Phaser.GameObjects.Zone | null = null;
 
   // --- scene objects ---------------------------------------------------------
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -191,7 +196,16 @@ export class GameScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------------------
   update() {
-    if (this.isPaused || !this.cursors) return;
+    if (this.isPaused || !this.cursors || this.isTransitioning) return;
+
+    // Clear active exit zone once the player has walked out of it
+    if (this.activeExitZone) {
+      const isTouching = this.physics.overlap(this.player, this.activeExitZone);
+      
+        if (!isTouching) {
+          this.activeExitZone = null;
+        }
+    }
 
     this.handleMovement();
     this.updateInteractHint();
@@ -213,9 +227,14 @@ export class GameScene extends Phaser.Scene {
    * @param spawnName - Name of the spawn-point object on the map's
    *                    "Objects" layer.  Falls back to map center if not found.
    */
-  changeMap(mapKey: string, spawnName: string) {
+  changeMap(
+    mapKey: string,
+    spawnName: string,
+    relativePos?: { axis: 'x' | 'y'; value: number },
+  ) {
     // --- clean up previous map ------------------------------------------------
     this.cleanupMap();
+    this.currentMapKey = mapKey;
 
     // --- create new tilemap ---------------------------------------------------
     this.map = this.make.tilemap({ key: mapKey });
@@ -261,7 +280,28 @@ export class GameScene extends Phaser.Scene {
     );
 
     if (spawnPoint?.x != null && spawnPoint?.y != null) {
-      this.player.setPosition(spawnPoint.x, spawnPoint.y);
+      const spawnW = spawnPoint.width ?? 0;
+      const spawnH = spawnPoint.height ?? 0;
+
+      if (relativePos && spawnW > 0 && spawnH > 0) {
+        // Map the relative exit position onto this spawn zone
+        if (relativePos.axis === 'y') {
+          const newY = spawnPoint.y + relativePos.value * spawnH;
+          // Nudge player away from the map edge so they don't re-enter the exit zone
+          const nudgeX = spawnPoint.x < 100 ? 50 : -50;
+          this.player.setPosition(spawnPoint.x + spawnW / 2 + nudgeX, newY);
+        } else {
+          const newX = spawnPoint.x + relativePos.value * spawnW;
+          const nudgeY = spawnPoint.y < 100 ? 50 : -50;
+          this.player.setPosition(newX, spawnPoint.y + spawnH / 2 + nudgeY);
+        }
+      } else {
+        // Point spawn or no relative position — place at center
+        this.player.setPosition(
+          spawnPoint.x + spawnW / 2,
+          spawnPoint.y + spawnH / 2,
+        );
+      }
     } else {
       console.warn(
         `Spawn point "${spawnName}" not found in map "${mapKey}" — placing player at map center.`,
@@ -274,6 +314,9 @@ export class GameScene extends Phaser.Scene {
 
     // --- spawn map objects (NPCs, etc.) --------------------------------------
     this.spawnObjects();
+
+    // --- create exit zones for map transitions --------------------------------
+    this.createExitZones();
   }
 
   /**
@@ -284,6 +327,11 @@ export class GameScene extends Phaser.Scene {
       collider.destroy();
     }
     this.mapColliders = [];
+
+    // Destroy exit zones from the previous map
+    if (this.exitZones) {
+      this.exitZones.clear(true, true);
+    }
 
     this.groundLayer?.destroy();
     this.obstaclesLayer?.destroy();
@@ -359,6 +407,159 @@ export class GameScene extends Phaser.Scene {
     };
 
     this.npcs.push(npc);
+  }
+
+  // ---- exit zone management --------------------------------------------------
+
+  /**
+   * Create physics zones for each Markers-layer object that has a `target_map`
+   * property.  An overlap callback triggers the map transition.
+   */
+  private createExitZones() {
+    this.exitZones = this.physics.add.staticGroup();
+
+    const markersLayer = this.map.getObjectLayer(MARKERS_LAYER);
+    if (!markersLayer) return;
+
+    for (const obj of markersLayer.objects) {
+      if (!obj.width || !obj.height || obj.x == null || obj.y == null) continue;
+
+      const props = obj.properties as
+        | Array<{ name: string; value: unknown }>
+        | undefined;
+      const targetMapProp = props?.find((p) => p.name === 'target_map');
+      if (!targetMapProp) continue;
+
+      const zone = this.add.zone(
+        obj.x + obj.width / 2,
+        obj.y + obj.height / 2,
+        obj.width,
+        obj.height,
+      );
+
+      this.physics.add.existing(zone, true);
+
+      zone.setData('targetMap', String(targetMapProp.value));
+      zone.setData('width', obj.width);
+      zone.setData('height', obj.height);
+      zone.setData('y', obj.y);
+
+      this.exitZones.add(zone);
+    }
+
+    // The overlap fires every frame while the player touches the zone
+    this.physics.add.overlap(
+      this.player,
+      this.exitZones,
+      this.handleExitOverlap as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this,
+    );
+  }
+
+  /**
+   * Called by the physics overlap each frame. Ignores the zone if the player
+   * hasn't left it yet (prevents the spawn-loop problem).
+   */
+  private handleExitOverlap(
+    _player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    zone: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+  ) {
+    if (this.isTransitioning) return;
+
+    // Ignore if this is the zone the player just spawned into
+    if (this.activeExitZone === zone) return;
+
+    this.activeExitZone = zone as Phaser.GameObjects.Zone;
+
+    const targetMap = (zone as Phaser.GameObjects.Zone).getData('targetMap') as string;
+    const zoneY = (zone as Phaser.GameObjects.Zone).getData('y') as number;
+    const zoneH = (zone as Phaser.GameObjects.Zone).getData('height') as number;
+
+    const relY = (this.player.y - zoneY) / zoneH; 
+
+    this.startMapTransition(targetMap, relY);
+  }
+
+  /**
+   * Perform a fade-out → change map → fade-in transition.
+   */
+  private startMapTransition(
+    targetMapId: string,
+    relativeY: number,
+  ) {
+    this.isTransitioning = true;
+
+    // Stop player movement immediately
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.setVelocity(0, 0);
+    this.player.anims.stop();
+
+    // Derive the map cache key (maps are loaded as "<id>-json")
+    const mapKey = `${targetMapId}-json`;
+
+    // The destination spawn name is the same as the exit spawn name on the
+    // *current* map — the two maps share a naming convention where a zone
+    // on one map has a `target_map` pointing to the other map, and the
+    // matching zone on the other map points back. We need to find the zone
+    // on the *target* map whose `target_map` points back to the current map.
+    const currentMapId = this.currentMapKey.replace('-json', '');
+
+    // Fade out
+    this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
+
+    this.cameras.main.once(
+      Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+      () => {
+        // Find the matching spawn zone on the target map
+        // We need to peek into the target map data to find the correct spawn
+        const targetTilemap = this.make.tilemap({ key: mapKey });
+        const targetMarkersLayer = targetTilemap.getObjectLayer(MARKERS_LAYER);
+        let destinationSpawnName = 'spawn';
+
+        if (targetMarkersLayer) {
+          for (const obj of targetMarkersLayer.objects) {
+            const objProps = obj.properties as
+              | Array<{ name: string; value: unknown }>
+              | undefined;
+            const tmProp = objProps?.find((p) => p.name === 'target_map');
+            if (tmProp && String(tmProp.value) === currentMapId) {
+              destinationSpawnName = obj.name;
+              break;
+            }
+          }
+        }
+        targetTilemap.destroy();
+
+        // Change the map with relative positioning
+        this.changeMap(mapKey, destinationSpawnName, {
+          axis: 'y',
+          value: relativeY,
+        });
+
+        // Fade back in
+        this.cameras.main.fadeIn(FADE_DURATION, 0, 0);
+
+        // Mark the zone the player just spawned into so it won't re-trigger
+        // We find it by checking which exit zone contains the player
+        this.activeExitZone = null;
+        for (const child of this.exitZones.getChildren()) {
+          const z = child as Phaser.GameObjects.Zone;
+          const bounds = z.getBounds();
+          if (Phaser.Geom.Rectangle.Contains(bounds, this.player.x, this.player.y)) {
+            this.activeExitZone = z;
+            break;
+          }
+        }
+
+        this.cameras.main.once(
+          Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE,
+          () => {
+            this.isTransitioning = false;
+          },
+        );
+      },
+    );
   }
 
   // ---- private helpers ------------------------------------------------------
