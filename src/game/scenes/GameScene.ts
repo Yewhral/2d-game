@@ -15,9 +15,44 @@ import { EventBus } from "../EventBus";
 
 // ---- tuning ----------------------------------------------------------------
 const PLAYER_SPEED = 180;
-// const PLAYER_SIZE = 16; // half-extents for physics body
 const INTERACT_RADIUS = 50;
-// const TILE = 32; // grid cell size
+const NPCS_LAYER = 'Npcs';
+const MARKERS_LAYER = 'Markers';
+
+// ---- NPC registry ----------------------------------------------------------
+// Maps npcId (set as a custom property on Tiled objects) → visual + dialog data.
+// To add a new NPC type: add an entry here, then place an object on the map's
+// "Objects" layer with a custom property `npcId` matching the key.
+const NPC_REGISTRY: Record<
+  string,
+  {
+    name: string;
+    text: string;
+    spriteKey: string;
+    frame: number;
+    scale: number;
+    bodySize: { width: number; height: number };
+    bodyOffset: { x: number; y: number };
+  }
+> = {
+  'purple-warrior': {
+    name: 'Purple Warrior',
+    text: 'hey',
+    spriteKey: 'purple-warrior-idle',
+    frame: 0,
+    scale: 0.75,
+    bodySize: { width: 35, height: 35 },
+    bodyOffset: { x: 80, y: 85 },
+  },
+};
+
+// ---- tileset name → preloaded image key ------------------------------------
+// Every tileset name used in Tiled maps must have a corresponding preloaded
+// image key here.  The Preloader scene must load these images beforehand.
+const TILESET_IMAGE_KEYS: Record<string, string> = {
+  grass: 'grass-img',
+  barracks: 'barracks-img',
+};
 
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
@@ -41,6 +76,13 @@ export class GameScene extends Phaser.Scene {
   private score = 0;
   private health = { current: 100, max: 100 };
   private isPaused = false;
+
+  // --- map -------------------------------------------------------------------
+  private map!: Phaser.Tilemaps.Tilemap;
+  private groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private obstaclesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private overheadLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private mapColliders: Phaser.Physics.Arcade.Collider[] = [];
 
   // --- scene objects ---------------------------------------------------------
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -68,74 +110,41 @@ export class GameScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
 
-    // ---- floor ---------------------------------------------------------------
-    const map = this.make.tilemap({ key: '16-json' });
-    const tileset = map.addTilesetImage('grass', 'grass-img');
-    // const tileset2 = map.addTilesetImage('tree', 'tree-img');
-    // const tileset3 = map.addTilesetImage('cloud', 'cloud-img');
-    // const tileset4 = map.addTilesetImage('house', 'house-img');
-    const tileset5 = map.addTilesetImage('barracks', 'barracks-img');
-    let layer: Phaser.Tilemaps.TilemapLayer | null = null;
-    let layer2: Phaser.Tilemaps.TilemapLayer | null = null;
-    let layer3: Phaser.Tilemaps.TilemapLayer | null = null;
-    const obstaclesTilesetList = [tileset5] as Phaser.Tilemaps.Tileset[];
-    const overheadTilesList = [tileset5] as Phaser.Tilemaps.Tileset[];
-    if (tileset && tileset5) {
-      layer = map.createLayer('Ground', tileset, 0, 0);
-      layer2 = map.createLayer('Obstacles', obstaclesTilesetList, 0, 0);
-      layer3 = map.createLayer('Overhead', overheadTilesList, 0, 0);
-
-      layer?.setDepth(0);
-      layer2?.setDepth(10);
-      layer3?.setDepth(30);
-      console.log('layers:', layer, layer2);
-      console.log('tilesets:', map.tilesets);
-    } else {
-      console.error("Tileset not found in JSON or images not loaded.");
-    }
-
-    // ---- walls ---------------------------------------------------------------
-    this.walls = this.physics.add.staticGroup();
-    this.buildWalls(width, height);
-
-    // ---- player --------------------------------------------------------------
+    // ---- player animations ---------------------------------------------------
     const directions = ['up', 'ne', 'right', 'se', 'down', 'sw', 'left', 'nw'];
     directions.forEach((dir, index) => {
-        this.anims.create({
-            key: `walk-${dir}`,
-            frames: [
-                { key: 'player', frame: 72 + index },
-                { key: 'player', frame: 80 + index },
-                { key: 'player', frame: 88 + index }
-            ],
-            frameRate: 10,
-            repeat: -1
-        });
+      this.anims.create({
+        key: `walk-${dir}`,
+        frames: [
+          { key: 'player', frame: 72 + index },
+          { key: 'player', frame: 80 + index },
+          { key: 'player', frame: 88 + index },
+        ],
+        frameRate: 10,
+        repeat: -1,
+      });
     });
 
+    // ---- player --------------------------------------------------------------
     this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 76);
-    this.player.setScale(3); 
+    this.player.setScale(3);
     this.player.setDepth(20);
-    if(this.player.body) {
+    if (this.player.body) {
       this.player.body.setSize(10, 6);
       this.player.body.setOffset(3, 18);
     }
     this.player.setCollideWorldBounds(true);
 
-    if (layer && layer2) {
-      layer.setCollisionByProperty({ collides: '1' });
-      layer2.setCollisionByProperty({ collides: '1' });
-
-      this.physics.add.collider(this.player, layer);
-      this.physics.add.collider(this.player, layer2);
-    }
+    // ---- walls ---------------------------------------------------------------
+    this.walls = this.physics.add.staticGroup();
+    this.buildWalls(width, height);
+    this.physics.add.collider(this.player, this.walls);
 
     // ---- interactable objects -----------------------------------------------
     this.buildInteractables(width, height);
 
-    // ---- NPC: Purple Warrior on tile row 10 (map line 16) -------------------
-    // Tile row 10, column 10  → world x = 10*32 + 16 = 336, y = 10*32 + 16 = 336
-    this.addPurpleWarrior(336, 336);
+    // ---- load initial map ---------------------------------------------------
+    this.changeMap('16-json', 'spawn');
 
     // ---- hint text -----------------------------------------------------------
     this.hint = this.add
@@ -148,9 +157,6 @@ export class GameScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 1)
       .setDepth(20);
-
-    // ---- physics colliders ---------------------------------------------------
-    this.physics.add.collider(this.player, this.walls);
 
     // ---- input ---------------------------------------------------------------
     const kb = this.input.keyboard;
@@ -198,9 +204,166 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("ui:restart-scene");
   }
 
+  // ---- map management -------------------------------------------------------
+
+  /**
+   * Transition to a different tilemap.
+   *
+   * @param mapKey   - Cache key of the tilemap JSON (loaded in Preloader).
+   * @param spawnName - Name of the spawn-point object on the map's
+   *                    "Objects" layer.  Falls back to map center if not found.
+   */
+  changeMap(mapKey: string, spawnName: string) {
+    // --- clean up previous map ------------------------------------------------
+    this.cleanupMap();
+
+    // --- create new tilemap ---------------------------------------------------
+    this.map = this.make.tilemap({ key: mapKey });
+
+    // Add every tileset referenced by this map
+    const tilesets: Phaser.Tilemaps.Tileset[] = [];
+    for (const tilesetData of this.map.tilesets) {
+      const imageKey = TILESET_IMAGE_KEYS[tilesetData.name];
+      if (imageKey) {
+        const ts = this.map.addTilesetImage(tilesetData.name, imageKey);
+        if (ts) tilesets.push(ts);
+      } else {
+        console.warn(
+          `Tileset "${tilesetData.name}" has no image key in TILESET_IMAGE_KEYS — skipping.`,
+        );
+      }
+    }
+
+    // --- create layers -------------------------------------------------------
+    if (tilesets.length > 0) {
+      this.groundLayer = this.map.createLayer('Ground', tilesets) ?? null;
+      this.obstaclesLayer = this.map.createLayer('Obstacles', tilesets) ?? null;
+      this.overheadLayer = this.map.createLayer('Overhead', tilesets) ?? null;
+
+      this.groundLayer?.setDepth(0);
+      this.obstaclesLayer?.setDepth(10);
+      this.overheadLayer?.setDepth(30);
+
+      // Set collisions on collidable layers based on the tile property
+      for (const layer of [this.groundLayer, this.obstaclesLayer]) {
+        if (layer) {
+          layer.setCollisionByProperty({ collides: '1' });
+          const collider = this.physics.add.collider(this.player, layer);
+          this.mapColliders.push(collider);
+        }
+      }
+    }
+
+    // --- position player at spawn point --------------------------------------
+    const spawnPoint = this.map.findObject(
+      MARKERS_LAYER,
+      (obj) => obj.name === spawnName,
+    );
+
+    if (spawnPoint?.x != null && spawnPoint?.y != null) {
+      this.player.setPosition(spawnPoint.x, spawnPoint.y);
+    } else {
+      console.warn(
+        `Spawn point "${spawnName}" not found in map "${mapKey}" — placing player at map center.`,
+      );
+      this.player.setPosition(
+        this.map.widthInPixels / 2,
+        this.map.heightInPixels / 2,
+      );
+    }
+
+    // --- spawn map objects (NPCs, etc.) --------------------------------------
+    this.spawnObjects();
+  }
+
+  /**
+   * Destroy the current map, its layers, colliders, and NPC references.
+   */
+  private cleanupMap() {
+    for (const collider of this.mapColliders) {
+      collider.destroy();
+    }
+    this.mapColliders = [];
+
+    this.groundLayer?.destroy();
+    this.obstaclesLayer?.destroy();
+    this.overheadLayer?.destroy();
+    this.groundLayer = null;
+    this.obstaclesLayer = null;
+    this.overheadLayer = null;
+
+    for (const npc of this.npcs) {
+      npc.sprite.destroy();
+    }
+    this.npcs = [];
+
+    if (this.map) {
+      this.map.destroy();
+    }
+  }
+
+  /**
+   * Each object with a custom property `npcId` will be spawned as an NPC
+   * using the data from NPC_REGISTRY.
+   */
+  private spawnObjects() {
+    // adjust to spawn other things too
+    const objectLayer = this.map.getObjectLayer(NPCS_LAYER);
+    if (!objectLayer) return;
+
+    for (const obj of objectLayer.objects) {
+      if (obj.x == null || obj.y == null) continue;
+
+      // Look for the npcId custom property
+      const npcIdProp = (
+        obj.properties as Array<{ name: string; value: unknown }> | undefined
+      )?.find((p) => p.name === 'npcId');
+
+      if (npcIdProp) {
+        const npcId = String(npcIdProp.value);
+        this.spawnNpc(obj.x, obj.y, npcId);
+      }
+    }
+  }
+
+  /**
+   * Spawn a single NPC at the given world position using NPC_REGISTRY data.
+   */
+  private spawnNpc(x: number, y: number, npcId: string) {
+    const data = NPC_REGISTRY[npcId];
+    if (!data) {
+      console.warn(`Unknown npcId "${npcId}" — skipping spawn at (${x}, ${y}).`);
+      return;
+    }
+
+    const sprite = this.physics.add.sprite(x, y, data.spriteKey, data.frame);
+    sprite.setScale(data.scale);
+    sprite.setDepth(18);
+    sprite.setImmovable(true);
+
+    const body = sprite.body as Phaser.Physics.Arcade.Body;
+    body.setSize(data.bodySize.width, data.bodySize.height);
+    body.setOffset(data.bodyOffset.x, data.bodyOffset.y);
+
+    this.physics.add.collider(this.player, sprite);
+
+    const npc: NpcObject = {
+      sprite,
+      x,
+      y,
+      name: data.name,
+      onInteract: () => {
+        this.dialogOpen = true;
+        EventBus.emit('npc-dialog', { npc: data.name, text: data.text });
+      },
+    };
+
+    this.npcs.push(npc);
+  }
+
   // ---- private helpers ------------------------------------------------------
 
-private handleMovement() {
+  private handleMovement() {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     const speed = PLAYER_SPEED;
 
@@ -242,7 +405,7 @@ private handleMovement() {
       body.setVelocity(0, 0);
       this.player.anims.stop();
     }
-}
+  }
 
   private updateInteractHint() {
     const nearest = this.nearestInteractable();
@@ -317,15 +480,6 @@ private handleMovement() {
     for (const { x, y, w, h } of borders) {
       this.addWall(x, y, w, h);
     }
-
-    // Inner obstacles — a few rooms / pillars
-    // const pillars = [
-    //   // horizontal wall with gap
-    //   { x: 280, y: 300, w: 160, h: 16 },
-    // ];
-    // for (const { x, y, w, h } of pillars) {
-    //   this.addWall(x, y, w, h);
-    // }
   }
 
   private addWall(x: number, y: number, w: number, h: number) {
@@ -478,33 +632,5 @@ private handleMovement() {
     };
 
     this.interactables.push(item);
-  }
-
-  // ---- Purple Warrior NPC ---------------------------------------------------
-  private addPurpleWarrior(x: number, y: number) {
-    // Static sprite: frame 0 only, no animation
-    const sprite = this.physics.add.sprite(x, y, 'purple-warrior-idle', 0);
-    const body = sprite.body as Phaser.Physics.Arcade.StaticBody;
-    sprite.setScale(0.75); 
-    body.setSize(35, 35);
-    body.setOffset(80, 85);
-    sprite.setDepth(18);    // above land/obstacles, below HUD
-    sprite.setFlipX(false);
-    sprite.setImmovable(true);
-    
-    this.physics.add.collider(this.player, sprite);
-
-    const npc: NpcObject = {
-      sprite,
-      x,
-      y,
-      name: 'Purple Warrior',
-      onInteract: () => {
-        this.dialogOpen = true;
-        EventBus.emit('npc-dialog', { npc: 'Purple Warrior', text: 'hey' });
-      },
-    };
-
-    this.npcs.push(npc);
   }
 }
