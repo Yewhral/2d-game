@@ -16,6 +16,7 @@ import { EventBus } from "../EventBus";
 // ---- tuning ----------------------------------------------------------------
 const PLAYER_SPEED = 180;
 const INTERACT_RADIUS = 50;
+const NPC_EXIT_RADIUS = 90;
 const NPCS_LAYER = 'Npcs';
 const MARKERS_LAYER = 'Markers';
 const FADE_DURATION = 350;
@@ -34,6 +35,7 @@ const NPC_REGISTRY: Record<
     scale: number;
     bodySize: { width: number; height: number };
     bodyOffset: { x: number; y: number };
+    portrait: string;
   }
 > = {
   'purple-warrior': {
@@ -44,6 +46,7 @@ const NPC_REGISTRY: Record<
     scale: 0.75,
     bodySize: { width: 35, height: 35 },
     bodyOffset: { x: 80, y: 85 },
+    portrait: 'gameAssets/purpleWarriorAvatar.png',
   },
 };
 
@@ -95,7 +98,7 @@ export class GameScene extends Phaser.Scene {
   private interactables: InteractableObject[] = [];
   private npcs: NpcObject[] = [];
   private hint!: Phaser.GameObjects.Text;
-  private dialogOpen = false;
+  private activeDialogNpc: NpcObject | null = null;
 
   // --- input -----------------------------------------------------------------
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -208,6 +211,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.handleMovement();
+    this.checkDialogExitRadius();
     this.updateInteractHint();
     this.handleInteract();
   }
@@ -401,8 +405,12 @@ export class GameScene extends Phaser.Scene {
       y,
       name: data.name,
       onInteract: () => {
-        this.dialogOpen = true;
-        EventBus.emit('npc-dialog', { npc: data.name, text: data.text });
+        this.activeDialogNpc = npc;
+        EventBus.emit('npc-dialog', {
+          npc: data.name,
+          text: data.text,
+          portrait: data.portrait,
+        });
       },
     };
 
@@ -612,30 +620,37 @@ export class GameScene extends Phaser.Scene {
     const nearest = this.nearestInteractable();
     const nearestNpc = this.nearestNpc();
     if (nearest || nearestNpc) {
-      if (this.dialogOpen) {
-        this.hint?.setText('');
+      if (this.activeDialogNpc) {
         this.hint.setVisible(false);
       } else {
         this.hint?.setText(`Press [E] to ${nearestNpc ? 'talk' : 'interact'}`);
-      }
-      this.hint.setVisible(true);
-    } else {
-      if (this.dialogOpen) {
-        // still show close hint even when walking away
-        this.hint?.setText("Press [E] to close dialog");
         this.hint.setVisible(true);
-      } else {
+      }
+    } else {
         this.hint?.setText('');
         this.hint.setVisible(false);
-      }
+    }
+  }
+
+  private checkDialogExitRadius() {
+    if (!this.activeDialogNpc) return;
+    const dist = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      this.activeDialogNpc.x,
+      this.activeDialogNpc.y,
+    );
+    if (dist > NPC_EXIT_RADIUS) {
+      this.activeDialogNpc = null;
+      EventBus.emit('npc-dialog', null);
     }
   }
 
   private handleInteract() {
     if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
       // If dialog is open, close it first
-      if (this.dialogOpen) {
-        this.dialogOpen = false;
+      if (this.activeDialogNpc) {
+        this.activeDialogNpc = null;
         EventBus.emit('npc-dialog', null);
         return;
       }
