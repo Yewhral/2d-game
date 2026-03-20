@@ -94,6 +94,7 @@ export class GameScene extends Phaser.Scene {
 
   // --- scene objects ---------------------------------------------------------
   private player!: Phaser.Physics.Arcade.Sprite;
+  private playerShadow!: Phaser.GameObjects.Ellipse;
   private walls!: Phaser.Physics.Arcade.StaticGroup;
   private interactables: InteractableObject[] = [];
   private npcs: NpcObject[] = [];
@@ -133,12 +134,17 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
+    // ---- player shadow -------------------------------------------------------
+    this.playerShadow = this.add.ellipse(0, 0, 28, 22, 0x000000, 0.25);
+    this.add.ellipse()
+    this.playerShadow.setDepth(19);
+
     // ---- player --------------------------------------------------------------
     this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 76);
     this.player.setScale(3);
     this.player.setDepth(20);
     if (this.player.body) {
-      this.player.body.setSize(10, 6);
+      this.player.body.setSize(9, 6);
       this.player.body.setOffset(3, 18);
     }
     this.player.setCollideWorldBounds(true);
@@ -208,6 +214,12 @@ export class GameScene extends Phaser.Scene {
         if (!isTouching) {
           this.activeExitZone = null;
         }
+    }
+
+    if (this.player && this.playerShadow) {
+        this.playerShadow.setPosition(this.player.x - 2, this.player.y + 26);
+        const isMoving = (this.player.body as Phaser.Physics.Arcade.Body).velocity.length() > 0;
+        this.playerShadow.setScale(isMoving ? 1.1 : 1.0);
     }
 
     this.handleMovement();
