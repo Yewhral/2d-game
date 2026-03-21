@@ -108,7 +108,26 @@
          "draworder":"topdown",
          "id":5,
          "name":"Npcs",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":2,
+                 "name":"purple-warrior2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"purple-warrior2"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":664.401160381268,
+                 "y":260.588479071695
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -207,7 +226,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":2,
+ "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",

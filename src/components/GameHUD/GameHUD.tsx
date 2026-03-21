@@ -7,7 +7,7 @@
 
 import { EventBus } from "@/game/EventBus";
 import { useGameEvent } from "@/hooks/useGameEvent";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./GameHUD.module.css";
 
 export function GameHUD() {
@@ -17,6 +17,14 @@ export function GameHUD() {
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
   const [dialog, setDialog] = useState<{ npc: string; text: string; portrait: string } | null>(null);
+  const [questNotification, setQuestNotification] = useState<{
+    message: string;
+    status: string;
+  } | null>(null);
+  const [quests, setQuests] = useState<
+    Array<{ questId: string; title: string; status: string }>
+  >([]);
+  const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Subscribe to Phaser events
   useGameEvent(
@@ -39,6 +47,52 @@ export function GameHUD() {
     "npc-dialog",
     useCallback((payload) => setDialog(payload ?? null), []),
   );
+  useGameEvent(
+    "quest-updated",
+    useCallback(
+      (payload) => {
+        // Show notification toast
+        setQuestNotification({
+          message: payload.message,
+          status: payload.status,
+        });
+
+        // Update quest tracker
+        setQuests((prev) => {
+          const existing = prev.find((q) => q.questId === payload.questId);
+          if (existing) {
+            return prev.map((q) =>
+              q.questId === payload.questId
+                ? { ...q, status: payload.status }
+                : q,
+            );
+          }
+          return [
+            ...prev,
+            {
+              questId: payload.questId,
+              title: payload.title,
+              status: payload.status,
+            },
+          ];
+        });
+
+        // Clear previous timer
+        if (notifTimer.current) clearTimeout(notifTimer.current);
+        notifTimer.current = setTimeout(() => {
+          setQuestNotification(null);
+        }, 3000);
+      },
+      [],
+    ),
+  );
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (notifTimer.current) clearTimeout(notifTimer.current);
+    };
+  }, []);
 
   const handleTogglePause = () => {
     EventBus.emit("ui:toggle-pause", undefined);
@@ -51,7 +105,11 @@ export function GameHUD() {
     setScore(0);
     setHealth({ current: 100, max: 100 });
     setDialog(null);
+    setQuests([]);
+    setQuestNotification(null);
   };
+
+  const visibleQuests = quests.filter((q) => q.status !== 'complete');
 
   const hpPct = Math.max(0, (health.current / health.max) * 100);
   const hpColor =
@@ -121,6 +179,49 @@ export function GameHUD() {
             </div>
           </div>
           <span className={styles.dialogHint}>Press [E] to close</span>
+        </div>
+      )}
+
+      {/* Quest notification toast */}
+      {questNotification && (
+        <div
+          className={`${styles.questNotification} ${
+            questNotification.status === 'complete'
+              ? styles.questNotifComplete
+              : questNotification.status === 'done'
+                ? styles.questNotifDone
+                : styles.questNotifNew
+          }`}
+        >
+          <span className={styles.questNotifIcon}>
+            {questNotification.status === 'complete'
+              ? '✦'
+              : questNotification.status === 'done'
+                ? '◆'
+                : '!'}
+          </span>
+          <span className={styles.questNotifText}>
+            {questNotification.message}
+          </span>
+        </div>
+      )}
+
+      {/* Quest tracker (bottom-left) */}
+      {visibleQuests.length > 0 && (
+        <div className={styles.questTracker}>
+          <div className={styles.questTrackerHeader}>Quests</div>
+          {visibleQuests.map((q) => (
+            <div key={q.questId} className={styles.questEntry}>
+              <span
+                className={`${styles.questStatus} ${
+                  q.status === 'done' ? styles.questStatusDone : ''
+                }`}
+              >
+                {q.status === 'done' ? '◆' : '○'}
+              </span>
+              <span className={styles.questTitle}>{q.title}</span>
+            </div>
+          ))}
         </div>
       )}
     </div>

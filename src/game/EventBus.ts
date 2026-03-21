@@ -41,6 +41,14 @@ export type GameEvents = {
 
   /** Phaser → React: an NPC started/stopped speaking. */
   "npc-dialog": { npc: string; text: string; portrait: string } | null;
+
+  /** Phaser → React: a quest state changed. */
+  "quest-updated": {
+    questId: string;
+    status: 'inactive' | 'active' | 'done' | 'complete';
+    title: string;
+    message: string;
+  };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

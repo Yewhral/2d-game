@@ -12,6 +12,7 @@
 
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
+import { questManager } from "../QuestManager";
 import { 
   DEPTHS, 
   FADE_DURATION, 
@@ -29,18 +30,84 @@ const NPC_REGISTRY: Record<
   string,
   {
     name: string;
-    text: string;
+    /** Static text OR a function that returns text based on npcId */
+    text: string | ((npcId: string) => string);
     spriteKey: string;
     frame: number;
     scale: number;
     bodySize: { width: number; height: number };
     bodyOffset: { x: number; y: number };
     portrait: string;
+    /** Optional callback when the NPC is interacted with (before dialog shows) */
+    onInteract?: (npcId: string) => void;
   }
 > = {
   'purple-warrior': {
     name: 'Purple Warrior',
-    text: 'hey',
+    text: (_npcId: string) => {
+      // Check quest state to determine dialog
+      const quest = questManager.getQuestsForGiver('purple-warrior')[0];
+      if (!quest) return 'Hey there, traveler.';
+
+      const status = questManager.getStatus(quest.id);
+      switch (status) {
+        case 'inactive':
+          return 'Hey traveler! I\'ve heard rumors of a mysterious stranger in the eastern fields. Could you go find them and see what they want?';
+        case 'active':
+          return 'Have you found the stranger yet? Head east through the fields to find them.';
+        case 'done':
+          return 'You found the stranger? Excellent work! Thank you, traveler.';
+        case 'complete':
+          return 'Thanks again for your help, traveler. You\'re a true hero!';
+        default:
+          return 'Hey there.';
+      }
+    },
+    onInteract: (_npcId: string) => {
+      const quest = questManager.getQuestsForGiver('purple-warrior')[0];
+      if (!quest) return;
+
+      const status = questManager.getStatus(quest.id);
+      if (status === 'inactive') {
+        questManager.activateQuest(quest.id);
+      } else if (status === 'done') {
+        questManager.completeQuest(quest.id);
+      }
+    },
+    spriteKey: 'purple-warrior-idle',
+    frame: 0,
+    scale: 0.75,
+    bodySize: { width: 35, height: 35 },
+    bodyOffset: { x: 80, y: 85 },
+    portrait: 'gameAssets/purpleWarriorAvatar.png',
+  },
+  'purple-warrior2': {
+    name: 'Mysterious Stranger',
+    text: (_npcId: string) => {
+      const quest = questManager.getQuestsForTarget('purple-warrior2')[0];
+      if (!quest) return '...';
+
+      const status = questManager.getStatus(quest.id);
+      switch (status) {
+        case 'active':
+          return 'Ah, so the Purple Warrior sent you? Tell them the message has been received. The preparations are underway.';
+        case 'done':
+          return 'Go tell the Purple Warrior what I said. They\'ll be waiting for you.';
+        case 'complete':
+          return 'The winds of change are coming... but that\'s a story for another day.';
+        default:
+          return '... Who are you? I don\'t know what you want.';
+      }
+    },
+    onInteract: (_npcId: string) => {
+      const quest = questManager.getQuestsForTarget('purple-warrior2')[0];
+      if (!quest) return;
+
+      const status = questManager.getStatus(quest.id);
+      if (status === 'active') {
+        questManager.markDone(quest.id);
+      }
+    },
     spriteKey: 'purple-warrior-idle',
     frame: 0,
     scale: 0.75,
@@ -194,6 +261,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.on("ui:restart-scene", () => {
       this.score = 0;
       this.health = { current: 100, max: 100 };
+      questManager.reset();
       this.scene.restart();
     });
 
@@ -413,10 +481,19 @@ export class GameScene extends Phaser.Scene {
       y,
       name: data.name,
       onInteract: () => {
+        // Resolve text FIRST (before quest state changes)
+        const resolvedText =
+          typeof data.text === 'function' ? data.text(npcId) : data.text;
+
+        // Then run quest-related side effects
+        if (data.onInteract) {
+          data.onInteract(npcId);
+        }
+
         this.activeDialogNpc = npc;
         EventBus.emit('npc-dialog', {
           npc: data.name,
-          text: data.text,
+          text: resolvedText,
           portrait: data.portrait,
         });
       },
