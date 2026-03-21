@@ -136,7 +136,6 @@ export class GameScene extends Phaser.Scene {
 
     // ---- player shadow -------------------------------------------------------
     this.playerShadow = this.add.ellipse(0, 0, 28, 22, 0x000000, 0.25);
-    this.add.ellipse()
     this.playerShadow.setDepth(19);
 
     // ---- player --------------------------------------------------------------
@@ -205,22 +204,15 @@ export class GameScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------------------
   update() {
-    if (this.isPaused || !this.cursors || this.isTransitioning) return;
-
-    // Clear active exit zone once the player has walked out of it
-    if (this.activeExitZone) {
-      const isTouching = this.physics.overlap(this.player, this.activeExitZone);
-      
-        if (!isTouching) {
-          this.activeExitZone = null;
-        }
-    }
+    if (this.isPaused || !this.cursors) return;
 
     if (this.player && this.playerShadow) {
         this.playerShadow.setPosition(this.player.x - 2, this.player.y + 26);
         const isMoving = (this.player.body as Phaser.Physics.Arcade.Body).velocity.length() > 0;
         this.playerShadow.setScale(isMoving ? 1.1 : 1.0);
     }
+
+    if (this.isTransitioning) return;
 
     this.handleMovement();
     this.checkDialogExitRadius();
@@ -306,23 +298,19 @@ export class GameScene extends Phaser.Scene {
           // Nudge player away from the map edge so they don't re-enter the exit zone
           const nudgeX = spawnPoint.x < 100 ? 50 : -50;
           this.player.setPosition(spawnPoint.x + spawnW / 2 + nudgeX, newY);
-          this.playerShadow.setPosition(spawnPoint.x + spawnW / 2 + nudgeX, newY);
+          this.playerShadow.setPosition(spawnPoint.x + spawnW / 2 + nudgeX - 2, newY + 26);
         } else {
           const newX = spawnPoint.x + relativePos.value * spawnW;
           const nudgeY = spawnPoint.y < 100 ? 50 : -50;
           this.player.setPosition(newX, spawnPoint.y + spawnH / 2 + nudgeY);
-          this.playerShadow.setPosition(newX, spawnPoint.y + spawnH / 2 + nudgeY);
+          this.playerShadow.setPosition(newX - 2, spawnPoint.y + spawnH / 2 + nudgeY + 26);
         }
       } else {
         // Point spawn or no relative position — place at center
-        this.player.setPosition(
-          spawnPoint.x + spawnW / 2,
-          spawnPoint.y + spawnH / 2,
-        );
-        this.playerShadow.setPosition(
-          spawnPoint.x + spawnW / 2,
-          spawnPoint.y + spawnH / 2,
-        );
+        const centerX = spawnPoint.x + spawnW / 2;
+        const centerY = spawnPoint.y + spawnH / 2;
+        this.player.setPosition(centerX, centerY);
+        this.playerShadow.setPosition(centerX - 2, centerY + 26);
       }
     } else {
       console.warn(
