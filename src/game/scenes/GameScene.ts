@@ -12,14 +12,14 @@
 
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
-
-// ---- tuning ----------------------------------------------------------------
-const PLAYER_SPEED = 180;
-const INTERACT_RADIUS = 50;
-const NPC_EXIT_RADIUS = 90;
-const NPCS_LAYER = 'Npcs';
-const MARKERS_LAYER = 'Markers';
-const FADE_DURATION = 350;
+import { 
+  DEPTHS, 
+  FADE_DURATION, 
+  INTERACT_RADIUS, 
+  LAYERS, 
+  NPC_EXIT_RADIUS, 
+  PLAYER_SPEED 
+} from "../constants";
 
 // ---- NPC registry ----------------------------------------------------------
 // Maps npcId (set as a custom property on Tiled objects) → visual + dialog data.
@@ -134,19 +134,20 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
-    // ---- player shadow -------------------------------------------------------
-    this.playerShadow = this.add.ellipse(0, 0, 28, 22, 0x000000, 0.25);
-    this.playerShadow.setDepth(19);
-
     // ---- player --------------------------------------------------------------
     this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 76);
     this.player.setScale(3);
-    this.player.setDepth(20);
+    this.player.setDepth(this.player.y);
+    this.player.setOrigin(0.5, 1);
     if (this.player.body) {
       this.player.body.setSize(9, 6);
       this.player.body.setOffset(3, 18);
     }
     this.player.setCollideWorldBounds(true);
+
+    // ---- player shadow -------------------------------------------------------
+    this.playerShadow = this.add.ellipse(0, 0, 28, 22, 0x000000, 0.25);
+    this.playerShadow.setDepth(this.player.y - 1);
 
     // ---- walls ---------------------------------------------------------------
     this.walls = this.physics.add.staticGroup();
@@ -207,9 +208,10 @@ export class GameScene extends Phaser.Scene {
     if (this.isPaused || !this.cursors) return;
 
     if (this.player && this.playerShadow) {
-        this.playerShadow.setPosition(this.player.x - 2, this.player.y + 26);
-        const isMoving = (this.player.body as Phaser.Physics.Arcade.Body).velocity.length() > 0;
-        this.playerShadow.setScale(isMoving ? 1.1 : 1.0);
+      this.playerShadow.setPosition(this.player.x - 2, this.player.y - 10);
+      const isMoving = (this.player.body as Phaser.Physics.Arcade.Body).velocity.length() > 0;
+      this.playerShadow.setScale(isMoving ? 1.1 : 1.0);
+      this.player.setDepth(this.player.y);
     }
 
     if (this.isTransitioning) return;
@@ -267,9 +269,9 @@ export class GameScene extends Phaser.Scene {
       this.obstaclesLayer = this.map.createLayer('Obstacles', tilesets) ?? null;
       this.overheadLayer = this.map.createLayer('Overhead', tilesets) ?? null;
 
-      this.groundLayer?.setDepth(0);
-      this.obstaclesLayer?.setDepth(10);
-      this.overheadLayer?.setDepth(30);
+      this.groundLayer?.setDepth(DEPTHS.GROUND);
+      this.obstaclesLayer?.setDepth(DEPTHS.OBSTACLES);
+      this.overheadLayer?.setDepth(DEPTHS.OVERHEAD);
 
       // Set collisions on collidable layers based on the tile property
       for (const layer of [this.groundLayer, this.obstaclesLayer]) {
@@ -283,7 +285,7 @@ export class GameScene extends Phaser.Scene {
 
     // --- position player at spawn point --------------------------------------
     const spawnPoint = this.map.findObject(
-      MARKERS_LAYER,
+      LAYERS.MARKERS,
       (obj) => obj.name === spawnName,
     );
 
@@ -366,7 +368,7 @@ export class GameScene extends Phaser.Scene {
    */
   private spawnObjects() {
     // adjust to spawn other things too
-    const objectLayer = this.map.getObjectLayer(NPCS_LAYER);
+    const objectLayer = this.map.getObjectLayer(LAYERS.NPCS);
     if (!objectLayer) return;
 
     for (const obj of objectLayer.objects) {
@@ -396,7 +398,7 @@ export class GameScene extends Phaser.Scene {
 
     const sprite = this.physics.add.sprite(x, y, data.spriteKey, data.frame);
     sprite.setScale(data.scale);
-    sprite.setDepth(18);
+    sprite.setDepth(sprite.y);
     sprite.setImmovable(true);
 
     const body = sprite.body as Phaser.Physics.Arcade.Body;
@@ -432,7 +434,7 @@ export class GameScene extends Phaser.Scene {
   private createExitZones() {
     this.exitZones = this.physics.add.staticGroup();
 
-    const markersLayer = this.map.getObjectLayer(MARKERS_LAYER);
+    const markersLayer = this.map.getObjectLayer(LAYERS.MARKERS);
     if (!markersLayer) return;
 
     for (const obj of markersLayer.objects) {
@@ -528,7 +530,7 @@ export class GameScene extends Phaser.Scene {
         // Find the matching spawn zone on the target map
         // We need to peek into the target map data to find the correct spawn
         const targetTilemap = this.make.tilemap({ key: mapKey });
-        const targetMarkersLayer = targetTilemap.getObjectLayer(MARKERS_LAYER);
+        const targetMarkersLayer = targetTilemap.getObjectLayer(LAYERS.MARKERS);
         let destinationSpawnName = 'spawn';
 
         if (targetMarkersLayer) {
