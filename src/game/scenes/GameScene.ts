@@ -306,14 +306,20 @@ export class GameScene extends Phaser.Scene {
           // Nudge player away from the map edge so they don't re-enter the exit zone
           const nudgeX = spawnPoint.x < 100 ? 50 : -50;
           this.player.setPosition(spawnPoint.x + spawnW / 2 + nudgeX, newY);
+          this.playerShadow.setPosition(spawnPoint.x + spawnW / 2 + nudgeX, newY);
         } else {
           const newX = spawnPoint.x + relativePos.value * spawnW;
           const nudgeY = spawnPoint.y < 100 ? 50 : -50;
           this.player.setPosition(newX, spawnPoint.y + spawnH / 2 + nudgeY);
+          this.playerShadow.setPosition(newX, spawnPoint.y + spawnH / 2 + nudgeY);
         }
       } else {
         // Point spawn or no relative position — place at center
         this.player.setPosition(
+          spawnPoint.x + spawnW / 2,
+          spawnPoint.y + spawnH / 2,
+        );
+        this.playerShadow.setPosition(
           spawnPoint.x + spawnW / 2,
           spawnPoint.y + spawnH / 2,
         );
