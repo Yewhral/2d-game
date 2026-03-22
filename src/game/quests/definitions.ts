@@ -9,6 +9,7 @@
 
 import type { QuestHandler } from './types';
 import { TalkQuestHandler } from './TalkQuestHandler';
+import { CollectQuestHandler } from './CollectQuestHandler';
 
 export const QUEST_DEFINITIONS: QuestHandler[] = [
   new TalkQuestHandler({
@@ -35,6 +36,26 @@ export const QUEST_DEFINITIONS: QuestHandler[] = [
         done: "Go tell the Purple Warrior what I said. They'll be waiting for you.",
         complete:
           "The winds of change are coming... but that's a story for another day.",
+      },
+    },
+  }),
+
+  new CollectQuestHandler({
+    id: 'collect-chests',
+    title: 'Supply Run',
+    description: 'Collect 2 healing chests for the Purple Warrior.',
+    giverNpcId: 'purple-warrior',
+    itemType: 'chest',
+    requiredCount: 2,
+    dialogs: {
+      giver: {
+        inactive:
+          "I'm running low on supplies. There are some healing chests scattered around. Could you bring me 2 of them?",
+        active:
+          "How's the search going? You've found {collected} out of {required} chests so far.",
+        done: "You've gathered all the supplies I need! Well done, adventurer!",
+        complete:
+          'Those supplies will last me a long time. Thank you!',
       },
     },
   }),

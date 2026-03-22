@@ -12,6 +12,7 @@
  * Usage from GameScene:
  *   const dialog = questManager.getNpcDialog(npcId);   // before showing text
  *   questManager.handleNpcInteract(npcId);              // after text resolved
+ *   questManager.handleItemCollected('chest');           // when an item is picked up
  */
 
 import { EventBus } from '../EventBus';
@@ -53,25 +54,32 @@ class QuestManager {
   /**
    * Get quest-aware dialog for an NPC.
    *
-   * Iterates all registered handlers; the first one that returns non-null
-   * text wins.  Returns `null` if no quest has anything to say for this NPC,
-   * so the caller can fall back to the NPC's default text.
+   * Priority: active/done quests first (in-progress), then inactive
+   * (new quests to discover), then complete (past quests).
+   * Returns `null` if no quest has dialog for this NPC.
    */
   getNpcDialog(npcId: string): string | null {
+    let inactiveDialog: string | null = null;
+    let completeDialog: string | null = null;
+
     for (const [id, handler] of this.handlers) {
       const status = this.getStatus(id);
       const dialog = handler.getDialogForNpc(npcId, status);
-      if (dialog !== null) return dialog;
+      if (dialog === null) continue;
+
+      // Active / done quests take highest priority
+      if (status === 'active' || status === 'done') return dialog;
+      // Remember first inactive match as fallback
+      if (status === 'inactive' && inactiveDialog === null) inactiveDialog = dialog;
+      // Remember first complete match as last resort
+      if (status === 'complete' && completeDialog === null) completeDialog = dialog;
     }
-    return null;
+
+    return inactiveDialog ?? completeDialog ?? null;
   }
 
   /**
    * Notify the quest system that the player interacted with an NPC.
-   *
-   * Each handler decides independently whether this interaction should
-   * advance its quest.  Call this *after* resolving dialog text so the
-   * player sees the pre-transition message.
    */
   handleNpcInteract(npcId: string): void {
     for (const [id, handler] of this.handlers) {
@@ -83,12 +91,47 @@ class QuestManager {
     }
   }
 
+  // ---- Item collection (called by GameScene) --------------------------------
+
+  /**
+   * Notify the quest system that the player collected an item.
+   *
+   * Handlers that implement `onItemCollected` will be checked.
+   * If the quest state doesn't change but the handler has progress info,
+   * a progress notification is emitted for the HUD.
+   */
+  handleItemCollected(itemType: string): void {
+    for (const [id, handler] of this.handlers) {
+      if (!handler.onItemCollected) continue;
+      const currentStatus = this.getStatus(id);
+      const newStatus = handler.onItemCollected(itemType, currentStatus);
+
+      if (newStatus && newStatus !== currentStatus) {
+        // Quest state changed (e.g. reached required count)
+        this.setState(id, newStatus);
+      } else if (currentStatus === 'active') {
+        // Progress but no state change — emit a progress notification
+        const progress = handler.getProgress?.() ?? null;
+        if (progress) {
+          EventBus.emit('quest-updated', {
+            questId: id,
+            status: currentStatus,
+            title: handler.title,
+            message: `${handler.title}: ${progress}`,
+            progress,
+          });
+        }
+      }
+    }
+  }
+
   // ---- lifecycle ------------------------------------------------------------
 
   /** Reset every quest back to inactive (e.g. on game restart). */
   reset(): void {
-    for (const id of this.handlers.keys()) {
+    for (const [id, handler] of this.handlers) {
       this.states.set(id, 'inactive');
+      handler.reset?.();
     }
   }
 
@@ -97,6 +140,7 @@ class QuestManager {
   private setState(questId: string, status: QuestStatus): void {
     this.states.set(questId, status);
     const handler = this.handlers.get(questId);
+    const progress = handler?.getProgress?.() ?? undefined;
 
     let message = '';
     switch (status) {
@@ -116,6 +160,7 @@ class QuestManager {
       status,
       title: handler?.title ?? questId,
       message,
+      progress,
     });
   }
 }

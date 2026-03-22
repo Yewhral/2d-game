@@ -22,7 +22,7 @@ export function GameHUD() {
     status: string;
   } | null>(null);
   const [quests, setQuests] = useState<
-    Array<{ questId: string; title: string; status: string }>
+    Array<{ questId: string; title: string; status: string; progress?: string }>
   >([]);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -63,7 +63,7 @@ export function GameHUD() {
           if (existing) {
             return prev.map((q) =>
               q.questId === payload.questId
-                ? { ...q, status: payload.status }
+                ? { ...q, status: payload.status, progress: payload.progress }
                 : q,
             );
           }
@@ -73,6 +73,7 @@ export function GameHUD() {
               questId: payload.questId,
               title: payload.title,
               status: payload.status,
+              progress: payload.progress,
             },
           ];
         });
@@ -220,6 +221,9 @@ export function GameHUD() {
                 {q.status === 'done' ? '◆' : '○'}
               </span>
               <span className={styles.questTitle}>{q.title}</span>
+              {q.progress && (
+                <span className={styles.questProgress}>{q.progress}</span>
+              )}
             </div>
           ))}
         </div>

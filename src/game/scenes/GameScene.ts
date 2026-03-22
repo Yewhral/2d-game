@@ -849,6 +849,9 @@ export class GameScene extends Phaser.Scene {
         this.health.current = Math.min(this.health.current + 20, this.health.max);
         EventBus.emit("player-health-changed", { ...this.health });
 
+        // Notify quest system
+        questManager.handleItemCollected('chest');
+
         this.tweens.add({
           targets: label,
           y: label.y - 30,

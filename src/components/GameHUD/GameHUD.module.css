@@ -342,3 +342,14 @@
   color: var(--color-text);
   line-height: 1.4;
 }
+
+.questProgress {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
