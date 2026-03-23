@@ -167,7 +167,75 @@
          "draworder":"topdown",
          "id":4,
          "name":"Collectibles",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":865,
+                 "height":128,
+                 "id":11,
+                 "name":"money",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"money_1"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"money"
+                        }, 
+                        {
+                         "name":"value",
+                         "type":"string",
+                         "value":"10"
+                        }],
+                 "rotation":0,
+                 "type":"money",
+                 "visible":true,
+                 "width":128,
+                 "x":243.121508811708,
+                 "y":594.763681335669
+                }, 
+                {
+                 "gid":865,
+                 "height":128,
+                 "id":12,
+                 "name":"money2",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"auto"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"money_2"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"money"
+                        }, 
+                        {
+                         "name":"value",
+                         "type":"string",
+                         "value":"15"
+                        }],
+                 "rotation":0,
+                 "type":"money",
+                 "visible":true,
+                 "width":128,
+                 "x":416.263835927033,
+                 "y":188.703699886633
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -226,7 +294,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":3,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",
@@ -2733,6 +2801,49 @@
                         }]
                 }],
          "tilewidth":16,
+         "transparentcolor":"#ff00ff"
+        }, 
+        {
+         "columns":6,
+         "firstgid":865,
+         "image":"..\/..\/..\/..\/assets2d\/pngs\/Tiny Swords (Free Pack)\/Terrain\/Resources\/Gold\/Gold Resource\/Gold_Resource_Highlight.png",
+         "imageheight":128,
+         "imagewidth":768,
+         "margin":0,
+         "name":"Gold_Resource_Highlight",
+         "spacing":0,
+         "tilecount":6,
+         "tileheight":128,
+         "tiles":[
+                {
+                 "animation":[
+                        {
+                         "duration":120,
+                         "tileid":0
+                        }, 
+                        {
+                         "duration":120,
+                         "tileid":1
+                        }, 
+                        {
+                         "duration":120,
+                         "tileid":2
+                        }, 
+                        {
+                         "duration":120,
+                         "tileid":3
+                        }, 
+                        {
+                         "duration":120,
+                         "tileid":4
+                        }, 
+                        {
+                         "duration":120,
+                         "tileid":5
+                        }],
+                 "id":0
+                }],
+         "tilewidth":128,
          "transparentcolor":"#ff00ff"
         }],
  "tilewidth":16,
