@@ -1,9 +1,8 @@
 /**
  * Quest system types.
  *
- * QuestStatus defines the lifecycle every quest goes through.
- * QuestHandler is the interface that each quest *type* implements
- * (TalkQuestHandler, CollectQuestHandler, etc.).
+ * Handlers are STATELESS — they receive progress as input and return
+ * updates.  All mutable state lives in QuestManager.
  */
 
 // ---- Quest status -----------------------------------------------------------
@@ -12,49 +11,81 @@ export type QuestStatus = 'inactive' | 'active' | 'done' | 'complete';
 // ---- Quest type -------------------------------------------------------------
 export type QuestType = 'talk' | 'collect';
 
-// ---- Quest handler interface ------------------------------------------------
+// ---- Quest update (returned by handlers) ------------------------------------
+/**
+ * Return type for handler event hooks.
+ *
+ * - `status`   — set to advance the quest lifecycle.
+ * - `progress` — set to update quest-specific runtime data
+ *                (e.g. `{ collected: 1 }`).
+ *
+ * Both fields are optional.  Return `null` from a hook if the event
+ * is irrelevant to this quest.
+ */
+export type QuestUpdate = {
+  status?: QuestStatus;
+  progress?: Record<string, unknown>;
+};
+
+// ---- Quest handler (stateless logic) ----------------------------------------
+/**
+ * Handlers contain ONLY gameplay logic — no state, no UI strings,
+ * no side effects.  They receive the current status + progress and
+ * return a QuestUpdate describing what changed.
+ *
+ * Implement only the event hooks you need; all are optional.
+ */
 export interface QuestHandler {
-  /** Unique quest identifier */
-  readonly id: string;
-  /** Human-readable title shown in the tracker */
-  readonly title: string;
-  /** Longer description (for journal / tooltip) */
-  readonly description: string;
-  /** Quest type — must be a registered QuestType */
   readonly type: QuestType;
 
-  /**
-   * Return quest-specific dialog for an NPC, or `null` to fall through
-   * to the NPC's default text.
-   *
-   * Called *before* `onNpcInteract`, so it sees the status *prior* to
-   * any state change on this interaction.
-   */
-  getDialogForNpc(npcId: string, status: QuestStatus): string | null;
+  /** Return the initial progress blob when the quest becomes active. */
+  getInitialProgress(): Record<string, unknown>;
 
-  /**
-   * Called when the player interacts with an NPC.
-   * Return the new QuestStatus if this interaction should advance the
-   * quest, or `null` if no change should occur.
-   */
-  onNpcInteract(npcId: string, currentStatus: QuestStatus): QuestStatus | null;
+  // ---- Event hooks (all optional) -------------------------------------------
+  onNpcInteract?(
+    npcId: string,
+    status: QuestStatus,
+    progress: Record<string, unknown>,
+  ): QuestUpdate | null;
 
-  /**
-   * Called when the player collects / picks up an item.
-   * Return the new QuestStatus if this changes the quest, or `null`.
-   * Optional — only implement for collection-type quests.
-   */
-  onItemCollected?(itemType: string, currentStatus: QuestStatus): QuestStatus | null;
+  onItemCollected?(
+    itemType: string,
+    status: QuestStatus,
+    progress: Record<string, unknown>,
+  ): QuestUpdate | null;
 
-  /**
-   * Return a short progress string (e.g. "1 / 2") for display in the
-   * quest tracker, or `null` if no progress info is available.
-   */
-  getProgress?(): string | null;
+  // Future hooks — add as needed:
+  // onAreaEntered?(areaId: string, status: QuestStatus, progress: Record<string, unknown>): QuestUpdate | null;
+  // onEnemyKilled?(enemyType: string, status: QuestStatus, progress: Record<string, unknown>): QuestUpdate | null;
+}
 
-  /**
-   * Reset handler-internal state (e.g. collected counts).
-   * Called by QuestManager.reset().
-   */
-  reset?(): void;
+// ---- Dialog templates -------------------------------------------------------
+/**
+ * Dialog templates keyed by npcId → quest status.
+ * Placeholders like `{collected}` are interpolated from progress data
+ * by the QuestManager at runtime.
+ */
+export type QuestDialogs = Record<
+  string,
+  Partial<Record<QuestStatus, string>>
+>;
+
+// ---- Quest definition (full package) ----------------------------------------
+/**
+ * A complete quest definition: metadata + stateless handler + dialog config.
+ * This is the unit you add to `definitions.ts` when creating a new quest.
+ */
+export interface QuestDefinition {
+  /** Unique quest identifier */
+  id: string;
+  /** Human-readable title shown in the tracker */
+  title: string;
+  /** Longer description (for journal / tooltip) */
+  description: string;
+  /** Stateless handler containing gameplay logic */
+  handler: QuestHandler;
+  /** NPC dialog templates, interpolated with progress data */
+  dialogs: QuestDialogs;
+  /** Optional formatter for the progress badge in the quest tracker */
+  formatProgress?: (progress: Record<string, unknown>) => string | null;
 }

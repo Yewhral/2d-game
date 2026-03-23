@@ -1,97 +1,69 @@
 /**
  * CollectQuestHandler — "collect N items of a given type".
  *
+ * STATELESS: all progress (collected count) is stored externally in
+ * QuestManager and passed in as input.  The handler only decides
+ * what the updated progress/status should be.
+ *
  * Lifecycle:
  *   1. Player talks to giver NPC        → inactive → active
- *   2. Player collects required items    → active   → done  (auto when count reached)
+ *   2. Player collects required items    → active   → done
  *   3. Player returns to giver NPC      → done     → complete
- *
- * Dialog strings may contain `{collected}` and `{required}` placeholders
- * which are replaced with the current progress values at runtime.
  */
 
-import type { QuestHandler, QuestStatus } from './types';
+import type { QuestHandler, QuestStatus, QuestUpdate } from './types';
 
 export interface CollectQuestConfig {
-  id: string;
-  title: string;
-  description: string;
   /** npcId of the quest giver */
   giverNpcId: string;
   /** Item type string that must match the value passed to onItemCollected */
   itemType: string;
   /** How many items the player must collect */
   requiredCount: number;
-  /** Dialog lines keyed by quest status for the giver NPC */
-  dialogs: {
-    giver: Partial<Record<QuestStatus, string>>;
-  };
 }
 
 export class CollectQuestHandler implements QuestHandler {
-  readonly id: string;
-  readonly title: string;
-  readonly description: string;
   readonly type = 'collect' as const;
 
   private giverNpcId: string;
   private itemType: string;
   private requiredCount: number;
-  private collectedCount = 0;
-  private dialogs: CollectQuestConfig['dialogs'];
 
   constructor(config: CollectQuestConfig) {
-    this.id = config.id;
-    this.title = config.title;
-    this.description = config.description;
     this.giverNpcId = config.giverNpcId;
     this.itemType = config.itemType;
     this.requiredCount = config.requiredCount;
-    this.dialogs = config.dialogs;
   }
 
-  // ---- QuestHandler required methods ----------------------------------------
-
-  getDialogForNpc(npcId: string, status: QuestStatus): string | null {
-    if (npcId !== this.giverNpcId) return null;
-    const template = this.dialogs.giver[status] ?? null;
-    if (!template) return null;
-    return this.interpolate(template);
+  getInitialProgress(): Record<string, unknown> {
+    return { collected: 0, required: this.requiredCount };
   }
 
-  onNpcInteract(npcId: string, currentStatus: QuestStatus): QuestStatus | null {
+  onNpcInteract(
+    npcId: string,
+    status: QuestStatus,
+    _progress: Record<string, unknown>,
+  ): QuestUpdate | null {
     if (npcId !== this.giverNpcId) return null;
-    // Accept the quest
-    if (currentStatus === 'inactive') return 'active';
-    // Hand in the completed quest
-    if (currentStatus === 'done') return 'complete';
+    if (status === 'inactive') return { status: 'active' };
+    if (status === 'done') return { status: 'complete' };
     return null;
   }
 
-  // ---- QuestHandler optional methods ----------------------------------------
-
-  onItemCollected(itemType: string, currentStatus: QuestStatus): QuestStatus | null {
-    if (currentStatus !== 'active') return null;
+  onItemCollected(
+    itemType: string,
+    status: QuestStatus,
+    progress: Record<string, unknown>,
+  ): QuestUpdate | null {
+    if (status !== 'active') return null;
     if (itemType !== this.itemType) return null;
-    this.collectedCount++;
-    if (this.collectedCount >= this.requiredCount) return 'done';
-    return null; // progress but not done yet
-  }
 
-  getProgress(): string | null {
-    return `${this.collectedCount} / ${this.requiredCount}`;
-  }
+    const collected = (progress.collected as number) + 1;
+    const required = progress.required as number;
 
-  reset(): void {
-    this.collectedCount = 0;
-  }
-
-  // ---- internal -------------------------------------------------------------
-
-  /** Replace `{collected}` and `{required}` placeholders in a dialog string. */
-  private interpolate(template: string): string {
-    return template
-      .replace(/\{collected\}/g, String(this.collectedCount))
-      .replace(/\{required\}/g, String(this.requiredCount));
+    if (collected >= required) {
+      return { status: 'done', progress: { collected, required } };
+    }
+    return { progress: { collected, required } };
   }
 }
