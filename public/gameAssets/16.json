@@ -138,6 +138,25 @@
                  "width":0,
                  "x":295.530107129664,
                  "y":393.055042482453
+                }, 
+                {
+                 "height":0,
+                 "id":5,
+                 "name":"purple-monk",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"purple-monk"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":201.036594942673,
+                 "y":120.936076645202
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -250,7 +269,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":5,
+ "nextobjectid":6,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",
@@ -3092,6 +3111,20 @@
                     }
                 }],
          "tilewidth":16
+        }, 
+        {
+         "columns":36,
+         "firstgid":1057,
+         "image":"..\/..\/..\/..\/assets2d\/pngs\/Tiny Swords (Free Pack)\/Terrain\/Tileset\/Tilemap_color4.png",
+         "imageheight":384,
+         "imagewidth":576,
+         "margin":0,
+         "name":"grass2",
+         "spacing":0,
+         "tilecount":864,
+         "tileheight":16,
+         "tilewidth":16,
+         "transparentcolor":"#ff00ff"
         }],
  "tilewidth":16,
  "type":"map",

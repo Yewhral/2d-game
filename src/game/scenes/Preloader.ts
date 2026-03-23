@@ -37,6 +37,10 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 192,
       frameHeight: 192,
     });
+    this.load.spritesheet('purple-monk-idle', 'purpleMonkIdle.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
     this.load.tilemapTiledJSON('16-json', '16.json');
     this.load.tilemapTiledJSON('26-json', '26.json');
     this.load.spritesheet('player', 'player.png', {

@@ -48,6 +48,28 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     },
   },
 
+    {
+    id: 'wait-a-minute',
+    title: 'Morning Meditation',
+    description:
+      'Wait for the monk to finish meditating.',
+    handler: new TalkQuestHandler({
+      giverNpcId: 'purple-monk',
+      targetNpcId: 'purple-monk',
+    }),
+    dialogs: {
+      'purple-monk': {
+        inactive:
+          "Mmmeditating, wait a mmminute.",
+        active:
+          '...',
+        done: "Good things come to those who wait. Here's your <i>mmmm</i>oney",
+        complete:
+          "<i>Monk seems to be back to meditating and humming</i>",
+      },
+    },
+  },
+
   {
     id: 'collect-chests',
     title: 'Supply Run',

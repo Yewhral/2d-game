@@ -176,7 +176,7 @@ export function GameHUD() {
             </div>
             <div className={styles.dialogContent}>
               <span className={styles.dialogNpcName}>{dialog.npc}</span>
-              <p className={styles.dialogText}>{dialog.text}</p>
+              <p className={styles.dialogText} dangerouslySetInnerHTML={{ __html: dialog.text }} />
             </div>
           </div>
           <span className={styles.dialogHint}>Press [E] to close</span>

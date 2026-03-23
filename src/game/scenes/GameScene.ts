@@ -60,6 +60,16 @@ const NPC_REGISTRY: Record<
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/purpleWarriorAvatar.png',
   },
+  'purple-monk': {
+    name: 'One Without a Name',
+    text: '...',
+    spriteKey: 'purple-monk-idle',
+    frame: 0,
+    scale: 0.75,
+    bodySize: { width: 35, height: 35 },
+    bodyOffset: { x: 80, y: 85 },
+    portrait: 'gameAssets/purpleMonkAvatar.png',
+  }
 };
 
 // ---- tileset name → preloaded image key ------------------------------------
