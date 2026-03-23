@@ -33,9 +33,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
           "Hey traveler! I've heard rumors of a mysterious stranger in the eastern fields. Could you go find them and see what they want?",
         active:
           'Have you found the stranger yet? Head east through the fields to find them.',
-        done: 'You found the stranger? Excellent work! Thank you, traveler.',
+        done: 'So it begins. Open the gates!',
         complete:
-          "Thanks again for your help, traveler. You're a true hero!",
+          "The gates are open! The time has come!",
       },
       'purple-warrior2': {
         inactive: "... Who are you? I don't know what you want.",
