@@ -16,6 +16,7 @@ import { questManager } from "../quests/QuestManager";
 import { 
   DEPTHS, 
   FADE_DURATION, 
+  GAME_BG_COLOR, 
   INTERACT_RADIUS, 
   LAYERS, 
   NPC_EXIT_RADIUS, 
@@ -78,6 +79,7 @@ const NPC_REGISTRY: Record<
 const TILESET_IMAGE_KEYS: Record<string, string> = {
   grass: 'grass-img',
   barracks: 'barracks-img',
+  water: 'water-img'
 };
 
 // ---- types -----------------------------------------------------------------
@@ -107,6 +109,7 @@ export class GameScene extends Phaser.Scene {
 
   // --- map -------------------------------------------------------------------
   private map!: Phaser.Tilemaps.Tilemap;
+  private waterLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private obstaclesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private overheadLayer: Phaser.Tilemaps.TilemapLayer | null = null;
@@ -140,6 +143,7 @@ export class GameScene extends Phaser.Scene {
   // ---------------------------------------------------------------------------
   create() {
     const { width, height } = this.scale;
+    this.cameras.main.setBackgroundColor(GAME_BG_COLOR);
 
     // ---- player animations ---------------------------------------------------
     const directions = ['up', 'ne', 'right', 'se', 'down', 'sw', 'left', 'nw'];
@@ -173,7 +177,7 @@ export class GameScene extends Phaser.Scene {
 
     // ---- walls ---------------------------------------------------------------
     this.walls = this.physics.add.staticGroup();
-    this.buildWalls(width, height);
+    // this.buildWalls(width, height);
     this.physics.add.collider(this.player, this.walls);
 
     // ---- interactable objects -----------------------------------------------
@@ -192,7 +196,7 @@ export class GameScene extends Phaser.Scene {
         padding: { x: 8, y: 4 },
       })
       .setOrigin(0.5, 1)
-      .setDepth(20);
+      .setDepth(300000);
 
     // ---- input ---------------------------------------------------------------
     const kb = this.input.keyboard;
@@ -288,10 +292,12 @@ export class GameScene extends Phaser.Scene {
 
     // --- create layers -------------------------------------------------------
     if (tilesets.length > 0) {
+      this.waterLayer = this.map.createLayer('Water', tilesets) ?? null;
       this.groundLayer = this.map.createLayer('Ground', tilesets) ?? null;
       this.obstaclesLayer = this.map.createLayer('Obstacles', tilesets) ?? null;
       this.overheadLayer = this.map.createLayer('Overhead', tilesets) ?? null;
 
+      this.waterLayer?.setDepth(DEPTHS.WATER);
       this.groundLayer?.setDepth(DEPTHS.GROUND);
       this.obstaclesLayer?.setDepth(DEPTHS.OBSTACLES);
       this.overheadLayer?.setDepth(DEPTHS.OVERHEAD);
@@ -368,9 +374,11 @@ export class GameScene extends Phaser.Scene {
       this.exitZones.clear(true, true);
     }
 
+    this.waterLayer?.destroy();
     this.groundLayer?.destroy();
     this.obstaclesLayer?.destroy();
     this.overheadLayer?.destroy();
+    this.waterLayer = null;
     this.groundLayer = null;
     this.obstaclesLayer = null;
     this.overheadLayer = null;
