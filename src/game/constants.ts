@@ -6,6 +6,7 @@ export const NPC_EXIT_RADIUS = 90;
 export const LAYERS = {
   NPCS: 'Npcs',
   MARKERS: 'Markers',
+  COLLECTIBLES: 'Collectibles',
 }
 export const FADE_DURATION = 350;
 export const DEPTHS = {

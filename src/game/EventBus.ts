@@ -51,6 +51,9 @@ export type GameEvents = {
     /** Optional progress string, e.g. "1 / 2" */
     progress?: string;
   };
+
+  /** Phaser → React: the player's money total changed. */
+  "money-changed": { money: number };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

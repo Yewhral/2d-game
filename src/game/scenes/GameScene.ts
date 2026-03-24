@@ -13,6 +13,9 @@
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
 import { questManager } from "../quests/QuestManager";
+import { Collectible } from "../collectibles/Collectible";
+import { spawnCollectibles } from "../collectibles/spawnCollectibles";
+import { collectibleState } from "../collectibles/CollectibleState";
 import { 
   DEPTHS, 
   FADE_DURATION, 
@@ -122,6 +125,8 @@ export class GameScene extends Phaser.Scene {
   private playerShadow!: Phaser.GameObjects.Ellipse;
   private interactables: InteractableObject[] = [];
   private npcs: NpcObject[] = [];
+  private collectibles: Collectible[] = [];
+  private collectibleOverlap: Phaser.Physics.Arcade.Collider | null = null;
   private hint!: Phaser.GameObjects.Text;
   private activeDialogNpc: NpcObject | null = null;
 
@@ -215,6 +220,7 @@ export class GameScene extends Phaser.Scene {
       this.score = 0;
       this.health = { current: 100, max: 100 };
       questManager.reset();
+      collectibleState.reset();
       this.scene.restart();
     });
 
@@ -350,6 +356,9 @@ export class GameScene extends Phaser.Scene {
     // --- spawn map objects (NPCs, etc.) --------------------------------------
     this.spawnObjects();
 
+    // --- spawn collectibles from Tiled object layer --------------------------
+    this.spawnCollectibles();
+
     // --- create exit zones for map transitions --------------------------------
     this.createExitZones();
   }
@@ -381,6 +390,16 @@ export class GameScene extends Phaser.Scene {
       npc.sprite.destroy();
     }
     this.npcs = [];
+
+    // Destroy collectibles from previous map
+    if (this.collectibleOverlap) {
+      this.collectibleOverlap.destroy();
+      this.collectibleOverlap = null;
+    }
+    for (const c of this.collectibles) {
+      if (!c.isCollected) c.destroySprite();
+    }
+    this.collectibles = [];
 
     if (this.map) {
       this.map.destroy();
@@ -660,11 +679,13 @@ export class GameScene extends Phaser.Scene {
   private updateInteractHint() {
     const nearest = this.nearestInteractable();
     const nearestNpc = this.nearestNpc();
-    if (nearest || nearestNpc) {
+    const nearestCol = this.nearestCollectible();
+    if (nearest || nearestNpc || nearestCol) {
       if (this.activeDialogNpc) {
         this.hint.setVisible(false);
       } else {
-        this.hint?.setText(`Press [E] to ${nearestNpc ? 'talk' : 'interact'}`);
+        const label = nearestNpc ? 'talk' : nearestCol ? 'pick up' : 'interact';
+        this.hint?.setText(`Press [E] to ${label}`);
         this.hint.setVisible(true);
       }
     } else {
@@ -700,6 +721,11 @@ export class GameScene extends Phaser.Scene {
         target.onInteract();
         return;
       }
+      const col = this.nearestCollectible();
+      if (col) {
+        col.collect();
+        return;
+      }
       const npc = this.nearestNpc();
       if (npc) npc.onInteract();
     }
@@ -722,93 +748,53 @@ export class GameScene extends Phaser.Scene {
     return null;
   }
 
+  /** Find the closest interact-type collectible within range. */
+  private nearestCollectible(): Collectible | null {
+    for (const c of this.collectibles) {
+      if (c.isCollected || c.collectibleType !== 'interact') continue;
+      const dist = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y,
+        c.sprite.x, c.sprite.y,
+      );
+      if (dist <= INTERACT_RADIUS) return c;
+    }
+    return null;
+  }
+
+  // ---- collectible spawning -------------------------------------------------
+
+  /**
+   * Spawn collectibles from the Tiled Collectibles layer and set up
+   * auto-collect overlaps.
+   */
+  private spawnCollectibles() {
+    this.collectibles = spawnCollectibles(this, this.map);
+
+    // Filter for auto-collect sprites and create a single overlap
+    const autoSprites = this.collectibles
+      .filter((c) => c.collectibleType === 'auto')
+      .map((c) => c.sprite);
+
+    if (autoSprites.length > 0) {
+      const group = this.physics.add.group(autoSprites);
+      this.collectibleOverlap = this.physics.add.overlap(
+        this.player,
+        group,
+        (_player, sprite) => {
+          const col = this.collectibles.find(
+            (c) => c.sprite === sprite && !c.isCollected,
+          );
+          if (col) col.collect();
+        },
+      );
+    }
+  }
+
   // ---- map builders ---------------------------------------------------------
   private buildInteractables(width: number, height: number) {
-    // Coins to collect
-    const coinSpots = [
-      { x: 100, y: 100 },
-      { x: width - 100, y: 100 },
-      { x: 100, y: height - 100 },
-      { x: width - 100, y: height - 100 },
-      { x: width / 2, y: 140 },
-      { x: width / 2, y: height - 140 },
-    ];
-
-    for (const { x, y } of coinSpots) {
-      this.addCoin(x, y);
-    }
-
     // A chest that heals the player
     this.addChest(width / 2 - 60, height / 2);
     this.addChest(width / 2 + 60, height / 2);
-  }
-
-  private addCoin(x: number, y: number) {
-    const gfx = this.add.circle(x, y, 10, 0xfbbf24).setDepth(5);
-    gfx.setStrokeStyle(2, 0xf59e0b);
-    this.physics.add.existing(gfx, true);
-
-    // Idle bob tween
-    this.tweens.add({
-      targets: gfx,
-      y: y - 5,
-      duration: 700,
-      ease: "Sine.InOut",
-      yoyo: true,
-      repeat: -1,
-    });
-
-    const label = this.add
-      .text(x, y - 20, "+10", {
-        fontFamily: "monospace",
-        fontSize: "11px",
-        color: "#fbbf24",
-      })
-      .setOrigin(0.5)
-      .setAlpha(0)
-      .setDepth(15);
-
-    const item: InteractableObject = {
-      gfx,
-      body: gfx.body as Phaser.Physics.Arcade.StaticBody,
-      label,
-      collected: false,
-      onInteract: () => {
-        if (item.collected) return;
-        item.collected = true;
-
-        this.score += 10;
-        EventBus.emit("score-changed", { score: this.score });
-
-        // Float-up animation then destroy
-        this.tweens.add({
-          targets: label,
-          y: label.y - 30,
-          alpha: 1,
-          duration: 600,
-          ease: "Quadratic.Out",
-          onComplete: () => {
-            this.tweens.add({
-              targets: label,
-              alpha: 0,
-              duration: 300,
-              onComplete: () => label.destroy(),
-            });
-          },
-        });
-
-        this.tweens.add({
-          targets: gfx,
-          alpha: 0,
-          scaleX: 2,
-          scaleY: 2,
-          duration: 300,
-          onComplete: () => gfx.destroy(),
-        });
-      },
-    };
-
-    this.interactables.push(item);
   }
 
   private addChest(x: number, y: number) {
