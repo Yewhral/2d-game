@@ -9,10 +9,10 @@ export const LAYERS = {
 }
 export const FADE_DURATION = 350;
 export const DEPTHS = {
-  WATER: 0,
-  GROUND: 1,
-  WALLS: 2,
-  INTERACTABLES: 3,
+  WATER: 1,
+  GROUND: 2,
+  WALLS: 3,
+  INTERACTABLES: 4,
   OBSTACLES: 10,
   OVERHEAD: 30000,
 }

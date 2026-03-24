@@ -120,7 +120,6 @@ export class GameScene extends Phaser.Scene {
   // --- scene objects ---------------------------------------------------------
   private player!: Phaser.Physics.Arcade.Sprite;
   private playerShadow!: Phaser.GameObjects.Ellipse;
-  private walls!: Phaser.Physics.Arcade.StaticGroup;
   private interactables: InteractableObject[] = [];
   private npcs: NpcObject[] = [];
   private hint!: Phaser.GameObjects.Text;
@@ -174,11 +173,6 @@ export class GameScene extends Phaser.Scene {
     // ---- player shadow -------------------------------------------------------
     this.playerShadow = this.add.ellipse(0, 0, 28, 22, 0x000000, 0.25);
     this.playerShadow.setDepth(this.player.y - 1);
-
-    // ---- walls ---------------------------------------------------------------
-    this.walls = this.physics.add.staticGroup();
-    // this.buildWalls(width, height);
-    this.physics.add.collider(this.player, this.walls);
 
     // ---- interactable objects -----------------------------------------------
     this.buildInteractables(width, height);
@@ -729,29 +723,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   // ---- map builders ---------------------------------------------------------
-
-  private buildWalls(width: number, height: number) {
-    const W = 16; // wall thickness
-
-    // Outer border
-    const borders = [
-      { x: width / 2, y: W / 2, w: width, h: W }, // top
-      { x: width / 2, y: height - W / 2, w: width, h: W }, // bottom
-      { x: W / 2, y: height / 2, w: W, h: height }, // left
-      { x: width - W / 2, y: height / 2, w: W, h: height }, // right
-    ];
-    for (const { x, y, w, h } of borders) {
-      this.addWall(x, y, w, h);
-    }
-  }
-
-  private addWall(x: number, y: number, w: number, h: number) {
-    const rect = this.add.rectangle(x, y, w, h, 0x2e2e42);
-    rect.setStrokeStyle(1, 0x3e3e56);
-    this.physics.add.existing(rect, true);
-    this.walls.add(rect);
-  }
-
   private buildInteractables(width: number, height: number) {
     // Coins to collect
     const coinSpots = [
