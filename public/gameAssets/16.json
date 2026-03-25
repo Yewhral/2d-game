@@ -208,6 +208,25 @@
                  "width":0,
                  "x":201.036594942673,
                  "y":120.936076645202
+                }, 
+                {
+                 "height":0,
+                 "id":6,
+                 "name":"purple-pawn-idle-wood",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"purple-pawn-idle-wood"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":666.762259822197,
+                 "y":92.486377975337
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -320,7 +339,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":6,
+ "nextobjectid":7,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",

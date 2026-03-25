@@ -25,56 +25,7 @@ import {
   NPC_EXIT_RADIUS, 
   PLAYER_SPEED 
 } from "../constants";
-
-// ---- NPC registry ----------------------------------------------------------
-// Maps npcId (set as a custom property on Tiled objects) → visual + default
-// dialog data.  Quest-specific dialog is handled by the quest system —
-// see src/game/quests/.
-const NPC_REGISTRY: Record<
-  string,
-  {
-    name: string;
-    /** Default text when no quest overrides the dialog */
-    text: string;
-    spriteKey: string;
-    frame: number;
-    scale: number;
-    bodySize: { width: number; height: number };
-    bodyOffset: { x: number; y: number };
-    portrait: string;
-  }
-> = {
-  'purple-warrior': {
-    name: 'Purple Warrior',
-    text: 'Hey there, traveler.',
-    spriteKey: 'purple-warrior-idle',
-    frame: 0,
-    scale: 0.75,
-    bodySize: { width: 35, height: 35 },
-    bodyOffset: { x: 80, y: 85 },
-    portrait: 'gameAssets/purpleWarriorAvatar.png',
-  },
-  'purple-warrior2': {
-    name: 'Mysterious Stranger',
-    text: '...',
-    spriteKey: 'purple-warrior-idle',
-    frame: 0,
-    scale: 0.75,
-    bodySize: { width: 35, height: 35 },
-    bodyOffset: { x: 80, y: 85 },
-    portrait: 'gameAssets/purpleWarriorAvatar.png',
-  },
-  'purple-monk': {
-    name: 'One Without a Name',
-    text: '...',
-    spriteKey: 'purple-monk-idle',
-    frame: 0,
-    scale: 0.75,
-    bodySize: { width: 35, height: 35 },
-    bodyOffset: { x: 80, y: 85 },
-    portrait: 'gameAssets/purpleMonkAvatar.png',
-  }
-};
+import { NPC_REGISTRY } from "./npcs";
 
 // ---- tileset name → preloaded image key ------------------------------------
 // Every tileset name used in Tiled maps must have a corresponding preloaded
