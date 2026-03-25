@@ -7,6 +7,7 @@ export const LAYERS = {
   NPCS: 'Npcs',
   MARKERS: 'Markers',
   COLLECTIBLES: 'Collectibles',
+  DECORATIONS: 'Decorations',
 }
 export const FADE_DURATION = 350;
 export const DEPTHS = {

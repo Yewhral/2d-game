@@ -26,6 +26,7 @@ import {
   PLAYER_SPEED 
 } from "../constants";
 import { NPC_REGISTRY } from "./npcs";
+import { DECORATION_REGISTRY } from "./decorations";
 
 // ---- tileset name → preloaded image key ------------------------------------
 // Every tileset name used in Tiled maps must have a corresponding preloaded
@@ -33,7 +34,11 @@ import { NPC_REGISTRY } from "./npcs";
 const TILESET_IMAGE_KEYS: Record<string, string> = {
   grass: 'grass-img',
   barracks: 'barracks-img',
-  water: 'water-img'
+  water: 'water-img',
+  waterRocks2: 'waterRocks2-img',
+  waterRocks4: 'waterRocks4-img',
+  cloud: 'cloud-img',
+  bushes: 'bushes-img'
 };
 
 // ---- types -----------------------------------------------------------------
@@ -76,6 +81,7 @@ export class GameScene extends Phaser.Scene {
   private playerShadow!: Phaser.GameObjects.Ellipse;
   private interactables: InteractableObject[] = [];
   private npcs: NpcObject[] = [];
+  private decorations: Phaser.GameObjects.GameObject[] = [];
   private collectibles: Collectible[] = [];
   private collectibleOverlap: Phaser.Physics.Arcade.Collider | null = null;
   private hint!: Phaser.GameObjects.Text;
@@ -121,7 +127,7 @@ export class GameScene extends Phaser.Scene {
     this.player.setDepth(this.player.y);
     this.player.setOrigin(0.5, 1);
     if (this.player.body) {
-      this.player.body.setSize(9, 6);
+      this.player.body.setSize(9, 5);
       this.player.body.setOffset(3, 18);
     }
     this.player.setCollideWorldBounds(true);
@@ -342,6 +348,11 @@ export class GameScene extends Phaser.Scene {
     }
     this.npcs = [];
 
+    for (const d of this.decorations) {
+      d.destroy();
+    }
+    this.decorations = [];
+
     // Destroy collectibles from previous map
     if (this.collectibleOverlap) {
       this.collectibleOverlap.destroy();
@@ -357,19 +368,30 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * Each object with a custom property `npcId` will be spawned as an NPC
-   * using the data from NPC_REGISTRY.
-   */
-  private spawnObjects() {
-    // adjust to spawn other things too
+  private spawnDecorations() {
+    const layer = this.map.getObjectLayer(LAYERS.DECORATIONS);
+    if (!layer) return;
+
+    for (const obj of layer.objects) {
+      if (obj.x == null || obj.y == null) continue;
+
+      const decIdProp = (
+          obj.properties as Array<{ name: string; value: unknown }> | undefined
+        )?.find((p) => p.name === 'decorationId');
+      if (!decIdProp) continue;
+
+      const decorationId = String(decIdProp.value);
+      this.spawnDecoration(obj, decorationId);
+    }
+  }
+
+  private spawnNpcs() {
     const objectLayer = this.map.getObjectLayer(LAYERS.NPCS);
     if (!objectLayer) return;
 
     for (const obj of objectLayer.objects) {
       if (obj.x == null || obj.y == null) continue;
 
-      // Look for the npcId custom property
       const npcIdProp = (
         obj.properties as Array<{ name: string; value: unknown }> | undefined
       )?.find((p) => p.name === 'npcId');
@@ -381,9 +403,11 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * Spawn a single NPC at the given world position using NPC_REGISTRY data.
-   */
+  private spawnObjects() {
+    this.spawnNpcs();
+    this.spawnDecorations();
+  }
+
   private spawnNpc(x: number, y: number, npcId: string) {
     const data = NPC_REGISTRY[npcId];
     if (!data) {
@@ -427,6 +451,48 @@ export class GameScene extends Phaser.Scene {
 
     this.npcs.push(npc);
   }
+
+private spawnDecoration(obj: any, id: string) {
+  const data = DECORATION_REGISTRY[id];
+  if (!data) {
+    console.warn(`Unknown decoration "${id}"`);
+    return;
+  }
+
+  const offsetX = data?.bodyOffset?.x ?? 0;
+  const offsetY = data?.bodyOffset?.y ?? 0;
+
+  const sprite = this.add.sprite(
+    obj.x + offsetX,
+    obj.y + offsetY,
+    data.spriteKey
+  );
+
+  sprite.setOrigin(0, 1);
+  sprite.setScale(data.scale);
+  sprite.setDepth(sprite.y + (data.depthOffset ?? 0));
+
+  this.decorations.push(sprite);
+
+  // --- collision
+  if (data.hasCollision && data.hitbox) {
+    const body = this.physics.add.staticImage(obj.x, obj.y, '');
+    body.setVisible(false);
+
+    body.body.setSize(
+      data.hitbox.width,
+      data.hitbox.height
+    );
+
+    body.body.setOffset(
+      data.hitbox.offsetX,
+      data.hitbox.offsetY
+    );
+
+    this.physics.add.collider(this.player, body);
+    this.decorations.push(body);
+  }
+}
 
   // ---- exit zone management --------------------------------------------------
 
