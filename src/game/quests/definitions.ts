@@ -71,22 +71,22 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
   },
 
   {
-    id: 'collect-chests',
-    title: 'Supply Run',
-    description: 'Collect 2 healing chests for the Purple Warrior.',
+    id: 'collect-wood',
+    title: 'Lumber Support',
+    description: 'Collect 3 wood logs for the Purple Pawn.',
     handler: new CollectQuestHandler({
-      giverNpcId: 'purple-warrior',
-      itemType: 'chest',
-      requiredCount: 2,
+      giverNpcId: 'purple-pawn-idle-wood',
+      itemType: 'log',
+      requiredIds: ['log1', 'log2', 'log3'],
     }),
     dialogs: {
-      'purple-warrior': {
+      'purple-pawn-idle-wood': {
         inactive:
-          "I'm running low on supplies. There are some healing chests scattered around. Could you bring me 2 of them?",
+          "Life of a pawn is hard... I need some wood to build a shelter but I can't leave my post. Could you collect 3 logs for me?",
         active:
-          "How's the search going? You've found {collected} out of {required} chests so far.",
-        done: "You've gathered all the supplies I need! Well done, adventurer!",
-        complete: 'Those supplies will last me a long time. Thank you!',
+          "How's the wood gathering going? You've found {collected} out of {required} logs so far.",
+        done: "You found them all! Thank you so much, adventurer! Now I can build a proper shelter.",
+        complete: 'This shelter will keep me warm. Thank you, friend!',
       },
     },
     formatProgress: (progress) => {

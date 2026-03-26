@@ -121,6 +121,34 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
+    // ---- NPC animations -----------------------------------------------------
+    Object.values(NPC_REGISTRY).forEach((data) => {
+      if (data.animated) {
+        if (!this.anims.exists(`anim-${data.spriteKey}`)) {
+          this.anims.create({
+            key: `anim-${data.spriteKey}`,
+            frames: this.anims.generateFrameNumbers(data.spriteKey, {}),
+            frameRate: 10,
+            repeat: -1,
+          });
+        }
+      }
+    });
+
+    // ---- decoration animations -----------------------------------------------
+    Object.values(DECORATION_REGISTRY).forEach((data) => {
+      if (data.animated) {
+        if (!this.anims.exists(`anim-${data.spriteKey}`)) {
+          this.anims.create({
+            key: `anim-${data.spriteKey}`,
+            frames: this.anims.generateFrameNumbers(data.spriteKey, {}),
+            frameRate: 10,
+            repeat: -1,
+          });
+        }
+      }
+    });
+
     // ---- player --------------------------------------------------------------
     this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 76);
     this.player.setScale(3);
@@ -135,9 +163,6 @@ export class GameScene extends Phaser.Scene {
     // ---- player shadow -------------------------------------------------------
     this.playerShadow = this.add.ellipse(0, 0, 28, 22, 0x000000, 0.25);
     this.playerShadow.setDepth(this.player.y - 1);
-
-    // ---- interactable objects -----------------------------------------------
-    this.buildInteractables(width, height);
 
     // ---- load initial map ---------------------------------------------------
     this.changeMap('16-json', 'spawn');
@@ -426,6 +451,14 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player, sprite);
 
+    if (data.animated) {
+      const animKey = `anim-${data.spriteKey}`;
+      const anim = this.anims.get(animKey);
+      const totalFrames = anim ? anim.frames.length : 0;
+      const startFrame = Phaser.Math.Between(0, Math.max(0, totalFrames - 1));
+      sprite.play({ key: animKey, startFrame });
+    }
+
     const npc: NpcObject = {
       sprite,
       x,
@@ -465,12 +498,17 @@ private spawnDecoration(obj: any, id: string) {
   const sprite = this.add.sprite(
     obj.x + offsetX,
     obj.y + offsetY,
-    data.spriteKey
+    data.spriteKey,
+    data.frame
   );
 
   sprite.setOrigin(0, 1);
   sprite.setScale(data.scale);
   sprite.setDepth(sprite.y + (data.depthOffset ?? 0));
+
+  if (data.animated) {
+    sprite.play(`anim-${data.spriteKey}`);
+  }
 
   this.decorations.push(sprite);
 
@@ -787,7 +825,7 @@ private spawnDecoration(obj: any, id: string) {
   private spawnCollectibles() {
     this.collectibles = spawnCollectibles(this, this.map);
 
-    // Filter for auto-collect sprites and create a single overlap
+    // 1. Filter for auto-collect sprites and create a single overlap
     const autoSprites = this.collectibles
       .filter((c) => c.collectibleType === 'auto')
       .map((c) => c.sprite);
@@ -805,72 +843,14 @@ private spawnDecoration(obj: any, id: string) {
         },
       );
     }
-  }
 
-  // ---- map builders ---------------------------------------------------------
-  private buildInteractables(width: number, height: number) {
-    // A chest that heals the player
-    this.addChest(width / 2 - 60, height / 2);
-    this.addChest(width / 2 + 60, height / 2);
-  }
+    // 2. Filter for items that should physically block the player
+    const solidSprites = this.collectibles
+      .filter((c) => c.collides)
+      .map((c) => c.sprite);
 
-  private addChest(x: number, y: number) {
-    const gfx = this.add.rectangle(x, y, 28, 22, 0xb45309).setDepth(5);
-    gfx.setStrokeStyle(2, 0x7c6af7);
-    this.physics.add.existing(gfx, true);
-
-    const label = this.add
-      .text(x, y - 24, "❤ +20 HP", {
-        fontFamily: "monospace",
-        fontSize: "11px",
-        color: "#4ade80",
-      })
-      .setOrigin(0.5)
-      .setAlpha(0)
-      .setDepth(15);
-
-    const item: InteractableObject = {
-      gfx,
-      body: gfx.body as Phaser.Physics.Arcade.StaticBody,
-      label,
-      collected: false,
-      onInteract: () => {
-        if (item.collected) return;
-        item.collected = true;
-
-        this.health.current = Math.min(this.health.current + 20, this.health.max);
-        EventBus.emit("player-health-changed", { ...this.health });
-
-        // Notify quest system
-        questManager.handleItemCollected('chest');
-
-        this.tweens.add({
-          targets: label,
-          y: label.y - 30,
-          alpha: 1,
-          duration: 600,
-          ease: "Quadratic.Out",
-          onComplete: () => {
-            this.tweens.add({
-              targets: label,
-              alpha: 0,
-              duration: 300,
-              onComplete: () => label.destroy(),
-            });
-          },
-        });
-
-        // Lid-open visual
-        this.tweens.add({
-          targets: gfx,
-          fillColor: 0x78350f,
-          scaleY: 0.4,
-          duration: 200,
-          yoyo: false,
-        });
-      },
-    };
-
-    this.interactables.push(item);
+    if (solidSprites.length > 0) {
+      this.physics.add.collider(this.player, solidSprites);
+    }
   }
 }

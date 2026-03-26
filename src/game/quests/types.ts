@@ -11,6 +11,13 @@ export type QuestStatus = 'inactive' | 'active' | 'done' | 'complete';
 // ---- Quest type -------------------------------------------------------------
 export type QuestType = 'talk' | 'collect';
 
+// ---- Item collection info ---------------------------------------------------
+/** Passed to handlers when a collectible is picked up. */
+export interface ItemCollectedInfo {
+  itemType: string;
+  collectibleId: string;
+}
+
 // ---- Quest update (returned by handlers) ------------------------------------
 /**
  * Return type for handler event hooks.
@@ -49,7 +56,7 @@ export interface QuestHandler {
   ): QuestUpdate | null;
 
   onItemCollected?(
-    itemType: string,
+    info: ItemCollectedInfo,
     status: QuestStatus,
     progress: Record<string, unknown>,
   ): QuestUpdate | null;

@@ -318,7 +318,94 @@
          "draworder":"topdown",
          "id":7,
          "name":"Collectibles",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":10,
+                 "name":"log",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"log1"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"log"
+                        }],
+                 "rotation":0,
+                 "type":"log",
+                 "visible":true,
+                 "width":0,
+                 "x":685.322672758424,
+                 "y":134.209023415191
+                }, 
+                {
+                 "height":0,
+                 "id":13,
+                 "name":"log2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"log2"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"log"
+                        }],
+                 "rotation":0,
+                 "type":"log",
+                 "visible":true,
+                 "width":0,
+                 "x":742.316961736,
+                 "y":144.203312393
+                }, 
+                {
+                 "height":0,
+                 "id":14,
+                 "name":"log3",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"log3"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"log"
+                        }],
+                 "rotation":0,
+                 "type":"log",
+                 "visible":true,
+                 "width":0,
+                 "x":805.323,
+                 "y":134.209
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -377,7 +464,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":9,
+ "nextobjectid":15,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",

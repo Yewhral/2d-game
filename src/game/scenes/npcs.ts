@@ -14,6 +14,7 @@ export const NPC_REGISTRY: Record<
     bodySize: { width: number; height: number };
     bodyOffset: { x: number; y: number };
     portrait: string;
+    animated?: boolean;
   }
 > = {
   'purple-warrior': {

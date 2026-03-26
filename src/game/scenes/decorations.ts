@@ -7,6 +7,7 @@ export const DECORATION_REGISTRY: Record<
     scale: number;
     depthOffset: number;
     hasCollision: boolean;
+    animated?: boolean;
     hitbox?: {
       width: number;
       height: number;

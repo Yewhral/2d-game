@@ -35,6 +35,12 @@ export interface CollectibleConfig {
   scale?: number;
   /** Extra data bag (e.g. { value: 10 } for money) */
   extra?: Record<string, unknown>;
+  /** Whether the item should bob up and down while idle */
+  bob?: boolean;
+  /** Custom hitbox configuration */
+  hitbox?: { width: number; height: number; offsetX?: number; offsetY?: number };
+  /** Whether the player should physically collide (block) with this item */
+  collides?: boolean;
   /** Callback invoked when the item is collected */
   onCollect: (collectible: Collectible) => void;
 }
@@ -43,6 +49,7 @@ export class Collectible {
   readonly id: string;
   readonly itemType: string;
   readonly collectibleType: CollectibleType;
+  readonly collides: boolean;
   readonly sprite: Phaser.Physics.Arcade.Sprite;
   readonly extra: Record<string, unknown>;
 
@@ -53,6 +60,7 @@ export class Collectible {
     this.id = config.id;
     this.itemType = config.itemType;
     this.collectibleType = config.collectibleType;
+    this.collides = config.collides ?? false;
     this.extra = config.extra ?? {};
     this.onCollect = config.onCollect;
 
@@ -67,26 +75,28 @@ export class Collectible {
     this.sprite.setDepth(config.y);
     this.sprite.setImmovable(true);
 
-    // Smaller hitbox so the player must get close
+    // ---- hitbox ---------------------------------------------------------
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
-    body.setSize(
-      this.sprite.width * 0.5,
-      this.sprite.height * 0.5,
-    );
-    body.setOffset(
-      this.sprite.width * 0.25,
-      this.sprite.height * 0.25,
-    );
+    if (config.hitbox) {
+      body.setSize(config.hitbox.width, config.hitbox.height);
+      body.setOffset(config.hitbox.offsetX ?? 0, config.hitbox.offsetY ?? 0);
+    } else {
+      // Default to 50% size if nothing else is specified
+      body.setSize(this.sprite.width * 0.5, this.sprite.height * 0.5);
+      body.setOffset(this.sprite.width * 0.25, this.sprite.height * 0.25);
+    }
 
     // Idle bob tween for visual polish
-    config.scene.tweens.add({
-      targets: this.sprite,
-      y: config.y - 4,
-      duration: 800,
-      ease: 'Sine.InOut',
-      yoyo: true,
-      repeat: -1,
-    });
+    if (config.bob) {
+      config.scene.tweens.add({
+        targets: this.sprite,
+        y: config.y - 4,
+        duration: 800,
+        ease: 'Sine.InOut',
+        yoyo: true,
+        repeat: -1,
+      });
+    }
   }
 
   // ---- public API --------------------------------------------------------

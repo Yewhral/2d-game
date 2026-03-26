@@ -54,6 +54,9 @@ export type GameEvents = {
 
   /** Phaser → React: the player's money total changed. */
   "money-changed": { money: number };
+
+  /** Phaser → React: a wood log was collected. */
+  "wood-collected": { id: string; itemType: string };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

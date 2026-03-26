@@ -13,9 +13,30 @@ import { collectibleState } from './CollectibleState';
 import { questManager } from '../quests/QuestManager';
 import { EventBus } from '../EventBus';
 import { LAYERS } from '../constants';
+import { ITEM_REGISTRY } from './collectibles';
 
-/** Texture key used for tile-object collectibles (loaded from the tileset). */
-const COLLECTIBLE_TEXTURE = 'money-img';
+// ---- effect registry --------------------------------------------------------
+/**
+ * Effect registry — maps `itemType` strings to side-effect callbacks.
+ * To add a new collectible type, just add a new entry here.
+ */
+type CollectEffect = (collectible: Collectible) => void;
+
+const collectEffects: Record<string, CollectEffect> = {
+  money: (c) => {
+    const value = (c.extra.value as number) ?? 0;
+    collectibleState.addMoney(value);
+    EventBus.emit('money-changed', { money: collectibleState.getMoney() });
+  },
+
+  log: (c) => {
+    // No global counter needed yet — just emit an event for quest/UI hooks
+    EventBus.emit('wood-collected', {
+      id: c.id,
+      itemType: c.itemType,
+    });
+  },
+};
 
 /**
  * Read a custom property value from a Tiled object's property array.
@@ -80,13 +101,12 @@ export function spawnCollectibles(
     const value = getProp(obj, 'value');
     if (value != null) extra.value = Number(value);
 
-    // --- determine sprite ---------------------------------------------------
-    // Tile objects carry a `gid` which references a tile in the tileset.
-    // We derive the frame index from the gid.
-    let textureKey = COLLECTIBLE_TEXTURE;
+    // --- determine config ---------------------------------------------------
+    const config = ITEM_REGISTRY[itemType];
+    let textureKey = config?.textureKey ?? 'money-img';
     let frame: number | undefined;
 
-    if (obj.gid != null) {
+    if (!config && obj.gid != null) {
       // Find the tileset this gid belongs to
       for (const ts of map.tilesets) {
         if (obj.gid >= ts.firstgid && obj.gid < ts.firstgid + ts.total) {
@@ -109,8 +129,11 @@ export function spawnCollectibles(
       collectibleType,
       textureKey,
       frame,
-      scale: 0.5,
+      scale: config?.scale ?? 0.5,
       extra,
+      bob: config?.bob ?? false,
+      collides: config?.collides ?? false,
+      hitbox: config?.hitbox,
       onCollect: (c) => handleCollect(scene, c),
     });
 
@@ -126,18 +149,26 @@ function handleCollect(scene: Phaser.Scene, collectible: Collectible): void {
   // 1. Mark in global state
   collectibleState.markCollected(collectible.id);
 
-  // 2. Money handling
+  // 2. Run type-specific effect (if registered)
+  collectEffects[collectible.itemType]?.(collectible);
+
+  // 3. Float text for money items
   if (collectible.itemType === 'money') {
     const value = (collectible.extra.value as number) ?? 0;
-    collectibleState.addMoney(value);
-    EventBus.emit('money-changed', { money: collectibleState.getMoney() });
     showFloatText(scene, collectible.sprite.x, collectible.sprite.y, `+${value} 💰`);
   }
 
-  // 3. Notify quest system
-  questManager.handleItemCollected(collectible.itemType);
+  // 4. Notify quest system (with both itemType and collectibleId)
+  questManager.handleItemCollected({
+    itemType: collectible.itemType,
+    collectibleId: collectible.id,
+  });
 
-  // 4. Destroy sprite with a quick scale-down tween
+  // 5. Disable physics body immediately to stop collisions during animation
+  if (collectible.sprite.body) {
+    collectible.sprite.body.enable = false;
+  }
+
   scene.tweens.add({
     targets: collectible.sprite,
     scaleX: 0,

@@ -11,7 +11,7 @@
  */
 
 import { EventBus } from '../EventBus';
-import type { QuestDefinition, QuestStatus, QuestUpdate } from './types';
+import type { QuestDefinition, QuestStatus, QuestUpdate, ItemCollectedInfo } from './types';
 import { QUEST_DEFINITIONS } from './definitions';
 
 class QuestManager {
@@ -93,12 +93,12 @@ class QuestManager {
     }
   }
 
-  handleItemCollected(itemType: string): void {
+  handleItemCollected(info: ItemCollectedInfo): void {
     for (const [id, def] of this.definitions) {
       if (!def.handler.onItemCollected) continue;
       const status = this.getStatus(id);
       const progress = this.getProgress(id);
-      const update = def.handler.onItemCollected(itemType, status, progress);
+      const update = def.handler.onItemCollected(info, status, progress);
       if (update) this.applyUpdate(id, update);
     }
   }
