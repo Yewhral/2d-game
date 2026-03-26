@@ -468,6 +468,7 @@ export class GameScene extends Phaser.Scene {
     sprite.setScale(data.scale);
     sprite.setDepth(sprite.y);
     sprite.setImmovable(true);
+    sprite.setFlipX(data.flipX ?? false);
 
     const body = sprite.body as Phaser.Physics.Arcade.Body;
     body.setSize(data.bodySize.width, data.bodySize.height);
@@ -529,6 +530,7 @@ private spawnDecoration(obj: any, id: string) {
   sprite.setOrigin(0, 1);
   sprite.setScale(data.scale);
   sprite.setDepth(sprite.y + (data.depthOffset ?? 0));
+  sprite.setFlipX(data.flipX ?? false);
 
   if (data.animated) {
     sprite.play(`anim-${data.spriteKey}`);

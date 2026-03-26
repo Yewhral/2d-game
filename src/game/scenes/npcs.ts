@@ -15,6 +15,7 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: number; y: number };
     portrait: string;
     animated?: boolean;
+    flipX?: boolean;
   }
 > = {
   'purple-warrior': {
@@ -56,5 +57,6 @@ export const NPC_REGISTRY: Record<
     bodySize: { width: 35, height: 35 },
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/purplePawnAvatar.png',
+    flipX: true,
   }
 };

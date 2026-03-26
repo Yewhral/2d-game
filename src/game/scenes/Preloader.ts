@@ -31,16 +31,21 @@ export class Preloader extends Phaser.Scene {
     this.load.image('grass-img', 'grass.png');
     this.load.image('water-img', 'water.png');
     this.load.image('house-img', 'house.png');
-    this.load.image('house2-img', 'house2.png');
-    // this.load.image('tree-img', 'tree.png');
     this.load.image('cloud-img', 'cloud.png');
     this.load.image('waterRocks2-img', 'waterRocks2.png');
     this.load.image('waterRocks4-img', 'waterRocks4.png');
     this.load.image('bushes-img', 'bushes.png');
-    // this.load.image('house-img', 'house.png');
-    this.load.image('barracks-img', 'barracks.png');
     this.load.image('woodLog-img', 'woodLog.png');
     this.load.image('money-img', 'money.png');
+    this.load.image('barracks-img', 'barracks.png');
+    this.load.spritesheet('house2', 'house2.png', {
+      frameWidth: 128,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('barracks', 'barracks.png', {
+      frameWidth: 192,
+      frameHeight: 256,
+    });
     this.load.spritesheet('purple-warrior-idle', 'purpleWarriorIdle.png', {
       frameWidth: 192,
       frameHeight: 192,

@@ -8,6 +8,7 @@ export const DECORATION_REGISTRY: Record<
     depthOffset: number;
     hasCollision: boolean;
     animated?: boolean;
+    flipX?: boolean;
     hitbox?: {
       width: number;
       height: number;
@@ -47,4 +48,50 @@ export const DECORATION_REGISTRY: Record<
     },
     bodyOffset: { x: -96, y: 0 },
   },
+  barracks: {
+    name: 'Barracks',
+    spriteKey: 'barracks',
+    scale: 1,
+    frame: 0,
+    depthOffset: -40,
+    hasCollision: true,
+    hitbox: {
+      width: 160,
+      height: 50,
+      offsetX: 15,
+      offsetY: -36,
+    },
+    bodyOffset: { x: -16, y: 24 },
+  },
+  house2: {
+    name: 'House2',
+    spriteKey: 'house2',
+    scale: 1,
+    frame: 0,
+    depthOffset: -40,
+    hasCollision: true,
+    hitbox: {
+      width: 110,
+      height: 10,
+      offsetX: 12,
+      offsetY: -16,
+    },
+    bodyOffset: { x: -12, y: 24 },
+  },
+  'house2-1': {
+    name: 'House2-1',
+    spriteKey: 'house2',
+    scale: 1,
+    frame: 0,
+    flipX: true,
+    depthOffset: -36,
+    hasCollision: true,
+    hitbox: {
+      width: 110,
+      height: 10,
+      offsetX: 12,
+      offsetY: -12,
+    },
+    bodyOffset: { x: -12, y: 24 },
+  }
 };
