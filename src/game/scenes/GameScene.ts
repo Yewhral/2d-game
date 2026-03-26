@@ -13,6 +13,7 @@
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
 import { questManager } from "../quests/QuestManager";
+import { QUEST_DEFINITIONS } from "../quests/definitions";
 import { Collectible } from "../collectibles/Collectible";
 import { spawnCollectibles } from "../collectibles/spawnCollectibles";
 import { collectibleState } from "../collectibles/CollectibleState";
@@ -38,7 +39,9 @@ const TILESET_IMAGE_KEYS: Record<string, string> = {
   waterRocks2: 'waterRocks2-img',
   waterRocks4: 'waterRocks4-img',
   cloud: 'cloud-img',
-  bushes: 'bushes-img'
+  bushes: 'bushes-img',
+  house: 'house-img',
+  house2: 'house2-img',
 };
 
 // ---- types -----------------------------------------------------------------
@@ -72,6 +75,7 @@ export class GameScene extends Phaser.Scene {
   private groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private obstaclesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private overheadLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private barriersLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private mapColliders: Phaser.Physics.Arcade.Collider[] = [];
   private exitZones!: Phaser.Physics.Arcade.StaticGroup;
   private activeExitZone: Phaser.GameObjects.Zone | null = null;
@@ -206,6 +210,20 @@ export class GameScene extends Phaser.Scene {
       this.scene.restart();
     });
 
+    EventBus.on("quest:remove-tiles", ({ mapKey, layer, tileIds }) => {
+      if (mapKey !== this.currentMapKey) return;
+      const tilemapLayer =
+        layer === LAYERS.OBSTACLES ? this.obstaclesLayer :
+        layer === LAYERS.BARRIERS ? this.barriersLayer : null;
+      if (!tilemapLayer) return;
+
+      tilemapLayer.forEachTile((tile) => {
+        if (tileIds.includes(tile.index)) {
+          tilemapLayer.removeTileAt(tile.x, tile.y);
+        }
+      });
+    });
+
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
     EventBus.emit("score-changed", { score: this.score });
@@ -235,6 +253,7 @@ export class GameScene extends Phaser.Scene {
   shutdown() {
     EventBus.off("ui:toggle-pause");
     EventBus.off("ui:restart-scene");
+    EventBus.off("quest:remove-tiles");
   }
 
   // ---- map management -------------------------------------------------------
@@ -274,18 +293,20 @@ export class GameScene extends Phaser.Scene {
 
     // --- create layers -------------------------------------------------------
     if (tilesets.length > 0) {
-      this.waterLayer = this.map.createLayer('Water', tilesets) ?? null;
-      this.groundLayer = this.map.createLayer('Ground', tilesets) ?? null;
-      this.obstaclesLayer = this.map.createLayer('Obstacles', tilesets) ?? null;
-      this.overheadLayer = this.map.createLayer('Overhead', tilesets) ?? null;
+      this.waterLayer = this.map.createLayer(LAYERS.WATER, tilesets) ?? null;
+      this.groundLayer = this.map.createLayer(LAYERS.GROUND, tilesets) ?? null;
+      this.obstaclesLayer = this.map.createLayer(LAYERS.OBSTACLES, tilesets) ?? null;
+      this.overheadLayer = this.map.createLayer(LAYERS.OVERHEAD, tilesets) ?? null;
+      this.barriersLayer = this.map.createLayer(LAYERS.BARRIERS, tilesets) ?? null;
 
       this.waterLayer?.setDepth(DEPTHS.WATER);
       this.groundLayer?.setDepth(DEPTHS.GROUND);
       this.obstaclesLayer?.setDepth(DEPTHS.OBSTACLES);
       this.overheadLayer?.setDepth(DEPTHS.OVERHEAD);
+      this.barriersLayer?.setDepth(DEPTHS.BARRIERS);
 
       // Set collisions on collidable layers based on the tile property
-      for (const layer of [this.groundLayer, this.obstaclesLayer]) {
+      for (const layer of [this.groundLayer, this.obstaclesLayer, this.barriersLayer]) {
         if (layer) {
           layer.setCollisionByProperty({ collides: '1' });
           const collider = this.physics.add.collider(this.player, layer);
@@ -343,6 +364,9 @@ export class GameScene extends Phaser.Scene {
 
     // --- create exit zones for map transitions --------------------------------
     this.createExitZones();
+
+    // --- check for retroactive quest effects (e.g. gates already open) --------
+    this.checkRetroactiveQuests();
   }
 
   /**
@@ -851,6 +875,14 @@ private spawnDecoration(obj: any, id: string) {
 
     if (solidSprites.length > 0) {
       this.physics.add.collider(this.player, solidSprites);
+    }
+  }
+
+  private checkRetroactiveQuests() {
+    for (const def of QUEST_DEFINITIONS) {
+      if (questManager.getStatus(def.id) === 'complete') {
+        def.onComplete?.();
+      }
     }
   }
 }

@@ -16,6 +16,8 @@
 import type { QuestDefinition } from './types';
 import { TalkQuestHandler } from './TalkQuestHandler';
 import { CollectQuestHandler } from './CollectQuestHandler';
+import { EventBus } from '../EventBus';
+import { LAYERS } from '../constants';
 
 export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
@@ -67,6 +69,15 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
         complete:
           "<i>Monk seems to be back to meditating and humming</i>",
       },
+    },
+    onComplete: () => {
+      EventBus.emit('quest:remove-tiles', {
+        mapKey: '16-json',
+        layer: LAYERS.BARRIERS,
+        tileIds: [1038, 1039, 1038, 1039, 1038, 1039,
+1026, 1027, 1026, 1027, 1026, 1027,
+1014, 1015, 1014, 1015, 1014, 1015],
+      });
     },
   },
 

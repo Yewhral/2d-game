@@ -57,6 +57,13 @@ export type GameEvents = {
 
   /** Phaser → React: a wood log was collected. */
   "wood-collected": { id: string; itemType: string };
+
+  /** Quest completion: remove specific tiles from a map layer. */
+  "quest:remove-tiles": {
+    mapKey: string;
+    layer: string;
+    tileIds: number[];
+  };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

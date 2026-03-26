@@ -145,6 +145,10 @@ class QuestManager {
 
       this.states.set(questId, update.status);
       this.emitStatusChange(questId, update.status);
+
+      if (update.status === 'complete' && def.onComplete) {
+        def.onComplete();
+      }
     } else if (progressChanged) {
       // Progress changed but status didn't — emit progress notification
       this.emitProgressUpdate(questId);

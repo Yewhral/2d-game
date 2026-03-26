@@ -30,6 +30,8 @@ export class Preloader extends Phaser.Scene {
     this.load.setPath("gameAssets");
     this.load.image('grass-img', 'grass.png');
     this.load.image('water-img', 'water.png');
+    this.load.image('house-img', 'house.png');
+    this.load.image('house2-img', 'house2.png');
     // this.load.image('tree-img', 'tree.png');
     this.load.image('cloud-img', 'cloud.png');
     this.load.image('waterRocks2-img', 'waterRocks2.png');
