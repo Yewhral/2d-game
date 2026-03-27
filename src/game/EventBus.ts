@@ -64,6 +64,11 @@ export type GameEvents = {
     layer: string;
     tileIds: number[];
   };
+
+  "quest:fade-layer": {
+    mapKey: string;
+    layer: string;
+  };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

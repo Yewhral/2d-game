@@ -71,12 +71,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       },
     },
     onComplete: () => {
-      EventBus.emit('quest:remove-tiles', {
+      EventBus.emit('quest:fade-layer', {
         mapKey: '16-json',
         layer: LAYERS.BARRIERS,
-        tileIds: [1038, 1039, 1038, 1039, 1038, 1039,
-1026, 1027, 1026, 1027, 1026, 1027,
-1014, 1015, 1014, 1015, 1014, 1015],
       });
     },
   },

@@ -228,6 +228,29 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
+    EventBus.on("quest:fade-layer", ({ mapKey, layer }) => {
+      if (mapKey !== this.currentMapKey) return;
+
+      const tilemapLayer =
+        layer === LAYERS.OBSTACLES ? this.obstaclesLayer :
+        layer === LAYERS.BARRIERS ? this.barriersLayer : null;
+
+      if (!tilemapLayer) return;
+
+      this.tweens.add({
+        targets: tilemapLayer,
+        alpha: 0,
+        duration: 800,
+        ease: "Sine.easeOut",
+        onComplete: () => {
+          tilemapLayer.forEachTile((tile) => {
+            tilemapLayer.removeTileAt(tile.x, tile.y);
+          });
+          tilemapLayer.setAlpha(1);
+        },
+      });
+    });
+
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
     EventBus.emit("score-changed", { score: this.score });
@@ -258,6 +281,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("ui:toggle-pause");
     EventBus.off("ui:restart-scene");
     EventBus.off("quest:remove-tiles");
+    EventBus.off("quest:fade-layer");
   }
 
   // ---- map management -------------------------------------------------------
