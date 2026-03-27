@@ -34,6 +34,8 @@ import { DECORATION_REGISTRY } from "./decorations";
 // image key here.  The Preloader scene must load these images beforehand.
 const TILESET_IMAGE_KEYS: Record<string, string> = {
   grass: 'grass-img',
+  grass2: 'grass2-img',
+  shadow: 'shadow-img',
   barracks: 'barracks-img',
   water: 'water-img',
   waterRocks2: 'waterRocks2-img',
@@ -73,6 +75,8 @@ export class GameScene extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
   private waterLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private shadowLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private highGroundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private obstaclesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private overheadLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private barriersLayer: Phaser.Tilemaps.TilemapLayer | null = null;
@@ -298,15 +302,19 @@ export class GameScene extends Phaser.Scene {
       this.obstaclesLayer = this.map.createLayer(LAYERS.OBSTACLES, tilesets) ?? null;
       this.overheadLayer = this.map.createLayer(LAYERS.OVERHEAD, tilesets) ?? null;
       this.barriersLayer = this.map.createLayer(LAYERS.BARRIERS, tilesets) ?? null;
+      this.shadowLayer = this.map.createLayer(LAYERS.SHADOW, tilesets) ?? null;
+      this.highGroundLayer = this.map.createLayer(LAYERS.HIGH_GROUND, tilesets) ?? null;
 
       this.waterLayer?.setDepth(DEPTHS.WATER);
       this.groundLayer?.setDepth(DEPTHS.GROUND);
+      this.shadowLayer?.setDepth(DEPTHS.SHADOW);
+      this.highGroundLayer?.setDepth(DEPTHS.HIGH_GROUND);
       this.obstaclesLayer?.setDepth(DEPTHS.OBSTACLES);
       this.overheadLayer?.setDepth(DEPTHS.OVERHEAD);
       this.barriersLayer?.setDepth(DEPTHS.BARRIERS);
 
       // Set collisions on collidable layers based on the tile property
-      for (const layer of [this.groundLayer, this.obstaclesLayer, this.barriersLayer]) {
+      for (const layer of [this.groundLayer, this.highGroundLayer, this.obstaclesLayer, this.barriersLayer]) {
         if (layer) {
           layer.setCollisionByProperty({ collides: '1' });
           const collider = this.physics.add.collider(this.player, layer);
