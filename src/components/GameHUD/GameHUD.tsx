@@ -16,7 +16,12 @@ export function GameHUD() {
   const [scene, setScene] = useState("—");
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
-  const [dialog, setDialog] = useState<{ npc: string; text: string; portrait: string } | null>(null);
+  const [dialog, setDialog] = useState<{
+    npc: string;
+    text: string;
+    portrait: string;
+    theme?: string;
+  } | null>(null);
   const [questNotification, setQuestNotification] = useState<{
     message: string;
     status: string;
@@ -169,7 +174,7 @@ export function GameHUD() {
 
       {/* NPC dialog bubble */}
       {dialog && (
-        <div className={styles.dialogOverlay}>
+        <div className={`${styles.dialogOverlay} ${styles[`theme-${dialog.theme ?? 'purple'}`]}`}>
           <div className={styles.dialogBox}>
             <div className={styles.dialogPortrait}>
               <img src={dialog.portrait} alt={dialog.npc} className={styles.portraitImg} />

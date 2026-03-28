@@ -40,7 +40,7 @@ export type GameEvents = {
   "ui:toggle-pause": undefined;
 
   /** Phaser → React: an NPC started/stopped speaking. */
-  "npc-dialog": { npc: string; text: string; portrait: string } | null;
+  "npc-dialog": { npc: string; text: string; portrait: string; theme?: string } | null;
 
   /** Phaser → React: a quest state changed. */
   "quest-updated": {

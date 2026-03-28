@@ -135,20 +135,61 @@
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Theme presets */
+.theme-purple {
+  --dialog-accent: #d8b4fe;
+  --dialog-grad-start: #4c1d95;
+  --dialog-grad-end: #7c3aed;
+  --dialog-border: rgba(216, 180, 254, 0.3);
+  --dialog-glow: rgba(216, 180, 254, 0.05);
+}
+
+.theme-black {
+  --dialog-accent: #9ca3af;
+  --dialog-grad-start: #1f2937;
+  --dialog-grad-end: #111827;
+  --dialog-border: rgba(156, 163, 175, 0.3);
+  --dialog-glow: rgba(156, 163, 175, 0.05);
+}
+
+.theme-blue {
+  --dialog-accent: #93c5fd;
+  --dialog-grad-start: #1e3a8a;
+  --dialog-grad-end: #3b82f6;
+  --dialog-border: rgba(147, 197, 253, 0.3);
+  --dialog-glow: rgba(147, 197, 253, 0.05);
+}
+
+.theme-red {
+  --dialog-accent: #fca5a5;
+  --dialog-grad-start: #7f1d1d;
+  --dialog-grad-end: #ef4444;
+  --dialog-border: rgba(252, 165, 165, 0.3);
+  --dialog-glow: rgba(252, 165, 165, 0.05);
+}
+
+.theme-yellow {
+  --dialog-accent: #fcd34d;
+  --dialog-grad-start: #78350f;
+  --dialog-grad-end: #f59e0b;
+  --dialog-border: rgba(252, 211, 77, 0.3);
+  --dialog-glow: rgba(252, 211, 77, 0.05);
+}
+
 .dialogBox {
   display: flex;
   align-items: flex-start;
   gap: 20px;
   background: rgba(15, 15, 19, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(216, 180, 254, 0.3); /* Purple tinted border */
+  border: 1px solid var(--dialog-border);
   border-radius: 20px;
   padding: 24px;
   max-width: 600px;
   width: 90%;
   box-shadow: 
     0 10px 40px rgba(0, 0, 0, 0.4),
-    inset 0 0 20px rgba(216, 180, 254, 0.05);
+    inset 0 0 20px var(--dialog-glow);
   pointer-events: auto;
   position: relative;
 }
@@ -156,7 +197,7 @@
 .dialogPortrait {
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, #4c1d95, #7c3aed);
+  background: linear-gradient(135deg, var(--dialog-grad-start), var(--dialog-grad-end));
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -185,7 +226,7 @@
 .dialogNpcName {
   font-size: 14px;
   font-weight: 800;
-  color: #d8b4fe;
+  color: var(--dialog-accent);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }

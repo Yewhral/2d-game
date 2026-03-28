@@ -535,6 +535,7 @@ export class GameScene extends Phaser.Scene {
           npc: data.name,
           text,
           portrait: data.portrait,
+          theme: data.theme ?? 'purple',
         });
       },
     };

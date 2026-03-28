@@ -56,7 +56,19 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 192,
       frameHeight: 192,
     });
+    this.load.spritesheet('purple-pawn-idle', 'purplePawnIdle.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
     this.load.spritesheet('purple-pawn-idle-wood', 'purplePawnIdleWood.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('black-warrior-idle', 'blackWarriorIdle.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('black-lancer-idle', 'blackLancerIdle.png', {
       frameWidth: 192,
       frameHeight: 192,
     });
