@@ -43,7 +43,7 @@ export const NPC_REGISTRY: Record<
     theme: 'purple',
     flipX: true,
   },
-  'purple-warrior2': {
+  'black-warrior': {
     name: 'Mysterious Stranger',
     text: '...',
     spriteKey: 'black-warrior-idle',
@@ -76,5 +76,27 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/purplePawnAvatar.png',
     flipX: true,
     theme: 'purple',
-  }
+  },
+    'black-lancer-idle': {
+    name: 'Mysterious Stranger',
+    text: '...',
+    spriteKey: 'black-lancer-idle',
+    frame: 0,
+    scale: 0.75,
+    bodySize: { width: 35, height: 35 },
+    bodyOffset: { x: 80, y: 85 },
+    portrait: 'gameAssets/blackWarriorAvatar.png',
+    theme: 'black',
+  },
+    'black-lancer-idle2': {
+    name: 'Mysterious Stranger',
+    text: '...',
+    spriteKey: 'black-lancer-idle',
+    frame: 8,
+    scale: 0.75,
+    bodySize: { width: 35, height: 35 },
+    bodyOffset: { x: 80, y: 85 },
+    portrait: 'gameAssets/blackWarriorAvatar.png',
+    theme: 'black',
+  },
 };

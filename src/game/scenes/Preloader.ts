@@ -69,8 +69,8 @@ export class Preloader extends Phaser.Scene {
       frameHeight: 192,
     });
     this.load.spritesheet('black-lancer-idle', 'blackLancerIdle.png', {
-      frameWidth: 192,
-      frameHeight: 192,
+      frameWidth: 320,
+      frameHeight: 320,
     });
     this.load.spritesheet('bush', 'bushes.png', {
       frameWidth: 128,

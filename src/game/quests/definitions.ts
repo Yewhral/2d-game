@@ -27,7 +27,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       'Find and talk to the mysterious stranger in the eastern fields.',
     handler: new TalkQuestHandler({
       giverNpcId: 'purple-warrior',
-      targetNpcId: 'purple-warrior2',
+      targetNpcId: 'black-warrior',
     }),
     dialogs: {
       'purple-warrior': {
@@ -39,7 +39,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
         complete:
           "The gates are open! The time has come!",
       },
-      'purple-warrior2': {
+      'black-warrior': {
         inactive: "... Who are you? I don't know what you want.",
         active:
           'Ah, so the Purple Warrior sent you? Tell them the message has been received. The preparations are underway.',

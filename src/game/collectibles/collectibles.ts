@@ -18,6 +18,6 @@ export const ITEM_REGISTRY: Record<string, ItemConfig> = {
     scale: 0.7,
     bob: false,
     collides: true,
-    hitbox: { width: 24, height: 12, offsetX: 12, offsetY: 22 },
+    hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
 };

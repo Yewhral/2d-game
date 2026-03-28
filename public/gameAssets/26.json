@@ -208,20 +208,259 @@
         }, 
         {
          "draworder":"topdown",
+         "id":13,
+         "name":"Decorations",
+         "objects":[
+                {
+                 "height":0,
+                 "id":15,
+                 "name":"bush",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":221.636532028664,
+                 "y":154.708423364199
+                }, 
+                {
+                 "height":0,
+                 "id":27,
+                 "name":"bush",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":148.957519682985,
+                 "y":125.905954228397
+                }, 
+                {
+                 "height":0,
+                 "id":17,
+                 "name":"tree3",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"tree3"
+                        }],
+                 "rotation":0,
+                 "type":"tree",
+                 "visible":true,
+                 "width":0,
+                 "x":186.278856071767,
+                 "y":296.250599520384
+                }, 
+                {
+                 "height":0,
+                 "id":20,
+                 "name":"tree3",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"tree3"
+                        }],
+                 "rotation":0,
+                 "type":"tree",
+                 "visible":true,
+                 "width":0,
+                 "x":279.644163825564,
+                 "y":109.958522071232
+                }, 
+                {
+                 "height":0,
+                 "id":25,
+                 "name":"tree3-sm",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"tree3-sm"
+                        }],
+                 "rotation":0,
+                 "type":"tree",
+                 "visible":true,
+                 "width":0,
+                 "x":259.273793455194,
+                 "y":202.859756639133
+                }, 
+                {
+                 "height":0,
+                 "id":26,
+                 "name":"tree3-sm",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"tree3-sm"
+                        }],
+                 "rotation":0,
+                 "type":"tree",
+                 "visible":true,
+                 "width":0,
+                 "x":199.076262590996,
+                 "y":121.995559108269
+                }, 
+                {
+                 "height":0,
+                 "id":16,
+                 "name":"bush--5",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush--5"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":265.603334326003,
+                 "y":158.104875576663
+                }, 
+                {
+                 "height":0,
+                 "id":21,
+                 "name":"bush--5",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush--54"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":234.437156157427,
+                 "y":189.025250387925
+                }, 
+                {
+                 "height":0,
+                 "id":18,
+                 "name":"bush--1",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush--1"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":288.061856396784,
+                 "y":186.410142473844
+                }, 
+                {
+                 "height":0,
+                 "id":19,
+                 "name":"bush--2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush--2"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":115.413175341628,
+                 "y":299.560022569767
+                }, 
+                {
+                 "height":0,
+                 "id":22,
+                 "name":"bush--2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush--2"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":271.684824688817,
+                 "y":142.762305188117
+                }, 
+                {
+                 "height":0,
+                 "id":24,
+                 "name":"bush--2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush--2"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":280.326799997459,
+                 "y":127.330206422685
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"Npcs",
          "objects":[
                 {
                  "height":0,
                  "id":2,
-                 "name":"purple-warrior2",
+                 "name":"black-warrior",
                  "opacity":1,
                  "point":true,
                  "properties":[
                         {
                          "name":"npcId",
                          "type":"string",
-                         "value":"purple-warrior2"
+                         "value":"black-warrior"
                         }],
                  "rotation":0,
                  "type":"NPC",
@@ -229,6 +468,44 @@
                  "width":0,
                  "x":664.401160381268,
                  "y":260.588479071695
+                }, 
+                {
+                 "height":0,
+                 "id":13,
+                 "name":"black-lancer-idle",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"black-lancer-idle"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":185.402029664325,
+                 "y":169.789227166276
+                }, 
+                {
+                 "height":0,
+                 "id":14,
+                 "name":"black-lancer-idle2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"black-lancer-idle2"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":245.901639344262,
+                 "y":124.902419984387
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -345,12 +622,12 @@
          "y":0
         }, 
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         "data":[4668, 4669, 4670, 4671, 2147488325, 2147488324, 2147488323, 2147488322, 2147488321, 2147488320, 2147488319, 2147488318, 2147488317, 2147488316, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            4704, 4705, 4706, 4707, 4708, 4709, 4710, 2147488358, 2147488357, 4710, 4711, 4712, 2147488353, 2147488352, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            4740, 4741, 4742, 4743, 4744, 4745, 4746, 2147488394, 2147488393, 4746, 4747, 4748, 0, 2147488388, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            4776, 4777, 4778, 4779, 4780, 4781, 4782, 2147488430, 2147488429, 4782, 4783, 4784, 0, 2147488424, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            4812, 4813, 4814, 4815, 4816, 4817, 4818, 2147488466, 2147488465, 4818, 4819, 4820, 0, 2147488460, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            4848, 4849, 4850, 4851, 2147488505, 2147488504, 2147488503, 2147488502, 2147488501, 2147488500, 2147488499, 2147488498, 2147488497, 2147488496, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -386,7 +663,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":40,
-         "id":2,
+         "id":14,
          "name":"Overhead",
          "opacity":1,
          "type":"tilelayer",
@@ -395,8 +672,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":13,
- "nextobjectid":13,
+ "nextlayerid":17,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",
@@ -6093,6 +6370,20 @@
          "name":"waterRocks2",
          "spacing":0,
          "tilecount":256,
+         "tileheight":16,
+         "tilewidth":16,
+         "transparentcolor":"#ff00ff"
+        }, 
+        {
+         "columns":36,
+         "firstgid":4439,
+         "image":"cloud.png",
+         "imageheight":256,
+         "imagewidth":576,
+         "margin":0,
+         "name":"cloud",
+         "spacing":0,
+         "tilecount":576,
          "tileheight":16,
          "tilewidth":16,
          "transparentcolor":"#ff00ff"

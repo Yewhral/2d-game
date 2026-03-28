@@ -305,6 +305,25 @@
                  "width":0,
                  "x":81.3820673900628,
                  "y":475.442604226156
+                }, 
+                {
+                 "height":0,
+                 "id":19,
+                 "name":"bush",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"bush"
+                        }],
+                 "rotation":0,
+                 "type":"bush",
+                 "visible":true,
+                 "width":0,
+                 "x":352.666666667,
+                 "y":63.901234568
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -390,8 +409,8 @@
                  "type":"NPC",
                  "visible":true,
                  "width":0,
-                 "x":721.016561964592,
-                 "y":412.621359223301
+                 "x":706.344585439754,
+                 "y":395.853386052058
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -591,7 +610,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":19,
+ "nextobjectid":20,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",
