@@ -30,6 +30,7 @@ import { NPC_REGISTRY } from "./npcs";
 import { DECORATION_REGISTRY } from "./decorations";
 import { TILESET_IMAGE_KEYS } from "../tilesets";
 import { worldState } from "../worldState";
+import { FX_REGISTRY } from "./effects";
 
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
@@ -148,6 +149,18 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
+    // ---- FX animations -------------------------------------------------------
+    Object.values(FX_REGISTRY).forEach((fx) => {
+      if (!this.anims.exists(fx.animKey)) {
+        this.anims.create({
+          key: fx.animKey,
+          frames: this.anims.generateFrameNumbers(fx.spriteKey, {}),
+          frameRate: 12,
+          repeat: 0,
+        });
+      }
+    });
+
     // ---- player --------------------------------------------------------------
     this.player = this.physics.add.sprite(width / 2, height / 2, 'player', 76);
     this.player.setScale(3);
@@ -247,6 +260,10 @@ export class GameScene extends Phaser.Scene {
       this.refreshWorldDecorations();
     });
 
+    EventBus.on("fx:spawn", ({ type, x, y }) => {
+      this.spawnEffect(type, x, y);
+    });
+
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
     EventBus.emit("score-changed", { score: this.score });
@@ -279,6 +296,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("quest:remove-tiles");
     EventBus.off("quest:fade-layer");
     EventBus.off("world:refresh-decorations");
+    EventBus.off("fx:spawn");
   }
 
   // ---- map management -------------------------------------------------------
@@ -614,6 +632,26 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
 
     // Respawn only worldState-controlled decorations from map
     this.spawnDecorations(true);
+  }
+
+  // ---- visual effects -------------------------------------------------------
+
+  private spawnEffect(type: string, x: number, y: number) {
+    const fx = FX_REGISTRY[type];
+    if (!fx) {
+      console.warn(`Unknown FX type "${type}"`);
+      return;
+    }
+
+    const sprite = this.add.sprite(x, y, fx.spriteKey);
+    sprite.setScale(fx.scale);
+    sprite.setDepth(y + fx.depthOffset);
+
+    sprite.play(fx.animKey);
+
+    sprite.once('animationcomplete', () => {
+      sprite.destroy();
+    });
   }
 
   // ---- exit zone management --------------------------------------------------

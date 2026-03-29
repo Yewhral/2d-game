@@ -72,6 +72,9 @@ export type GameEvents = {
 
   /** Trigger a refresh of worldState-controlled decorations. */
   "world:refresh-decorations": undefined;
+
+  /** Spawn a visual effect at a position. */
+  "fx:spawn": { type: string; x: number; y: number };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

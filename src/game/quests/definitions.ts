@@ -106,6 +106,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     onComplete: () => {
       worldState.set('pawnHouse', 'built');
       EventBus.emit('world:refresh-decorations');
+      EventBus.emit('fx:spawn', { type: 'build_smoke', x: 715, y: 110 });
     },
   },
 ];
