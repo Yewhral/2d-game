@@ -12,6 +12,7 @@ import { createGame } from "@/game/PhaserGame";
 import type Phaser from "phaser";
 import { useEffect, useRef } from "react";
 import styles from "./PhaserCanvas.module.css";
+import { EventBus } from "@/game/EventBus";
 
 export function PhaserCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,7 @@ export function PhaserCanvas() {
     gameRef.current = createGame(containerRef.current);
 
     return () => {
+      EventBus.all.clear();
       gameRef.current?.destroy(true);
       gameRef.current = null;
     };

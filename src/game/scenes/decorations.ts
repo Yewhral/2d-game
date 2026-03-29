@@ -155,5 +155,20 @@ export const DECORATION_REGISTRY: Record<
       offsetY: -12,
     },
     bodyOffset: { x: -12, y: 24 },
-  }
+  },
+  house: {
+    name: 'House2',
+    spriteKey: 'house2',
+    scale: 1,
+    frame: 0,
+    depthOffset: -40,
+    hasCollision: true,
+    hitbox: {
+      width: 110,
+      height: 10,
+      offsetX: 12,
+      offsetY: -16,
+    },
+    bodyOffset: { x: -12, y: 24 },
+  },
 };

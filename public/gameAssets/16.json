@@ -324,6 +324,30 @@
                  "width":0,
                  "x":352.666666667,
                  "y":63.901234568
+                }, 
+                {
+                 "height":0,
+                 "id":20,
+                 "name":"house",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"house"
+                        }, 
+                        {
+                         "name":"worldStateId",
+                         "type":"string",
+                         "value":"pawnHouse"
+                        }],
+                 "rotation":0,
+                 "type":"building",
+                 "visible":true,
+                 "width":0,
+                 "x":714.869949288402,
+                 "y":109.602486504171
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -610,7 +634,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":20,
+ "nextobjectid":21,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",

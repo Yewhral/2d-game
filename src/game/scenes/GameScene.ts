@@ -29,6 +29,7 @@ import {
 import { NPC_REGISTRY } from "./npcs";
 import { DECORATION_REGISTRY } from "./decorations";
 import { TILESET_IMAGE_KEYS } from "../tilesets";
+import { worldState } from "../worldState";
 
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
@@ -46,6 +47,12 @@ interface NpcObject {
   name: string;
   onInteract: () => void;
 }
+
+interface DecorationEntry {
+  gameObject: Phaser.GameObjects.GameObject;
+  worldStateId: string | null;
+}
+
 
 export class GameScene extends Phaser.Scene {
   // --- state -----------------------------------------------------------------
@@ -73,7 +80,7 @@ export class GameScene extends Phaser.Scene {
   private playerShadow!: Phaser.GameObjects.Ellipse;
   private interactables: InteractableObject[] = [];
   private npcs: NpcObject[] = [];
-  private decorations: Phaser.GameObjects.GameObject[] = [];
+  private decorations: DecorationEntry[] = [];
   private collectibles: Collectible[] = [];
   private collectibleOverlap: Phaser.Physics.Arcade.Collider | null = null;
   private hint!: Phaser.GameObjects.Text;
@@ -195,6 +202,7 @@ export class GameScene extends Phaser.Scene {
       this.health = { current: 100, max: 100 };
       questManager.reset();
       collectibleState.reset();
+      worldState.reset();
       this.scene.restart();
     });
 
@@ -235,6 +243,10 @@ export class GameScene extends Phaser.Scene {
       });
     });
 
+    EventBus.on("world:refresh-decorations", () => {
+      this.refreshWorldDecorations();
+    });
+
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
     EventBus.emit("score-changed", { score: this.score });
@@ -266,6 +278,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("ui:restart-scene");
     EventBus.off("quest:remove-tiles");
     EventBus.off("quest:fade-layer");
+    EventBus.off("world:refresh-decorations");
   }
 
   // ---- map management -------------------------------------------------------
@@ -413,8 +426,8 @@ export class GameScene extends Phaser.Scene {
     }
     this.npcs = [];
 
-    for (const d of this.decorations) {
-      d.destroy();
+    for (const entry of this.decorations) {
+      entry.gameObject.destroy();
     }
     this.decorations = [];
 
@@ -433,20 +446,35 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private spawnDecorations() {
+  private spawnDecorations(worldStateOnly = false) {
     const layer = this.map.getObjectLayer(LAYERS.DECORATIONS);
     if (!layer) return;
 
     for (const obj of layer.objects) {
       if (obj.x == null || obj.y == null) continue;
 
-      const decIdProp = (
-          obj.properties as Array<{ name: string; value: unknown }> | undefined
-        )?.find((p) => p.name === 'decorationId');
+      const getProp = (name: string) => (
+        obj.properties as Array<{ name: string; value: unknown }> | undefined
+      )?.find((p) => p.name === name)?.value;
+
+      const decIdProp = getProp('decorationId');
       if (!decIdProp) continue;
 
-      const decorationId = String(decIdProp.value);
-      this.spawnDecoration(obj, decorationId);
+      const baseId = String(decIdProp);
+      const worldStateId = getProp('worldStateId') ? String(getProp('worldStateId')) : undefined;
+
+      // CASE 1: no worldState → spawn normally (legacy behavior)
+      if (!worldStateId) {
+        if (!worldStateOnly) {
+          this.spawnDecoration(obj, baseId, null);
+        }
+        continue;
+      }
+
+      // CASE 2: worldState-controlled — only spawn if state exists
+      if (!worldState.get(worldStateId)) continue;
+
+      this.spawnDecoration(obj, baseId, worldStateId);
     }
   }
 
@@ -527,7 +555,7 @@ export class GameScene extends Phaser.Scene {
     this.npcs.push(npc);
   }
 
-private spawnDecoration(obj: any, id: string) {
+private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
   const data = DECORATION_REGISTRY[id];
   if (!data) {
     console.warn(`Unknown decoration "${id}"`);
@@ -553,7 +581,7 @@ private spawnDecoration(obj: any, id: string) {
     sprite.play(`anim-${data.spriteKey}`);
   }
 
-  this.decorations.push(sprite);
+  this.decorations.push({ gameObject: sprite, worldStateId });
 
   // --- collision
   if (data.hasCollision && data.hitbox) {
@@ -571,9 +599,22 @@ private spawnDecoration(obj: any, id: string) {
     );
 
     this.physics.add.collider(this.player, body);
-    this.decorations.push(body);
+    this.decorations.push({ gameObject: body, worldStateId });
   }
 }
+
+  private refreshWorldDecorations() {
+    // Remove only worldState-controlled decorations
+    this.decorations = this.decorations.filter((entry) => {
+      if (!entry.worldStateId) return true;
+
+      entry.gameObject.destroy();
+      return false;
+    });
+
+    // Respawn only worldState-controlled decorations from map
+    this.spawnDecorations(true);
+  }
 
   // ---- exit zone management --------------------------------------------------
 

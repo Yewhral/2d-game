@@ -18,6 +18,7 @@ import { TalkQuestHandler } from './TalkQuestHandler';
 import { CollectQuestHandler } from './CollectQuestHandler';
 import { EventBus } from '../EventBus';
 import { LAYERS } from '../constants';
+import { worldState } from '../worldState';
 
 export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
@@ -101,6 +102,10 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       const c = progress.collected as number;
       const r = progress.required as number;
       return `${c} / ${r}`;
+    },
+    onComplete: () => {
+      worldState.set('pawnHouse', 'built');
+      EventBus.emit('world:refresh-decorations');
     },
   },
 ];

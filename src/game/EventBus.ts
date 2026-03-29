@@ -69,6 +69,9 @@ export type GameEvents = {
     mapKey: string;
     layer: string;
   };
+
+  /** Trigger a refresh of worldState-controlled decorations. */
+  "world:refresh-decorations": undefined;
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();
