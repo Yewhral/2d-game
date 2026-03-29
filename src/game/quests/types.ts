@@ -95,6 +95,7 @@ export interface QuestDefinition {
   dialogs: QuestDialogs;
   /** Optional formatter for the progress badge in the quest tracker */
   formatProgress?: (progress: Record<string, unknown>) => string | null;
-  /** Optional callback fired when the quest transitions to 'complete' */
-  onComplete?: () => void;
+  /** Optional callback fired when the quest transitions to 'complete'.
+   *  `retroactive` is true when re-applying on map load (skip one-time FX). */
+  onComplete?: (retroactive?: boolean) => void;
 }

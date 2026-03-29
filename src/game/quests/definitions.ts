@@ -103,10 +103,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       const r = progress.required as number;
       return `${c} / ${r}`;
     },
-    onComplete: () => {
+    onComplete: (retroactive) => {
       worldState.set('pawnHouse', 'built');
       EventBus.emit('world:refresh-decorations');
-      EventBus.emit('fx:spawn', { type: 'build_smoke', x: 715, y: 110 });
+      if (!retroactive) {
+        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 715, y: 110 });
+      }
     },
   },
 ];

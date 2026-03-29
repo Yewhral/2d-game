@@ -979,7 +979,7 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
   private checkRetroactiveQuests() {
     for (const def of QUEST_DEFINITIONS) {
       if (questManager.getStatus(def.id) === 'complete') {
-        def.onComplete?.();
+        def.onComplete?.(true);
       }
     }
   }
