@@ -685,9 +685,11 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
       this.physics.add.existing(zone, true);
 
       zone.setData('targetMap', String(targetMapProp.value));
+      zone.setData('x', obj.x);
+      zone.setData('y', obj.y);
       zone.setData('width', obj.width);
       zone.setData('height', obj.height);
-      zone.setData('y', obj.y);
+      zone.setData('name', obj.name);
 
       this.exitZones.add(zone);
     }
@@ -718,20 +720,38 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     this.activeExitZone = zone as Phaser.GameObjects.Zone;
 
     const targetMap = (zone as Phaser.GameObjects.Zone).getData('targetMap') as string;
+    const zoneX = (zone as Phaser.GameObjects.Zone).getData('x') as number;
     const zoneY = (zone as Phaser.GameObjects.Zone).getData('y') as number;
+    const zoneW = (zone as Phaser.GameObjects.Zone).getData('width') as number;
     const zoneH = (zone as Phaser.GameObjects.Zone).getData('height') as number;
 
-    const relY = (this.player.y - zoneY) / zoneH; 
+    // Determine exit direction based on zone aspect ratio:
+    // - Tall/narrow zone → left/right exit → track Y position
+    // - Wide/short zone → top/bottom exit → track X position
+    const isHorizontalExit = zoneW > zoneH;
+    const axis: 'x' | 'y' = isHorizontalExit ? 'x' : 'y';
+    const relValue = isHorizontalExit
+      ? (this.player.x - zoneX) / zoneW
+      : (this.player.y - zoneY) / zoneH;
 
-    this.startMapTransition(targetMap, relY);
+    const zoneName = (zone as Phaser.GameObjects.Zone).getData('name') as string;
+    this.startMapTransition(targetMap, { axis, value: relValue }, zoneName);
   }
 
   /**
    * Perform a fade-out → change map → fade-in transition.
    */
+  private static OPPOSITE_DIRECTIONS: Record<string, string> = {
+    bottom: 'top',
+    top: 'bottom',
+    left: 'right',
+    right: 'left',
+  };
+
   private startMapTransition(
     targetMapId: string,
-    relativeY: number,
+    relativePos: { axis: 'x' | 'y'; value: number },
+    exitZoneName: string,
   ) {
     this.isTransitioning = true;
 
@@ -743,11 +763,6 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     // Derive the map cache key (maps are loaded as "<id>-json")
     const mapKey = `${targetMapId}-json`;
 
-    // The destination spawn name is the same as the exit spawn name on the
-    // *current* map — the two maps share a naming convention where a zone
-    // on one map has a `target_map` pointing to the other map, and the
-    // matching zone on the other map points back. We need to find the zone
-    // on the *target* map whose `target_map` points back to the current map.
     const currentMapId = this.currentMapKey.replace('-json', '');
 
     // Fade out
@@ -756,8 +771,9 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
-        // Find the matching spawn zone on the target map
-        // We need to peek into the target map data to find the correct spawn
+        // Find the matching spawn zone on the target map.
+        // Primary: look for a zone whose target_map points back to this map.
+        // Fallback: mirror the exit zone's direction name (e.g. spawn_bottom → spawn_top).
         const targetTilemap = this.make.tilemap({ key: mapKey });
         const targetMarkersLayer = targetTilemap.getObjectLayer(LAYERS.MARKERS);
         let destinationSpawnName = 'spawn';
@@ -773,14 +789,25 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
               break;
             }
           }
+
+          // Fallback: mirror the direction in the exit zone name
+          if (destinationSpawnName === 'spawn' && exitZoneName) {
+            const parts = exitZoneName.split('_');
+            const dir = parts[parts.length - 1];
+            const opposite = GameScene.OPPOSITE_DIRECTIONS[dir];
+            if (opposite) {
+              const mirroredName = [...parts.slice(0, -1), opposite].join('_');
+              const found = targetMarkersLayer.objects.find((o) => o.name === mirroredName);
+              if (found) {
+                destinationSpawnName = mirroredName;
+              }
+            }
+          }
         }
         targetTilemap.destroy();
 
         // Change the map with relative positioning
-        this.changeMap(mapKey, destinationSpawnName, {
-          axis: 'y',
-          value: relativeY,
-        });
+        this.changeMap(mapKey, destinationSpawnName, relativePos);
 
         // Fade back in
         this.cameras.main.fadeIn(FADE_DURATION, 0, 0);
