@@ -18,6 +18,6 @@ export const FX_REGISTRY: Record<
     spriteKey: 'dust2',
     animKey: 'anim-dust2',
     scale: 2,
-    depthOffset: 10,
+    depthOffset: 20,
   },
 };

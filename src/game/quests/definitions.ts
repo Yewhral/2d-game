@@ -104,11 +104,11 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       return `${c} / ${r}`;
     },
     onComplete: (retroactive) => {
+      if (!retroactive) {
+        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 758, y: 110 });
+      }
       worldState.set('pawnHouse', 'built');
       EventBus.emit('world:refresh-decorations');
-      if (!retroactive) {
-        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 715, y: 110 });
-      }
     },
   },
 ];
