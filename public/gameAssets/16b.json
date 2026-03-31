@@ -208,7 +208,7 @@
                         {
                          "name":"decorationId",
                          "type":"string",
-                         "value":"house2"
+                         "value":"house2black"
                         }],
                  "rotation":0,
                  "type":"building",
@@ -227,7 +227,7 @@
                         {
                          "name":"decorationId",
                          "type":"string",
-                         "value":"house2-1"
+                         "value":"house2-1black"
                         }],
                  "rotation":0,
                  "type":"building",
@@ -246,7 +246,7 @@
                         {
                          "name":"decorationId",
                          "type":"string",
-                         "value":"barracks"
+                         "value":"barracksBlack"
                         }],
                  "rotation":0,
                  "type":"building",
@@ -312,14 +312,14 @@
                 {
                  "height":0,
                  "id":3,
-                 "name":"purple-warrior",
+                 "name":"purple-warrior-black",
                  "opacity":1,
                  "point":true,
                  "properties":[
                         {
                          "name":"npcId",
                          "type":"string",
-                         "value":"purple-warrior"
+                         "value":"purple-warrior-black"
                         }],
                  "rotation":0,
                  "type":"NPC",
@@ -327,6 +327,25 @@
                  "width":0,
                  "x":295.530107129664,
                  "y":393.055042482453
+                }, 
+                {
+                 "height":0,
+                 "id":25,
+                 "name":"black-warrior",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"black-warrior-16b"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":351.16293049545,
+                 "y":394.445863066598
                 }, 
                 {
                  "height":0,
@@ -583,7 +602,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":25,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.0",
