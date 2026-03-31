@@ -26,6 +26,9 @@ export function createGame(parent: HTMLDivElement): Phaser.Game {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
+    input: {
+      activePointers: 2,           // allow joystick + action button at once
+    },
     physics: {
       default: "arcade",
       arcade: {

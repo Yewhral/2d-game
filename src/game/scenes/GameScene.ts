@@ -7,7 +7,7 @@
  *
  * Two-way EventBus integration:
  *   Phaser → React: "score-changed", "player-health-changed", "scene-changed"
- *   React  → Phaser: "ui:toggle-pause", "ui:restart-scene"
+ *   React  → Phaser: "ui:restart-scene"
  */
 
 import Phaser from "phaser";
@@ -31,6 +31,7 @@ import { DECORATION_REGISTRY } from "./decorations";
 import { TILESET_IMAGE_KEYS } from "../tilesets";
 import { worldState } from "../worldState";
 import { FX_REGISTRY } from "./effects";
+import VirtualJoystick from "phaser3-rex-plugins/plugins/virtualjoystick.js";
 
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
@@ -59,7 +60,6 @@ export class GameScene extends Phaser.Scene {
   // --- state -----------------------------------------------------------------
   private score = 0;
   private health = { current: 100, max: 100 };
-  private isPaused = false;
   private isTransitioning = false;
   private currentMapKey = '';
 
@@ -96,6 +96,14 @@ export class GameScene extends Phaser.Scene {
     right: Phaser.Input.Keyboard.Key;
   };
   private keyE!: Phaser.Input.Keyboard.Key;
+
+  // --- mobile controls -------------------------------------------------------
+  private isTouchDevice = false;
+  // biome-ignore lint: rex plugin typing
+  private joystick: any = null;
+  private joystickKeys: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
+  private mobileInteractPressed = false;
+  private actionBtn: Phaser.GameObjects.Container | null = null;
 
   constructor() {
     super("GameScene");
@@ -204,12 +212,13 @@ export class GameScene extends Phaser.Scene {
       this.keyE = kb.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     }
 
-    // ---- EventBus (React → Phaser) ------------------------------------------
-    EventBus.on("ui:toggle-pause", () => {
-      this.isPaused = !this.isPaused;
-      this.isPaused ? this.physics.pause() : this.physics.resume();
-    });
+    // ---- mobile controls (touch devices only) --------------------------------
+    this.isTouchDevice = this.sys.game.device.input.touch;
+    if (this.isTouchDevice) {
+      this.createMobileControls();
+    }
 
+    // ---- EventBus (React → Phaser) ------------------------------------------
     EventBus.on("ui:restart-scene", () => {
       this.score = 0;
       this.health = { current: 100, max: 100 };
@@ -264,6 +273,10 @@ export class GameScene extends Phaser.Scene {
       this.spawnEffect(type, x, y);
     });
 
+    EventBus.on("npc-dialog", (payload) => {
+      if (!payload) this.activeDialogNpc = null;
+    });
+
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
     EventBus.emit("score-changed", { score: this.score });
@@ -272,7 +285,7 @@ export class GameScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------------------
   update() {
-    if (this.isPaused || !this.cursors) return;
+    if (!this.cursors) return;
 
     if (this.player && this.playerShadow) {
       this.playerShadow.setPosition(this.player.x - 2, this.player.y - 10);
@@ -287,16 +300,19 @@ export class GameScene extends Phaser.Scene {
     this.checkDialogExitRadius();
     this.updateInteractHint();
     this.handleInteract();
+
+    // consume mobile interact flag
+    this.mobileInteractPressed = false;
   }
 
   // ---------------------------------------------------------------------------
   shutdown() {
-    EventBus.off("ui:toggle-pause");
     EventBus.off("ui:restart-scene");
     EventBus.off("quest:remove-tiles");
     EventBus.off("quest:fade-layer");
     EventBus.off("world:refresh-decorations");
     EventBus.off("fx:spawn");
+    EventBus.off("npc-dialog");
   }
 
   // ---- map management -------------------------------------------------------
@@ -654,6 +670,83 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     });
   }
 
+  // ---- mobile controls (rex virtual joystick + action button) ----------------
+
+  private createMobileControls() {
+    const { width, height } = this.scale;
+
+    // ---- Virtual Joystick (bottom-left) ------------------------------------
+    const baseRadius = 50;
+    const thumbRadius = 24;
+
+    const base = this.add.circle(0, 0, baseRadius, 0xffffff, 0.15);
+    base.setStrokeStyle(2, 0xffffff, 0.3);
+    base.setScrollFactor(0);
+    base.setDepth(400000);
+
+    const thumb = this.add.circle(0, 0, thumbRadius, 0xffffff, 0.35);
+    thumb.setStrokeStyle(2, 0xffffff, 0.6);
+    thumb.setScrollFactor(0);
+    thumb.setDepth(400001);
+
+    this.joystick = new VirtualJoystick(this, {
+      x: 90,
+      y: height - 90,
+      radius: baseRadius,
+      base,
+      thumb,
+      dir: '8dir',
+      forceMin: 10,
+      fixed: true,
+      enable: true,
+    });
+
+    this.joystickKeys = this.joystick.createCursorKeys();
+
+    // ---- Action Button (bottom-right) --------------------------------------
+    const btnRadius = 30;
+    const btnX = width - 80;
+    const btnY = height - 90;
+
+    const btnBg = this.add.circle(0, 0, btnRadius, 0xffffff, 0.15);
+    btnBg.setStrokeStyle(2, 0xffffff, 0.4);
+
+    const btnLabel = this.add.text(0, 0, 'E', {
+      fontFamily: 'monospace',
+      fontSize: '22px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+    }).setOrigin(0.5, 0.5);
+
+    this.actionBtn = this.add.container(btnX, btnY, [btnBg, btnLabel]);
+    this.actionBtn.setScrollFactor(0);
+    this.actionBtn.setDepth(400000);
+    this.actionBtn.setSize(btnRadius * 2, btnRadius * 2);
+    this.actionBtn.setInteractive();
+    this.actionBtn.setVisible(false); // starts hidden
+
+    this.actionBtn.on('pointerdown', () => {
+      this.mobileInteractPressed = true;
+      this.tweens.add({
+        targets: this.actionBtn,
+        scaleX: 0.85,
+        scaleY: 0.85,
+        duration: 60,
+        yoyo: true,
+        ease: 'Sine.easeOut',
+      });
+      btnBg.setFillStyle(0xffffff, 0.35);
+    });
+
+    this.actionBtn.on('pointerup', () => {
+      btnBg.setFillStyle(0xffffff, 0.15);
+    });
+
+    this.actionBtn.on('pointerout', () => {
+      btnBg.setFillStyle(0xffffff, 0.15);
+    });
+  }
+
   // ---- exit zone management --------------------------------------------------
 
   /**
@@ -840,10 +933,11 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     const speed = PLAYER_SPEED;
 
-    const left = this.cursors.left.isDown || this.wasd.left.isDown;
-    const right = this.cursors.right.isDown || this.wasd.right.isDown;
-    const up = this.cursors.up.isDown || this.wasd.up.isDown;
-    const down = this.cursors.down.isDown || this.wasd.down.isDown;
+    const jk = this.joystickKeys;
+    const left = this.cursors.left.isDown || this.wasd.left.isDown || (jk?.left.isDown ?? false);
+    const right = this.cursors.right.isDown || this.wasd.right.isDown || (jk?.right.isDown ?? false);
+    const up = this.cursors.up.isDown || this.wasd.up.isDown || (jk?.up.isDown ?? false);
+    const down = this.cursors.down.isDown || this.wasd.down.isDown || (jk?.down.isDown ?? false);
 
     let vx = 0;
     let vy = 0;
@@ -884,17 +978,26 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     const nearest = this.nearestInteractable();
     const nearestNpc = this.nearestNpc();
     const nearestCol = this.nearestCollectible();
-    if (nearest || nearestNpc || nearestCol) {
+    const canInteract = !!(nearest || nearestNpc || nearestCol);
+
+    // If we are in range OF something OR a dialog is already open
+    if (canInteract || this.activeDialogNpc) {
       if (this.activeDialogNpc) {
         this.hint.setVisible(false);
+        if (this.actionBtn) this.actionBtn.setVisible(true);
       } else {
         const label = nearestNpc ? 'talk' : nearestCol ? 'pick up' : 'interact';
-        this.hint?.setText(`Press [E] to ${label}`);
-        this.hint.setVisible(true);
+        const verb = this.isTouchDevice ? 'Tap' : 'Press [E]';
+        this.hint?.setText(`${verb} to ${label}`);
+        
+        // Show hint on desktop, but on mobile we use the button visibility instead
+        this.hint.setVisible(!this.isTouchDevice);
+        if (this.actionBtn) this.actionBtn.setVisible(true);
       }
     } else {
-        this.hint?.setText('');
-        this.hint.setVisible(false);
+      this.hint?.setText('');
+      this.hint.setVisible(false);
+      if (this.actionBtn) this.actionBtn.setVisible(false);
     }
   }
 
@@ -913,7 +1016,8 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
   }
 
   private handleInteract() {
-    if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
+    const pressed = Phaser.Input.Keyboard.JustDown(this.keyE) || this.mobileInteractPressed;
+    if (pressed) {
       // If dialog is open, close it first
       if (this.activeDialogNpc) {
         this.activeDialogNpc = null;

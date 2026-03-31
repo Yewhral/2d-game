@@ -14,7 +14,6 @@ export function GameHUD() {
   const [score, setScore] = useState(0);
   const [health, setHealth] = useState({ current: 100, max: 100 });
   const [scene, setScene] = useState("—");
-  const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
   const [dialog, setDialog] = useState<{
     npc: string;
@@ -100,14 +99,8 @@ export function GameHUD() {
     };
   }, []);
 
-  const handleTogglePause = () => {
-    EventBus.emit("ui:toggle-pause", undefined);
-    setPaused((p) => !p);
-  };
-
   const handleRestart = () => {
     EventBus.emit("ui:restart-scene", undefined);
-    setPaused(false);
     setScore(0);
     setHealth({ current: 100, max: 100 });
     setDialog(null);
@@ -149,10 +142,6 @@ export function GameHUD() {
       {/* Top-right: controls */}
       <div className={styles.controls}>
         {ready && (
-          <>
-            <button id="btn-pause" type="button" className={styles.btn} onClick={handleTogglePause}>
-              {paused ? "▶ Resume" : "⏸ Pause"}
-            </button>
             <button
               id="btn-restart"
               type="button"
@@ -161,20 +150,19 @@ export function GameHUD() {
             >
               ↺ Restart
             </button>
-          </>
         )}
       </div>
 
-      {/* Pause overlay */}
-      {paused && (
-        <div className={styles.pauseOverlay}>
-          <span>PAUSED</span>
-        </div>
-      )}
-
       {/* NPC dialog bubble */}
       {dialog && (
-        <div className={`${styles.dialogOverlay} ${styles[`theme-${dialog.theme ?? 'purple'}`]}`}>
+        <div
+          className={`${styles.dialogOverlay} ${styles[`theme-${dialog.theme ?? 'purple'}`]}`}
+          onClick={() => {
+            if ('ontouchstart' in window) {
+              EventBus.emit('npc-dialog', null);
+            }
+          }}
+        >
           <div className={styles.dialogBox}>
             <div className={styles.dialogPortrait}>
               <img src={dialog.portrait} alt={dialog.npc} className={styles.portraitImg} />
@@ -184,7 +172,9 @@ export function GameHUD() {
               <p className={styles.dialogText} dangerouslySetInnerHTML={{ __html: dialog.text }} />
             </div>
           </div>
-          <span className={styles.dialogHint}>Press [E] to close</span>
+          <span className={styles.dialogHint}>
+            {'ontouchstart' in window ? 'Tap to close' : 'Press [E] to close'}
+          </span>
         </div>
       )}
 

@@ -36,9 +36,6 @@ export type GameEvents = {
   /** React → Phaser: request to restart the current scene. */
   "ui:restart-scene": undefined;
 
-  /** React → Phaser: toggle pause state. */
-  "ui:toggle-pause": undefined;
-
   /** Phaser → React: an NPC started/stopped speaking. */
   "npc-dialog": { npc: string; text: string; portrait: string; theme?: string } | null;
 

@@ -104,23 +104,6 @@
   border-color: var(--color-danger);
 }
 
-/* ---- Pause overlay ---- */
-.pauseOverlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.pauseOverlay span {
-  font-size: 64px;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.08);
-  user-select: none;
-}
 /* ---- NPC Dialog Bubble ---- */
 .dialogOverlay {
   position: absolute;
