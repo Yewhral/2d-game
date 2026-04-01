@@ -439,10 +439,17 @@ export class GameScene extends Phaser.Scene {
     this.groundLayer?.destroy();
     this.obstaclesLayer?.destroy();
     this.overheadLayer?.destroy();
+    this.barriersLayer?.destroy();
+    this.shadowLayer?.destroy();
+    this.highGroundLayer?.destroy();
+
     this.waterLayer = null;
     this.groundLayer = null;
     this.obstaclesLayer = null;
     this.overheadLayer = null;
+    this.barriersLayer = null;
+    this.shadowLayer = null;
+    this.highGroundLayer = null;
 
     for (const npc of this.npcs) {
       npc.sprite.destroy();
