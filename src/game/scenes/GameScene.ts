@@ -7,7 +7,6 @@
  *
  * Two-way EventBus integration:
  *   Phaser → React: "score-changed", "player-health-changed", "scene-changed"
- *   React  → Phaser: "ui:restart-scene"
  */
 
 import Phaser from "phaser";
@@ -16,7 +15,6 @@ import { questManager } from "../quests/QuestManager";
 import { QUEST_DEFINITIONS } from "../quests/definitions";
 import { Collectible } from "../collectibles/Collectible";
 import { spawnCollectibles } from "../collectibles/spawnCollectibles";
-import { collectibleState } from "../collectibles/CollectibleState";
 import { 
   DEPTHS, 
   FADE_DURATION, 
@@ -219,14 +217,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     // ---- EventBus (React → Phaser) ------------------------------------------
-    EventBus.on("ui:restart-scene", () => {
-      this.score = 0;
-      this.health = { current: 100, max: 100 };
-      questManager.reset();
-      collectibleState.reset();
-      worldState.reset();
-      this.scene.restart();
-    });
 
     EventBus.on("quest:remove-tiles", ({ mapKey, layer, tileIds }) => {
       if (mapKey !== this.currentMapKey) return;
@@ -307,7 +297,6 @@ export class GameScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------------------
   shutdown() {
-    EventBus.off("ui:restart-scene");
     EventBus.off("quest:remove-tiles");
     EventBus.off("quest:fade-layer");
     EventBus.off("world:refresh-decorations");

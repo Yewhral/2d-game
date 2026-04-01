@@ -21,8 +21,6 @@ import type { Emitter } from "mitt";
 // Keys are event names, values are the payload type.
 // ---------------------------------------------------------------------------
 export type GameEvents = {
-  /** Fired once when Phaser is fully ready and the first scene is active. */
-  "game-ready": { scene: string };
 
   /** Fired whenever the player's HP changes. */
   "player-health-changed": { current: number; max: number };
@@ -33,8 +31,6 @@ export type GameEvents = {
   /** Fired when the current scene name changes. */
   "scene-changed": { scene: string };
 
-  /** React → Phaser: request to restart the current scene. */
-  "ui:restart-scene": undefined;
 
   /** Phaser → React: an NPC started/stopped speaking. */
   "npc-dialog": { npc: string; text: string; portrait: string; theme?: string } | null;

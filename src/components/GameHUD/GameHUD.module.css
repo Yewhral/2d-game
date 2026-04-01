@@ -100,9 +100,6 @@
   transform: translateY(0);
 }
 
-.btnDanger:hover {
-  border-color: var(--color-danger);
-}
 
 /* ---- NPC Dialog Bubble ---- */
 .dialogOverlay {

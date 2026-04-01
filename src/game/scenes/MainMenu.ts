@@ -57,16 +57,10 @@ export class MainMenu extends Phaser.Scene {
       this.scene.start("GameScene");
     });
 
-    // Listen for the React "restart" request via the EventBus
-    EventBus.on("ui:restart-scene", () => {
-      this.scene.restart();
-    });
 
     EventBus.emit("scene-changed", { scene: "MainMenu" });
-    EventBus.emit("game-ready", { scene: "MainMenu" });
   }
 
   shutdown() {
-    EventBus.off("ui:restart-scene");
   }
 }

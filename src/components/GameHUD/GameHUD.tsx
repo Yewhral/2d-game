@@ -14,7 +14,6 @@ export function GameHUD() {
   const [score, setScore] = useState(0);
   const [health, setHealth] = useState({ current: 100, max: 100 });
   const [scene, setScene] = useState("—");
-  const [ready, setReady] = useState(false);
   const [dialog, setDialog] = useState<{
     npc: string;
     text: string;
@@ -31,10 +30,6 @@ export function GameHUD() {
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Subscribe to Phaser events
-  useGameEvent(
-    "game-ready",
-    useCallback(() => setReady(true), []),
-  );
   useGameEvent(
     "scene-changed",
     useCallback(({ scene }) => setScene(scene), []),
@@ -99,14 +94,6 @@ export function GameHUD() {
     };
   }, []);
 
-  const handleRestart = () => {
-    EventBus.emit("ui:restart-scene", undefined);
-    setScore(0);
-    setHealth({ current: 100, max: 100 });
-    setDialog(null);
-    setQuests([]);
-    setQuestNotification(null);
-  };
 
   const visibleQuests = quests.filter((q) => q.status !== 'complete');
 
@@ -141,16 +128,6 @@ export function GameHUD() {
 
       {/* Top-right: controls */}
       <div className={styles.controls}>
-        {ready && (
-            <button
-              id="btn-restart"
-              type="button"
-              className={`${styles.btn} ${styles.btnDanger}`}
-              onClick={handleRestart}
-            >
-              ↺ Restart
-            </button>
-        )}
       </div>
 
       {/* NPC dialog bubble */}
