@@ -115,16 +115,19 @@ export class GameScene extends Phaser.Scene {
     // ---- player animations ---------------------------------------------------
     const directions = ['up', 'ne', 'right', 'se', 'down', 'sw', 'left', 'nw'];
     directions.forEach((dir, index) => {
-      this.anims.create({
-        key: `walk-${dir}`,
-        frames: [
-          { key: 'player', frame: 72 + index },
-          { key: 'player', frame: 80 + index },
-          { key: 'player', frame: 88 + index },
-        ],
-        frameRate: 10,
-        repeat: -1,
-      });
+      const animKey = `walk-${dir}`;
+      if (!this.anims.exists(animKey)) {
+        this.anims.create({
+          key: animKey,
+          frames: [
+            { key: 'player', frame: 72 + index },
+            { key: 'player', frame: 80 + index },
+            { key: 'player', frame: 88 + index },
+          ],
+          frameRate: 10,
+          repeat: -1,
+        });
+      }
     });
 
     // ---- NPC animations -----------------------------------------------------
@@ -225,8 +228,9 @@ export class GameScene extends Phaser.Scene {
         layer === LAYERS.BARRIERS ? this.barriersLayer : null;
       if (!tilemapLayer) return;
 
+      const tileIdSet = new Set(tileIds);
       tilemapLayer.forEachTile((tile) => {
-        if (tileIds.includes(tile.index)) {
+        if (tileIdSet.has(tile.index)) {
           tilemapLayer.removeTileAt(tile.x, tile.y);
         }
       });
@@ -358,12 +362,16 @@ export class GameScene extends Phaser.Scene {
       this.barriersLayer?.setDepth(DEPTHS.BARRIERS);
 
       // Set collisions on collidable layers based on the tile property
-      for (const layer of [this.groundLayer, this.highGroundLayer, this.obstaclesLayer, this.barriersLayer]) {
-        if (layer) {
-          layer.setCollisionByProperty({ collides: '1' });
-          const collider = this.physics.add.collider(this.player, layer);
-          this.mapColliders.push(collider);
-        }
+      const collidableLayers = [this.groundLayer, this.highGroundLayer, this.obstaclesLayer, this.barriersLayer]
+        .filter((l): l is Phaser.Tilemaps.TilemapLayer => l !== null);
+
+      for (const layer of collidableLayers) {
+        layer.setCollisionByProperty({ collides: '1' });
+      }
+      
+      if (collidableLayers.length > 0) {
+        const collider = this.physics.add.collider(this.player, collidableLayers);
+        this.mapColliders.push(collider);
       }
     }
 
@@ -873,26 +881,26 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
               | Array<{ name: string; value: unknown }>
               | undefined;
             const tmProp = objProps?.find((p) => p.name === 'target_map');
-            if (tmProp && String(tmProp.value) === currentMapId) {
-              destinationSpawnName = obj.name;
-              break;
+              if (tmProp && String(tmProp.value) === currentMapId) {
+                destinationSpawnName = obj.name;
+                break;
+              }
             }
-          }
 
-          // Fallback: mirror the direction in the exit zone name
-          if (destinationSpawnName === 'spawn' && exitZoneName) {
-            const parts = exitZoneName.split('_');
-            const dir = parts[parts.length - 1];
-            const opposite = GameScene.OPPOSITE_DIRECTIONS[dir];
-            if (opposite) {
-              const mirroredName = [...parts.slice(0, -1), opposite].join('_');
+            // Fallback: mirror the direction in the exit zone name
+            if (destinationSpawnName === 'spawn' && exitZoneName) {
+              const parts = exitZoneName.split('_');
+              const dir = parts[parts.length - 1];
+              const opposite = GameScene.OPPOSITE_DIRECTIONS[dir];
+              if (opposite) {
+                const mirroredName = [...parts.slice(0, -1), opposite].join('_');
               const found = targetMarkersLayer.objects.find((o) => o.name === mirroredName);
-              if (found) {
-                destinationSpawnName = mirroredName;
+                if (found) {
+                  destinationSpawnName = mirroredName;
+                }
               }
             }
           }
-        }
         targetTilemap.destroy();
 
         // Change the map with relative positioning
