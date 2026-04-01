@@ -24,7 +24,6 @@ export function createGame(parent: HTMLDivElement): Phaser.Game {
     backgroundColor: "#0f0f13",
     scale: {
       mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     input: {
       activePointers: 2,           // allow joystick + action button at once

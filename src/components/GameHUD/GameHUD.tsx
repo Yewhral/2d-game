@@ -9,6 +9,7 @@ import { EventBus } from "@/game/EventBus";
 import { useGameEvent } from "@/hooks/useGameEvent";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./GameHUD.module.css";
+import { QuestLogModal, type Quest } from "./QuestLogModal";
 
 export function GameHUD() {
   const [score, setScore] = useState(0);
@@ -24,9 +25,7 @@ export function GameHUD() {
     message: string;
     status: string;
   } | null>(null);
-  const [quests, setQuests] = useState<
-    Array<{ questId: string; title: string; status: string; description?: string; progress?: string }>
-  >([]);
+  const [quests, setQuests] = useState<Quest[]>([]);
   const [isQuestLogOpen, setIsQuestLogOpen] = useState(false);
   const [hasUnseenQuests, setHasUnseenQuests] = useState(false);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
@@ -97,7 +96,7 @@ export function GameHUD() {
   // Keyboard shortcut: Q for Quest Log
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'q' && !dialog) {
+      if (e.key.toLowerCase() === 'q' && !dialog && scene === 'GameScene') {
         setIsQuestLogOpen((prev) => {
           if (!prev) setHasUnseenQuests(false);
           return !prev;
@@ -109,7 +108,7 @@ export function GameHUD() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [dialog, isQuestLogOpen]);
+  }, [dialog, isQuestLogOpen, scene]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -123,7 +122,6 @@ export function GameHUD() {
   const hpColor =
     hpPct > 60 ? "var(--color-success)" : hpPct > 30 ? "#fbbf24" : "var(--color-danger)";
 
-  const selectedQuest = quests.find(q => q.questId === selectedQuestId);
 
   return (
     <div className={styles.hud}>
@@ -143,16 +141,11 @@ export function GameHUD() {
             {health.current}/{health.max}
           </span>
         </div>
-
-        <div className={styles.stat}>
-          <span className={styles.label}>SCENE</span>
-          <span className={styles.sceneName}>{scene}</span>
-        </div>
       </div>
 
       {/* Top-right: controls */}
       <div className={styles.controls}>
-        {quests.length > 0 && (
+        {scene === "GameScene" && (
           <button 
             className={`${styles.btn} ${styles.questLogBtn} ${hasUnseenQuests ? styles.hasNotification : ''}`}
             onClick={() => {
@@ -219,50 +212,13 @@ export function GameHUD() {
       )}
 
       {/* Quest Log Modal */}
-      {isQuestLogOpen && (
-        <div className={styles.questLogOverlay} onClick={() => setIsQuestLogOpen(false)}>
-          <div className={styles.questLogBox} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.questLogHeader}>
-              <h2>Quest Log</h2>
-              <button className={styles.questLogClose} onClick={() => setIsQuestLogOpen(false)}>×</button>
-            </div>
-            <div className={styles.questLogContent}>
-              <div className={styles.questList}>
-                {quests.map((q) => (
-                  <div 
-                    key={q.questId} 
-                    className={`${styles.questItem} ${selectedQuestId === q.questId ? styles.questItemActive : ''}`}
-                    onClick={() => setSelectedQuestId(q.questId)}
-                  >
-                    <span className={`${styles.questStatus} ${q.status === 'done' || q.status === 'complete' ? styles.questStatusDone : ''}`}>
-                      {q.status === 'complete' ? '✦' : q.status === 'done' ? '◆' : '○'}
-                    </span>
-                    <div className={styles.questItemInfo}>
-                      <span className={styles.questItemTitle}>{q.title}</span>
-                      <span className={styles.questItemStatusText}>{q.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className={styles.questDetails}>
-                {selectedQuest ? (
-                  <>
-                    <h3>{selectedQuest.title}</h3>
-                    <p className={styles.questDescription}>{selectedQuest.description}</p>
-                    {selectedQuest.progress && (
-                      <div className={styles.questProgressDetail}>
-                        Progress: {selectedQuest.progress}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className={styles.noQuestSelected}>Select a quest to see details</div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <QuestLogModal
+        isOpen={isQuestLogOpen}
+        onClose={() => setIsQuestLogOpen(false)}
+        quests={quests}
+        selectedQuestId={selectedQuestId}
+        onSelectQuest={setSelectedQuestId}
+      />
     </div>
   );
 }
