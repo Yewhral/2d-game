@@ -177,6 +177,7 @@ class QuestManager {
       questId,
       status,
       title: def?.title ?? questId,
+      description: def?.description,
       message,
       progress: progressStr,
     });
@@ -192,6 +193,7 @@ class QuestManager {
       questId,
       status,
       title: def?.title ?? questId,
+      description: def?.description,
       message: progressStr
         ? `${def?.title}: ${progressStr}`
         : `${def?.title}`,

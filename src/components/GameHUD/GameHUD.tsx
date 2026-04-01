@@ -25,8 +25,11 @@ export function GameHUD() {
     status: string;
   } | null>(null);
   const [quests, setQuests] = useState<
-    Array<{ questId: string; title: string; status: string; progress?: string }>
+    Array<{ questId: string; title: string; status: string; description?: string; progress?: string }>
   >([]);
+  const [isQuestLogOpen, setIsQuestLogOpen] = useState(false);
+  const [hasUnseenQuests, setHasUnseenQuests] = useState(false);
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Subscribe to Phaser events
@@ -56,13 +59,16 @@ export function GameHUD() {
           status: payload.status,
         });
 
+        // Show red dot on Q button
+        setHasUnseenQuests(true);
+
         // Update quest tracker
         setQuests((prev) => {
           const existing = prev.find((q) => q.questId === payload.questId);
           if (existing) {
             return prev.map((q) =>
               q.questId === payload.questId
-                ? { ...q, status: payload.status, progress: payload.progress }
+                ? { ...q, status: payload.status, progress: payload.progress, description: payload.description }
                 : q,
             );
           }
@@ -73,6 +79,7 @@ export function GameHUD() {
               title: payload.title,
               status: payload.status,
               progress: payload.progress,
+              description: payload.description,
             },
           ];
         });
@@ -87,6 +94,23 @@ export function GameHUD() {
     ),
   );
 
+  // Keyboard shortcut: Q for Quest Log
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'q' && !dialog) {
+        setIsQuestLogOpen((prev) => {
+          if (!prev) setHasUnseenQuests(false);
+          return !prev;
+        });
+      }
+      if (e.key === 'Escape' && isQuestLogOpen) {
+        setIsQuestLogOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [dialog, isQuestLogOpen]);
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -95,11 +119,11 @@ export function GameHUD() {
   }, []);
 
 
-  const visibleQuests = quests.filter((q) => q.status !== 'complete');
-
   const hpPct = Math.max(0, (health.current / health.max) * 100);
   const hpColor =
     hpPct > 60 ? "var(--color-success)" : hpPct > 30 ? "#fbbf24" : "var(--color-danger)";
+
+  const selectedQuest = quests.find(q => q.questId === selectedQuestId);
 
   return (
     <div className={styles.hud}>
@@ -128,6 +152,21 @@ export function GameHUD() {
 
       {/* Top-right: controls */}
       <div className={styles.controls}>
+        {quests.length > 0 && (
+          <button 
+            className={`${styles.btn} ${styles.questLogBtn} ${hasUnseenQuests ? styles.hasNotification : ''}`}
+            onClick={() => {
+              setIsQuestLogOpen(true);
+              setHasUnseenQuests(false);
+              if (!selectedQuestId && quests.length > 0) {
+                setSelectedQuestId(quests[0].questId);
+              }
+            }}
+            title="Quest Log (Q)"
+          >
+            Q
+          </button>
+        )}
       </div>
 
       {/* NPC dialog bubble */}
@@ -179,25 +218,49 @@ export function GameHUD() {
         </div>
       )}
 
-      {/* Quest tracker (bottom-left) */}
-      {visibleQuests.length > 0 && (
-        <div className={styles.questTracker}>
-          <div className={styles.questTrackerHeader}>Quests</div>
-          {visibleQuests.map((q) => (
-            <div key={q.questId} className={styles.questEntry}>
-              <span
-                className={`${styles.questStatus} ${
-                  q.status === 'done' ? styles.questStatusDone : ''
-                }`}
-              >
-                {q.status === 'done' ? '◆' : '○'}
-              </span>
-              <span className={styles.questTitle}>{q.title}</span>
-              {q.progress && (
-                <span className={styles.questProgress}>{q.progress}</span>
-              )}
+      {/* Quest Log Modal */}
+      {isQuestLogOpen && (
+        <div className={styles.questLogOverlay} onClick={() => setIsQuestLogOpen(false)}>
+          <div className={styles.questLogBox} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.questLogHeader}>
+              <h2>Quest Log</h2>
+              <button className={styles.questLogClose} onClick={() => setIsQuestLogOpen(false)}>×</button>
             </div>
-          ))}
+            <div className={styles.questLogContent}>
+              <div className={styles.questList}>
+                {quests.map((q) => (
+                  <div 
+                    key={q.questId} 
+                    className={`${styles.questItem} ${selectedQuestId === q.questId ? styles.questItemActive : ''}`}
+                    onClick={() => setSelectedQuestId(q.questId)}
+                  >
+                    <span className={`${styles.questStatus} ${q.status === 'done' || q.status === 'complete' ? styles.questStatusDone : ''}`}>
+                      {q.status === 'complete' ? '✦' : q.status === 'done' ? '◆' : '○'}
+                    </span>
+                    <div className={styles.questItemInfo}>
+                      <span className={styles.questItemTitle}>{q.title}</span>
+                      <span className={styles.questItemStatusText}>{q.status}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.questDetails}>
+                {selectedQuest ? (
+                  <>
+                    <h3>{selectedQuest.title}</h3>
+                    <p className={styles.questDescription}>{selectedQuest.description}</p>
+                    {selectedQuest.progress && (
+                      <div className={styles.questProgressDetail}>
+                        Progress: {selectedQuest.progress}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className={styles.noQuestSelected}>Select a quest to see details</div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

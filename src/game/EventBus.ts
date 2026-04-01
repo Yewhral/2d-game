@@ -40,6 +40,7 @@ export type GameEvents = {
     questId: string;
     status: 'inactive' | 'active' | 'done' | 'complete';
     title: string;
+    description?: string;
     message: string;
     /** Optional progress string, e.g. "1 / 2" */
     progress?: string;
