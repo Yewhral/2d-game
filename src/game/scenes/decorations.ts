@@ -217,4 +217,19 @@ export const DECORATION_REGISTRY: Record<
     },
     bodyOffset: { x: -12, y: 24 },
   },
+  'meat': {
+    name: 'meat',
+    spriteKey: 'meat',
+    scale: 0.75,
+    frame: 0,
+    depthOffset: -12,
+    hasCollision: true,
+    hitbox: {
+      width: 28,
+      height: 20,
+      offsetX: 2,
+      offsetY: 10,
+    },
+    bodyOffset: { x: -24, y: 28 },
+  },
 };

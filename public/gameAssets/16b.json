@@ -297,6 +297,63 @@
                  "width":0,
                  "x":708.94893561086,
                  "y":143.944365833912
+                }, 
+                {
+                 "height":0,
+                 "id":26,
+                 "name":"meat",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"meat"
+                        }],
+                 "rotation":0,
+                 "type":"meat",
+                 "visible":true,
+                 "width":0,
+                 "x":210.592985511836,
+                 "y":154.382075845143
+                }, 
+                {
+                 "height":0,
+                 "id":27,
+                 "name":"meat",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"meat"
+                        }],
+                 "rotation":0,
+                 "type":"meat",
+                 "visible":true,
+                 "width":0,
+                 "x":711.740954793761,
+                 "y":401.393397197372
+                }, 
+                {
+                 "height":0,
+                 "id":31,
+                 "name":"meat",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"meat"
+                        }],
+                 "rotation":0,
+                 "type":"meat",
+                 "visible":true,
+                 "width":0,
+                 "x":670.572401235,
+                 "y":107
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -346,63 +403,6 @@
                  "width":0,
                  "x":351.16293049545,
                  "y":394.445863066598
-                }, 
-                {
-                 "height":0,
-                 "id":5,
-                 "name":"purple-monk",
-                 "opacity":1,
-                 "point":true,
-                 "properties":[
-                        {
-                         "name":"npcId",
-                         "type":"string",
-                         "value":"purple-monk"
-                        }],
-                 "rotation":0,
-                 "type":"NPC",
-                 "visible":true,
-                 "width":0,
-                 "x":205.223761277856,
-                 "y":149.199449407685
-                }, 
-                {
-                 "height":0,
-                 "id":6,
-                 "name":"purple-pawn-idle-wood",
-                 "opacity":1,
-                 "point":true,
-                 "properties":[
-                        {
-                         "name":"npcId",
-                         "type":"string",
-                         "value":"purple-pawn-idle-wood"
-                        }],
-                 "rotation":0,
-                 "type":"NPC",
-                 "visible":true,
-                 "width":0,
-                 "x":664.851272982875,
-                 "y":94.6151142930828
-                }, 
-                {
-                 "height":0,
-                 "id":18,
-                 "name":"purple-pawn-idle",
-                 "opacity":1,
-                 "point":true,
-                 "properties":[
-                        {
-                         "name":"npcId",
-                         "type":"string",
-                         "value":"purple-pawn-idle"
-                        }],
-                 "rotation":0,
-                 "type":"NPC",
-                 "visible":true,
-                 "width":0,
-                 "x":706.344585439754,
-                 "y":395.853386052058
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -543,6 +543,35 @@
                  "width":0,
                  "x":836.019884592776,
                  "y":120.493370713866
+                }, 
+                {
+                 "height":0,
+                 "id":29,
+                 "name":"log4",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"log4"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"log"
+                        }],
+                 "rotation":0,
+                 "type":"log",
+                 "visible":true,
+                 "width":0,
+                 "x":670.572401235,
+                 "y":89.546275038
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -602,10 +631,10 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":26,
+ "nextobjectid":32,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.12.0",
+ "tiledversion":"1.12.1",
  "tileheight":16,
  "tilesets":[
         {
