@@ -69,6 +69,15 @@ export type GameEvents = {
 
   /** Spawn a visual effect at a position. */
   "fx:spawn": { type: string; x: number; y: number };
+
+  /** React → Phaser: virtual joystick moved. */
+  "mobile-move": { x: number; y: number };
+
+  /** React → Phaser: action button pressed/released. */
+  "mobile-interact": boolean;
+
+  /** Phaser → React: notify if interaction is currently possible for UI visibility. */
+  "mobile-interact-possible": boolean;
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

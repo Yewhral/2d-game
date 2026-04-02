@@ -29,7 +29,6 @@ import { DECORATION_REGISTRY } from "./decorations";
 import { TILESET_IMAGE_KEYS } from "../tilesets";
 import { worldState } from "../worldState";
 import { FX_REGISTRY } from "./effects";
-import VirtualJoystick from "phaser3-rex-plugins/plugins/virtualjoystick.js";
 
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
@@ -97,11 +96,9 @@ export class GameScene extends Phaser.Scene {
 
   // --- mobile controls -------------------------------------------------------
   private isTouchDevice = false;
-  // biome-ignore lint: rex plugin typing
-  private joystick: any = null;
-  private joystickKeys: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
+  private mobileMoveVector = { x: 0, y: 0 };
   private mobileInteractPressed = false;
-  private actionBtn: Phaser.GameObjects.Container | null = null;
+  private canInteract = false;
 
   constructor() {
     super("GameScene");
@@ -215,9 +212,15 @@ export class GameScene extends Phaser.Scene {
 
     // ---- mobile controls (touch devices only) --------------------------------
     this.isTouchDevice = this.sys.game.device.input.touch;
-    if (this.isTouchDevice) {
-      this.createMobileControls();
-    }
+    
+    // Listen for mobile control events from React
+    EventBus.on("mobile-move", (vec) => {
+      this.mobileMoveVector = vec;
+    });
+
+    EventBus.on("mobile-interact", (pressed) => {
+      this.mobileInteractPressed = pressed;
+    });
 
     // ---- EventBus (React → Phaser) ------------------------------------------
 
@@ -306,6 +309,8 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("world:refresh-decorations");
     EventBus.off("fx:spawn");
     EventBus.off("npc-dialog");
+    EventBus.off("mobile-move");
+    EventBus.off("mobile-interact");
   }
 
   // ---- map management -------------------------------------------------------
@@ -700,82 +705,7 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     });
   }
 
-  // ---- mobile controls (rex virtual joystick + action button) ----------------
-
-  private createMobileControls() {
-    const { width, height } = this.scale;
-
-    // ---- Virtual Joystick (bottom-left) ------------------------------------
-    const baseRadius = 50;
-    const thumbRadius = 24;
-
-    const base = this.add.circle(0, 0, baseRadius, 0xffffff, 0.15);
-    base.setStrokeStyle(2, 0xffffff, 0.3);
-    base.setScrollFactor(0);
-    base.setDepth(400000);
-
-    const thumb = this.add.circle(0, 0, thumbRadius, 0xffffff, 0.35);
-    thumb.setStrokeStyle(2, 0xffffff, 0.6);
-    thumb.setScrollFactor(0);
-    thumb.setDepth(400001);
-
-    this.joystick = new VirtualJoystick(this, {
-      x: 90,
-      y: height - 90,
-      radius: baseRadius,
-      base,
-      thumb,
-      dir: '8dir',
-      forceMin: 10,
-      fixed: true,
-      enable: true,
-    });
-
-    this.joystickKeys = this.joystick.createCursorKeys();
-
-    // ---- Action Button (bottom-right) --------------------------------------
-    const btnRadius = 30;
-    const btnX = width - 80;
-    const btnY = height - 90;
-
-    const btnBg = this.add.circle(0, 0, btnRadius, 0xffffff, 0.15);
-    btnBg.setStrokeStyle(2, 0xffffff, 0.4);
-
-    const btnLabel = this.add.text(0, 0, 'E', {
-      fontFamily: 'monospace',
-      fontSize: '22px',
-      color: '#ffffff',
-      fontStyle: 'bold',
-    }).setOrigin(0.5, 0.5);
-
-    this.actionBtn = this.add.container(btnX, btnY, [btnBg, btnLabel]);
-    this.actionBtn.setScrollFactor(0);
-    this.actionBtn.setDepth(400000);
-    this.actionBtn.setSize(btnRadius * 2, btnRadius * 2);
-    this.actionBtn.setInteractive();
-    this.actionBtn.setVisible(false); // starts hidden
-
-    this.actionBtn.on('pointerdown', () => {
-      this.mobileInteractPressed = true;
-      this.tweens.add({
-        targets: this.actionBtn,
-        scaleX: 0.85,
-        scaleY: 0.85,
-        duration: 60,
-        yoyo: true,
-        ease: 'Sine.easeOut',
-      });
-      btnBg.setFillStyle(0xffffff, 0.35);
-    });
-
-    this.actionBtn.on('pointerup', () => {
-      btnBg.setFillStyle(0xffffff, 0.15);
-    });
-
-    this.actionBtn.on('pointerout', () => {
-      btnBg.setFillStyle(0xffffff, 0.15);
-    });
-  }
+  // ---- mobile controls (React-based HUD) ------------------------------------
 
   // ---- exit zone management --------------------------------------------------
 
@@ -962,12 +892,12 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
   private handleMovement() {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     const speed = PLAYER_SPEED;
+    const { x: jx, y: jy } = this.mobileMoveVector;
 
-    const jk = this.joystickKeys;
-    const left = this.cursors.left.isDown || this.wasd.left.isDown || (jk?.left.isDown ?? false);
-    const right = this.cursors.right.isDown || this.wasd.right.isDown || (jk?.right.isDown ?? false);
-    const up = this.cursors.up.isDown || this.wasd.up.isDown || (jk?.up.isDown ?? false);
-    const down = this.cursors.down.isDown || this.wasd.down.isDown || (jk?.down.isDown ?? false);
+    const left = this.cursors.left.isDown || this.wasd.left.isDown || jx < -0.3;
+    const right = this.cursors.right.isDown || this.wasd.right.isDown || jx > 0.3;
+    const up = this.cursors.up.isDown || this.wasd.up.isDown || jy < -0.3;
+    const down = this.cursors.down.isDown || this.wasd.down.isDown || jy > 0.3;
 
     let vx = 0;
     let vy = 0;
@@ -1014,7 +944,7 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     if (canInteract || this.activeDialogNpc) {
       if (this.activeDialogNpc) {
         this.hint.setVisible(false);
-        if (this.actionBtn) this.actionBtn.setVisible(true);
+        this.canInteract = true;
       } else {
         const label = nearestNpc ? 'talk' : nearestCol ? 'pick up' : 'interact';
         const verb = this.isTouchDevice ? 'Tap' : 'Press [E]';
@@ -1022,12 +952,17 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
         
         // Show hint on desktop, but on mobile we use the button visibility instead
         this.hint.setVisible(!this.isTouchDevice);
-        if (this.actionBtn) this.actionBtn.setVisible(true);
+        this.canInteract = true;
       }
     } else {
       this.hint?.setText('');
       this.hint.setVisible(false);
-      if (this.actionBtn) this.actionBtn.setVisible(false);
+      this.canInteract = false;
+    }
+
+    // Sync interaction state to React if it changed
+    if (this.isTouchDevice) {
+      EventBus.emit("mobile-interact-possible", this.canInteract);
     }
   }
 

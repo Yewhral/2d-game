@@ -14,7 +14,6 @@
   flex-direction: column;
   gap: 10px;
   background: rgba(15, 15, 19, 0.75);
-  backdrop-filter: blur(8px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 12px 16px;
@@ -83,7 +82,6 @@
   font-family: var(--font);
   color: var(--color-text);
   background: rgba(15, 15, 19, 0.75);
-  backdrop-filter: blur(8px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   cursor: pointer;
@@ -161,7 +159,6 @@
   align-items: flex-start;
   gap: 20px;
   background: rgba(15, 15, 19, 0.85);
-  backdrop-filter: blur(12px);
   border: 1px solid var(--dialog-border);
   border-radius: 20px;
   padding: 24px;
@@ -253,7 +250,6 @@
   gap: 10px;
   padding: 12px 24px;
   border-radius: 12px;
-  backdrop-filter: blur(12px);
   pointer-events: none;
   animation: questSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   z-index: 100;
@@ -373,4 +369,74 @@
   0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
   70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* ---- Mobile Controls (fixed on screen) ---- */
+.mobileControls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 30px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.joystickContainer, .mobileActions {
+  pointer-events: auto;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.joystickBase {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.joystickThumb {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transition: background 0.2s, transform 0.05s linear;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.mobileActionBtn {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s, background 0.2s, border-color 0.2s;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobileActionBtn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.6);
 }
