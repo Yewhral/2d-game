@@ -416,16 +416,10 @@ export class GameScene extends Phaser.Scene {
       );
     }
 
-    // --- spawn map objects (NPCs, etc.) --------------------------------------
+    this.preloadNpcAvatars();
     this.spawnObjects();
-
-    // --- spawn collectibles from Tiled object layer --------------------------
     this.spawnCollectibles();
-
-    // --- create exit zones for map transitions --------------------------------
     this.createExitZones();
-
-    // --- check for retroactive quest effects (e.g. gates already open) --------
     this.checkRetroactiveQuests();
   }
 
@@ -537,6 +531,38 @@ export class GameScene extends Phaser.Scene {
   private spawnObjects() {
     this.spawnNpcs();
     this.spawnDecorations();
+  }
+
+  private preloadNpcAvatars() {
+    const objectLayer = this.map.getObjectLayer(LAYERS.NPCS);
+    if (!objectLayer) return;
+
+    const portraitsToLoad = new Set<string>();
+    for (const obj of objectLayer.objects) {
+      const npcIdProp = (
+        obj.properties as Array<{ name: string; value: unknown }> | undefined
+      )?.find((p) => p.name === 'npcId');
+
+      if (npcIdProp) {
+        const npcId = String(npcIdProp.value);
+        const data = NPC_REGISTRY[npcId];
+        if (data?.portrait) {
+          portraitsToLoad.add(data.portrait);
+        }
+      }
+    }
+
+    let startedLoad = false;
+    for (const portrait of portraitsToLoad) {
+      if (!this.textures.exists(portrait)) {
+        this.load.image(portrait, portrait);
+        startedLoad = true;
+      }
+    }
+
+    if (startedLoad) {
+      this.load.start();
+    }
   }
 
   private spawnNpc(x: number, y: number, npcId: string) {
