@@ -185,9 +185,11 @@ export function GameHUD() {
           }}
         >
           <div className={styles.dialogBox}>
-            <div className={styles.dialogPortrait}>
-              <img src={dialog.portrait} alt={dialog.npc} className={styles.portraitImg} />
-            </div>
+            {dialog.portrait && (
+              <div className={styles.dialogPortrait}>
+                <img src={dialog.portrait} alt={dialog.npc} className={styles.portraitImg} />
+              </div>
+            )}
             <div className={styles.dialogContent}>
               <span className={styles.dialogNpcName}>{dialog.npc}</span>
               <p className={styles.dialogText} dangerouslySetInnerHTML={{ __html: dialog.text }} />

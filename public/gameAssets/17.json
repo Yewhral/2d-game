@@ -205,6 +205,24 @@
                  "width":119.261441195,
                  "x":372.463826424,
                  "y":0
+                }, 
+                {
+                 "height":30.174581507,
+                 "id":25,
+                 "name":"effect",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"effectType",
+                         "type":"string",
+                         "value":"shake"
+                        }],
+                 "rotation":0,
+                 "type":"effect",
+                 "visible":true,
+                 "width":119.261441195,
+                 "x":372.463826424,
+                 "y":30
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -275,10 +293,10 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":25,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.12.0",
+ "tiledversion":"1.12.1",
  "tileheight":16,
  "tilesets":[
         {

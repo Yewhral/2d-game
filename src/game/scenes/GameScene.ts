@@ -72,6 +72,7 @@ export class GameScene extends Phaser.Scene {
   private mapColliders: Phaser.Physics.Arcade.Collider[] = [];
   private exitZones!: Phaser.Physics.Arcade.StaticGroup;
   private activeExitZone: Phaser.GameObjects.Zone | null = null;
+  private effectZones!: Phaser.Physics.Arcade.StaticGroup;
 
   // --- scene objects ---------------------------------------------------------
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -157,7 +158,7 @@ export class GameScene extends Phaser.Scene {
 
     // ---- FX animations -------------------------------------------------------
     Object.values(FX_REGISTRY).forEach((fx) => {
-      if (!this.anims.exists(fx.animKey)) {
+      if (fx.animKey && fx.spriteKey && !this.anims.exists(fx.animKey)) {
         this.anims.create({
           key: fx.animKey,
           frames: this.anims.generateFrameNumbers(fx.spriteKey, {}),
@@ -425,6 +426,7 @@ export class GameScene extends Phaser.Scene {
     this.spawnObjects();
     this.spawnCollectibles();
     this.createExitZones();
+    this.createEffectZones();
     this.checkRetroactiveQuests();
   }
 
@@ -440,6 +442,9 @@ export class GameScene extends Phaser.Scene {
     // Destroy exit zones from the previous map
     if (this.exitZones) {
       this.exitZones.clear(true, true);
+    }
+    if (this.effectZones) {
+      this.effectZones.clear(true, true);
     }
 
     this.waterLayer?.destroy();
@@ -687,22 +692,45 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
 
   // ---- visual effects -------------------------------------------------------
 
-  private spawnEffect(type: string, x: number, y: number) {
+  private spawnEffect(type: string, x?: number, y?: number) {
     const fx = FX_REGISTRY[type];
     if (!fx) {
       console.warn(`Unknown FX type "${type}"`);
       return;
     }
 
-    const sprite = this.add.sprite(x, y, fx.spriteKey);
-    sprite.setScale(fx.scale);
-    sprite.setDepth(y + fx.depthOffset);
+    if (fx.shake) {
+      this.cameras.main.shake(fx.shake.duration, fx.shake.intensity);
+    }
 
-    sprite.play(fx.animKey);
+    if (fx.dialog && x !== undefined && y !== undefined) {
+      this.activeDialogNpc = {
+        sprite: this.player, 
+        x,
+        y,
+        name: fx.dialog.npc || 'System',
+        onInteract: () => {}
+      };
 
-    sprite.once('animationcomplete', () => {
-      sprite.destroy();
-    });
+      EventBus.emit('npc-dialog', {
+        npc: fx.dialog.npc || '',
+        text: fx.dialog.text,
+        portrait: fx.dialog.portrait || '',
+        theme: fx.dialog.theme || 'purple',
+      });
+    }
+
+    if (fx.spriteKey && fx.animKey && x !== undefined && y !== undefined) {
+      const sprite = this.add.sprite(x, y, fx.spriteKey);
+      sprite.setScale(fx.scale ?? 1);
+      sprite.setDepth(y + (fx.depthOffset ?? 0));
+
+      sprite.play(fx.animKey);
+
+      sprite.once('animationcomplete', () => {
+        sprite.destroy();
+      });
+    }
   }
 
   // ---- mobile controls (React-based HUD) ------------------------------------
@@ -789,6 +817,70 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
 
     const zoneName = (zone as Phaser.GameObjects.Zone).getData('name') as string;
     this.startMapTransition(targetMap, { axis, value: relValue }, zoneName);
+  }
+
+  private createEffectZones() {
+    this.effectZones = this.physics.add.staticGroup();
+
+    const markersLayer = this.map.getObjectLayer(LAYERS.MARKERS);
+    if (!markersLayer) return;
+
+    for (const obj of markersLayer.objects) {
+      if (!obj.width || !obj.height || obj.x == null || obj.y == null) continue;
+
+      const props = obj.properties as Array<{ name: string; value: unknown }> | undefined;
+      const effectTypeProp = props?.find((p) => p.name === 'effectType');
+
+      if (obj.type !== 'effect' && !effectTypeProp) continue;
+
+      const effectType = effectTypeProp ? String(effectTypeProp.value) : obj.name;
+      
+      const worldStateId = `effect_${this.currentMapKey}_${obj.id}`;
+      // Just like pawn house built! 
+      if (worldState.get(worldStateId) === 'triggered') {
+        continue;
+      }
+
+      const zone = this.add.zone(
+        obj.x + obj.width / 2,
+        obj.y + obj.height / 2,
+        obj.width,
+        obj.height,
+      );
+
+      this.physics.add.existing(zone, true);
+      zone.setData('effectType', effectType);
+      zone.setData('worldStateId', worldStateId);
+
+      this.effectZones.add(zone);
+    }
+
+    this.physics.add.overlap(
+      this.player,
+      this.effectZones,
+      this.handleEffectOverlap as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this,
+    );
+  }
+
+  private handleEffectOverlap(
+    _player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    zone: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+  ) {
+    if (this.isTransitioning) return;
+
+    const z = zone as Phaser.GameObjects.Zone;
+    const effectType = z.getData('effectType') as string;
+    const worldStateId = z.getData('worldStateId') as string;
+
+    if (FX_REGISTRY[effectType]) {
+      this.spawnEffect(effectType, this.player.x, this.player.y);
+      worldState.set(worldStateId, 'triggered');
+      z.destroy();
+    } else {
+      console.warn(`Effect zone triggered unknown effect: ${effectType}`);
+    }
   }
 
   /**
