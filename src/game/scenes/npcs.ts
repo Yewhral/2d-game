@@ -16,6 +16,8 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: number; y: number };
     portrait?: string;
     animated?: boolean;
+    repeatDelay?: number;
+    delay?: number;
     flipX?: boolean;
     theme?: NpcTheme;
   }
@@ -30,6 +32,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/purpleWarriorAvatar.png',
     theme: 'purple',
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'purple-pawn-idle': {
     name: 'Purple Pawn',
@@ -42,6 +47,7 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/purplePawnAvatar.png',
     theme: 'purple',
     flipX: true,
+    animated: true,
   },
   'purple-pawn-idle-26': {
     name: 'Purple Pawn Sheppard',
@@ -53,6 +59,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/purplePawnAvatar.png',
     theme: 'purple',
+    animated: true,
+    repeatDelay: 3000,
+    delay: 3000,
   },
   'sheep-26-1': {
     name: 'Sheep',
@@ -63,6 +72,7 @@ export const NPC_REGISTRY: Record<
     bodySize: { width: 35, height: 30 },
     bodyOffset: { x: 50, y: 50 },
     theme: 'purple',
+    animated: true,
   },
   'sheep-26-2': {
     name: 'Sheep',
@@ -73,6 +83,7 @@ export const NPC_REGISTRY: Record<
     bodySize: { width: 35, height: 25 },
     bodyOffset: { x: 50, y: 50 },
     theme: 'purple',
+    animated: true,
   },
   'sheep-26-3': {
     name: 'Sheep',
@@ -83,6 +94,7 @@ export const NPC_REGISTRY: Record<
     bodySize: { width: 35, height: 25 },
     bodyOffset: { x: 50, y: 50 },
     theme: 'purple',
+    animated: true,
   },
   'black-warrior': {
     name: 'Mysterious Stranger',
@@ -94,6 +106,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'purple-monk': {
     name: 'One Without a Name',
@@ -105,6 +120,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/purpleMonkAvatar.png',
     theme: 'purple',
+    animated: true,
+    repeatDelay: 1000,
+    delay: 1000,
   },
   'purple-pawn-idle-wood': {
     name: 'Purple Pawn',
@@ -117,6 +135,9 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/purplePawnAvatar.png',
     flipX: true,
     theme: 'purple',
+    animated: true,
+    repeatDelay: 500,
+    delay: 200,
   },
   'black-lancer-idle': {
     name: 'Mysterious Stranger',
@@ -128,6 +149,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 120, y: 160 },
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'black-lancer-idle2': {
     name: 'Mysterious Stranger',
@@ -139,6 +163,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 120, y:  160 },
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'purple-warrior-black': {
     name: 'Purple? Warrior',
@@ -150,6 +177,9 @@ export const NPC_REGISTRY: Record<
     bodyOffset: { x: 80, y: 85 },
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'black-warrior-16b': {
     name: 'Mysterious Stranger',
@@ -162,6 +192,9 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
     flipX: true,
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'black-lancer-guard-top-16b': {
     name: 'Mysterious Stranger',
@@ -174,6 +207,9 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/blackLancerAvatar.png',
     theme: 'black',
     flipX: true,
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
   'black-lancer-guard-bot-16b': {
     name: 'Mysterious Stranger',
@@ -186,5 +222,9 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/blackLancerAvatar.png',
     theme: 'black',
     flipX: true,
+    animated: true,
+    repeatDelay: 200,
+    delay: 200,
   },
 };
+

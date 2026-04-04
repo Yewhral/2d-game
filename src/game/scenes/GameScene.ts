@@ -136,6 +136,9 @@ export class GameScene extends Phaser.Scene {
             key: `anim-${data.spriteKey}`,
             frames: this.anims.generateFrameNumbers(data.spriteKey, {}),
             frameRate: 10,
+            repeatDelay: data.repeatDelay ?? 0,
+            delay: data.delay ?? 0,
+            randomFrame: true,
             repeat: -1,
           });
         }
@@ -596,10 +599,7 @@ export class GameScene extends Phaser.Scene {
 
     if (data.animated) {
       const animKey = `anim-${data.spriteKey}`;
-      const anim = this.anims.get(animKey);
-      const totalFrames = anim ? anim.frames.length : 0;
-      const startFrame = Phaser.Math.Between(0, Math.max(0, totalFrames - 1));
-      sprite.play({ key: animKey, startFrame });
+      sprite.play({ key: animKey, startFrame: data.frame });
     }
 
     const npc: NpcObject = {
