@@ -80,6 +80,10 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 320,
       frameHeight: 320,
     });
+    this.load.spritesheet('black-lancer-defense', 'blackLancerDefense.png', {
+      frameWidth: 320,
+      frameHeight: 320,
+    });
     this.load.spritesheet('bush', 'bushes.png', {
       frameWidth: 128,
       frameHeight: 128,

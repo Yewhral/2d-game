@@ -703,11 +703,16 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
       this.cameras.main.shake(fx.shake.duration, fx.shake.intensity);
     }
 
+    if (fx.movePlayer) {
+      this.player.x += fx.movePlayer.x;
+      this.player.y += fx.movePlayer.y;
+    }
+
     if (fx.dialog && x !== undefined && y !== undefined) {
       this.activeDialogNpc = {
         sprite: this.player, 
-        x,
-        y,
+        x: fx.movePlayer ? this.player.x : x,
+        y: fx.movePlayer ? this.player.y : y,
         name: fx.dialog.npc || 'System',
         onInteract: () => {}
       };
@@ -837,7 +842,7 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
       
       const worldStateId = `effect_${this.currentMapKey}_${obj.id}`;
       // Just like pawn house built! 
-      if (worldState.get(worldStateId) === 'triggered') {
+      if (!FX_REGISTRY[effectType]?.repeatable && worldState.get(worldStateId) === 'triggered') {
         continue;
       }
 
@@ -876,8 +881,16 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
 
     if (FX_REGISTRY[effectType]) {
       this.spawnEffect(effectType, this.player.x, this.player.y);
-      worldState.set(worldStateId, 'triggered');
-      z.destroy();
+      if (!FX_REGISTRY[effectType].repeatable) {
+        worldState.set(worldStateId, 'triggered');
+        z.destroy();
+      } else {
+        const body = z.body as Phaser.Physics.Arcade.Body;
+        if (body) body.enable = false;
+        this.time.delayedCall(50, () => {
+          if (z.active && body) body.enable = true;
+        });
+      }
     } else {
       console.warn(`Effect zone triggered unknown effect: ${effectType}`);
     }

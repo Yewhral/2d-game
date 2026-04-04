@@ -403,6 +403,44 @@
                  "width":0,
                  "x":351.16293049545,
                  "y":394.445863066598
+                }, 
+                {
+                 "height":0,
+                 "id":33,
+                 "name":"black-lancer-guard-top",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"black-lancer-guard-top-16b"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":945.64885812325,
+                 "y":324.562654182815
+                }, 
+                {
+                 "height":0,
+                 "id":34,
+                 "name":"black-lancer-guard-bot",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"black-lancer-guard-bot-16b"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":944.691553891965,
+                 "y":404.97620961073
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -445,6 +483,24 @@
                  "width":119.261441195,
                  "x":372.463826424,
                  "y":609.239169481
+                }, 
+                {
+                 "height":146.467547386559,
+                 "id":32,
+                 "name":"effect",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"effectType",
+                         "type":"string",
+                         "value":"walkBack"
+                        }],
+                 "rotation":0,
+                 "type":"effect",
+                 "visible":true,
+                 "width":69.8832088837834,
+                 "x":880.719892781926,
+                 "y":289.10587784798
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -631,7 +687,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":32,
+ "nextobjectid":35,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
