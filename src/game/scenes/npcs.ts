@@ -14,7 +14,7 @@ export const NPC_REGISTRY: Record<
     scale: number;
     bodySize: { width: number; height: number };
     bodyOffset: { x: number; y: number };
-    portrait: string;
+    portrait?: string;
     animated?: boolean;
     flipX?: boolean;
     theme?: NpcTheme;
@@ -42,6 +42,47 @@ export const NPC_REGISTRY: Record<
     portrait: 'gameAssets/purplePawnAvatar.png',
     theme: 'purple',
     flipX: true,
+  },
+  'purple-pawn-idle-26': {
+    name: 'Purple Pawn Sheppard',
+    text: 'I used to be a warrior, but this life suits me better!',
+    spriteKey: 'purple-pawn-idle',
+    frame: 0,
+    scale: 0.75,
+    bodySize: { width: 35, height: 35 },
+    bodyOffset: { x: 80, y: 85 },
+    portrait: 'gameAssets/purplePawnAvatar.png',
+    theme: 'purple',
+  },
+  'sheep-26-1': {
+    name: 'Sheep',
+    text: 'Baa!',
+    spriteKey: 'sheep',
+    frame: 1,
+    scale: 0.85,
+    bodySize: { width: 35, height: 30 },
+    bodyOffset: { x: 50, y: 50 },
+    theme: 'purple',
+  },
+  'sheep-26-2': {
+    name: 'Sheep',
+    text: 'Baa!',
+    spriteKey: 'sheep',
+    frame: 0,
+    scale: 0.75,
+    bodySize: { width: 35, height: 25 },
+    bodyOffset: { x: 50, y: 50 },
+    theme: 'purple',
+  },
+  'sheep-26-3': {
+    name: 'Sheep',
+    text: 'Baa!',
+    spriteKey: 'sheep',
+    frame: 3,
+    scale: 0.75,
+    bodySize: { width: 35, height: 25 },
+    bodyOffset: { x: 50, y: 50 },
+    theme: 'purple',
   },
   'black-warrior': {
     name: 'Mysterious Stranger',
@@ -83,8 +124,8 @@ export const NPC_REGISTRY: Record<
     spriteKey: 'black-lancer-idle',
     frame: 0,
     scale: 0.75,
-    bodySize: { width: 35, height: 35 },
-    bodyOffset: { x: 80, y: 85 },
+    bodySize: { width: 45, height: 35 },
+    bodyOffset: { x: 120, y: 160 },
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
   },
@@ -94,8 +135,8 @@ export const NPC_REGISTRY: Record<
     spriteKey: 'black-lancer-idle',
     frame: 8,
     scale: 0.75,
-    bodySize: { width: 35, height: 35 },
-    bodyOffset: { x: 80, y: 85 },
+    bodySize: { width: 45, height: 35 },
+    bodyOffset: { x: 120, y:  160 },
     portrait: 'gameAssets/blackWarriorAvatar.png',
     theme: 'black',
   },

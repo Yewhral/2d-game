@@ -202,6 +202,21 @@ export const DECORATION_REGISTRY: Record<
     },
     bodyOffset: { x: -12, y: 24 },
   },
+  'purpleHouse-26': {
+    name: 'House2',
+    spriteKey: 'house',
+    scale: 1,
+    frame: 0,
+    depthOffset: -40,
+    hasCollision: true,
+    hitbox: {
+      width: 110,
+      height: 10,
+      offsetX: 12,
+      offsetY: -16,
+    },
+    bodyOffset: { x: -12, y: 24 },
+  },
   'house2black': {
     name: 'House2black',
     spriteKey: 'house2black',

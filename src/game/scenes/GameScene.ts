@@ -620,7 +620,7 @@ export class GameScene extends Phaser.Scene {
         EventBus.emit('npc-dialog', {
           npc: data.name,
           text,
-          portrait: data.portrait,
+          portrait: data?.portrait,
           theme: data.theme ?? 'purple',
         });
       },

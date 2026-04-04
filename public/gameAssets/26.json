@@ -438,6 +438,25 @@
                  "width":0,
                  "x":280.326799997459,
                  "y":127.330206422685
+                }, 
+                {
+                 "height":0,
+                 "id":32,
+                 "name":"house",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"purpleHouse-26"
+                        }],
+                 "rotation":0,
+                 "type":"building",
+                 "visible":true,
+                 "width":0,
+                 "x":588.650194054354,
+                 "y":407.974678025395
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -466,8 +485,8 @@
                  "type":"NPC",
                  "visible":true,
                  "width":0,
-                 "x":664.401160381268,
-                 "y":260.588479071695
+                 "x":843.183417085603,
+                 "y":123.971848948571
                 }, 
                 {
                  "height":0,
@@ -506,6 +525,82 @@
                  "width":0,
                  "x":245.901639344262,
                  "y":124.902419984387
+                }, 
+                {
+                 "height":0,
+                 "id":28,
+                 "name":"purple-pawn-idle",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"purple-pawn-idle-26"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":676.336650362624,
+                 "y":457.075392140327
+                }, 
+                {
+                 "height":0,
+                 "id":29,
+                 "name":"sheep",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"sheep-26-1"
+                        }],
+                 "rotation":0,
+                 "type":"sheep",
+                 "visible":true,
+                 "width":0,
+                 "x":784.280654410524,
+                 "y":421.65626581211
+                }, 
+                {
+                 "height":0,
+                 "id":30,
+                 "name":"sheep",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"sheep-26-2"
+                        }],
+                 "rotation":0,
+                 "type":"sheep",
+                 "visible":true,
+                 "width":0,
+                 "x":752.234778208804,
+                 "y":512.734019227526
+                }, 
+                {
+                 "height":0,
+                 "id":31,
+                 "name":"sheep",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"sheep-26-3"
+                        }],
+                 "rotation":0,
+                 "type":"sheep",
+                 "visible":true,
+                 "width":0,
+                 "x":851.745656940462,
+                 "y":484.061393152302
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -673,10 +768,10 @@
          "y":0
         }],
  "nextlayerid":17,
- "nextobjectid":28,
+ "nextobjectid":33,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.12.0",
+ "tiledversion":"1.12.1",
  "tileheight":16,
  "tilesets":[
         {

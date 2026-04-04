@@ -11,6 +11,4 @@ export const TILESET_IMAGE_KEYS: Record<string, string> = {
   waterRocks4: 'waterRocks4-img',
   cloud: 'cloud-img',
   bushes: 'bushes-img',
-  house: 'house-img',
-  house2: 'house2-img',
 };

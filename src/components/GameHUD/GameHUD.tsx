@@ -18,7 +18,7 @@ export function GameHUD() {
   const [dialog, setDialog] = useState<{
     npc: string;
     text: string;
-    portrait: string;
+    portrait?: string;
     theme?: string;
   } | null>(null);
   const [questNotification, setQuestNotification] = useState<{
