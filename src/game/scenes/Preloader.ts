@@ -39,6 +39,7 @@ export class Preloader extends Phaser.Scene {
     this.load.image('woodLog-img', 'woodLog.png');
     this.load.image('money-img', 'money.png');
     this.load.image('barracks-img', 'barracks.png');
+    this.load.image('cursor4-img', 'cursor4.png');
     this.load.spritesheet('house', 'house.png', {
       frameWidth: 128,
       frameHeight: 192,
@@ -106,6 +107,7 @@ export class Preloader extends Phaser.Scene {
     this.load.tilemapTiledJSON('16-json', '16.json');
     this.load.tilemapTiledJSON('16b-json', '16b.json');
     this.load.tilemapTiledJSON('17-json', '17.json');
+    this.load.tilemapTiledJSON('18-json', '18.json');
     this.load.tilemapTiledJSON('26-json', '26.json');
     this.load.spritesheet('dust2', 'dust2.png', {
       frameWidth: 64,
