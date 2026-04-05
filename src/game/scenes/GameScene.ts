@@ -354,13 +354,27 @@ export class GameScene extends Phaser.Scene {
 
     // --- create layers -------------------------------------------------------
     if (tilesets.length > 0) {
-      this.waterLayer = this.map.createLayer(LAYERS.WATER, tilesets) ?? null;
-      this.groundLayer = this.map.createLayer(LAYERS.GROUND, tilesets) ?? null;
-      this.obstaclesLayer = this.map.createLayer(LAYERS.OBSTACLES, tilesets) ?? null;
-      this.overheadLayer = this.map.createLayer(LAYERS.OVERHEAD, tilesets) ?? null;
-      this.barriersLayer = this.map.createLayer(LAYERS.BARRIERS, tilesets) ?? null;
-      this.shadowLayer = this.map.createLayer(LAYERS.SHADOW, tilesets) ?? null;
-      this.highGroundLayer = this.map.createLayer(LAYERS.HIGH_GROUND, tilesets) ?? null;
+      this.waterLayer = this.map.getLayer(LAYERS.WATER)
+        ? this.map.createLayer(LAYERS.WATER, tilesets)
+        : null;
+      this.groundLayer = this.map.getLayer(LAYERS.GROUND)
+        ? this.map.createLayer(LAYERS.GROUND, tilesets)
+        : null;
+      this.obstaclesLayer = this.map.getLayer(LAYERS.OBSTACLES)
+        ? this.map.createLayer(LAYERS.OBSTACLES, tilesets)
+        : null;
+      this.overheadLayer = this.map.getLayer(LAYERS.OVERHEAD)
+        ? this.map.createLayer(LAYERS.OVERHEAD, tilesets)
+        : null;
+      this.barriersLayer = this.map.getLayer(LAYERS.BARRIERS)
+        ? this.map.createLayer(LAYERS.BARRIERS, tilesets)
+        : null;
+      this.shadowLayer = this.map.getLayer(LAYERS.SHADOW)
+        ? this.map.createLayer(LAYERS.SHADOW, tilesets)
+        : null;
+      this.highGroundLayer = this.map.getLayer(LAYERS.HIGH_GROUND)
+        ? this.map.createLayer(LAYERS.HIGH_GROUND, tilesets)
+        : null;
 
       this.waterLayer?.setDepth(DEPTHS.WATER);
       this.groundLayer?.setDepth(DEPTHS.GROUND);
