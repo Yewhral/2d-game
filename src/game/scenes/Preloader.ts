@@ -40,6 +40,7 @@ export class Preloader extends Phaser.Scene {
     this.load.image('money-img', 'money.png');
     this.load.image('barracks-img', 'barracks.png');
     this.load.image('cursor4-img', 'cursor4.png');
+    this.load.image('woodTable-img', 'woodTable.png');
     this.load.spritesheet('house', 'house.png', {
       frameWidth: 128,
       frameHeight: 192,

@@ -12,4 +12,5 @@ export const TILESET_IMAGE_KEYS: Record<string, string> = {
   cloud: 'cloud-img',
   bushes: 'bushes-img',
   cursor4: 'cursor4-img',
+  woodTable: 'woodTable-img',
 };
