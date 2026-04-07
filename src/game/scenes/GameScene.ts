@@ -668,6 +668,100 @@ export class GameScene extends Phaser.Scene {
     };
 
     this.npcs.push(npc);
+
+    // ---- patrol behaviour ---------------------------------------------------
+    if (data.patrol) {
+      const { axis, distance, speed, pauseMs = 0 } = data.patrol;
+      const origin = axis === 'x' ? x : y;
+      const durationMs = (distance / speed) * 1000;
+      const defaultFlip = data.flipX ?? false;
+
+      // Helper: update tracked position so dialog-exit-radius follows the NPC
+      const syncPos = () => {
+        npc.x = sprite.x;
+        npc.y = sprite.y;
+      };
+
+      this.tweens.add({
+        targets: sprite,
+        [axis]: origin + distance, // walk forward
+        duration: durationMs,
+        ease: 'Linear',
+        delay: pauseMs,
+        onStart: () => {
+          sprite.setFlipX(axis === 'x' ? false : defaultFlip);
+        },
+        onUpdate: syncPos,
+        onComplete: () => {
+          syncPos();
+          // pause, then walk back to origin - distance
+          this.tweens.add({
+            targets: sprite,
+            [axis]: origin - distance,
+            duration: durationMs * 2, // double distance
+            ease: 'Linear',
+            delay: pauseMs,
+            onStart: () => {
+              sprite.setFlipX(axis === 'x' ? true : defaultFlip);
+            },
+            onUpdate: syncPos,
+            onComplete: () => {
+              syncPos();
+              // walk back to origin + distance and repeat
+              this.startPatrolLoop(sprite, npc, data);
+            },
+          });
+        },
+      });
+    }
+  }
+
+  /** Continuous patrol loop after the initial half-cycle */
+  private startPatrolLoop(
+    sprite: Phaser.GameObjects.Sprite,
+    npc: NpcObject,
+    data: (typeof NPC_REGISTRY)[string],
+  ) {
+    if (!data.patrol) return;
+    const { axis, distance, speed, pauseMs = 0 } = data.patrol;
+    const origin = axis === 'x' ? npc.x : npc.y; // current position is origin-distance
+    const defaultFlip = data.flipX ?? false;
+    const durationMs = (distance * 2 / speed) * 1000;
+
+    const syncPos = () => {
+      npc.x = sprite.x;
+      npc.y = sprite.y;
+    };
+
+    this.tweens.add({
+      targets: sprite,
+      [axis]: origin + distance * 2, // walk the full distance the other way
+      duration: durationMs,
+      ease: 'Linear',
+      delay: pauseMs,
+      onStart: () => {
+        sprite.setFlipX(axis === 'x' ? false : defaultFlip);
+      },
+      onUpdate: syncPos,
+      onComplete: () => {
+        syncPos();
+        this.tweens.add({
+          targets: sprite,
+          [axis]: origin,
+          duration: durationMs,
+          ease: 'Linear',
+          delay: pauseMs,
+          onStart: () => {
+            sprite.setFlipX(axis === 'x' ? true : defaultFlip);
+          },
+          onUpdate: syncPos,
+          onComplete: () => {
+            syncPos();
+            this.startPatrolLoop(sprite, npc, data);
+          },
+        });
+      },
+    });
   }
 
 private spawnDecoration(obj: any, id: string, worldStateId: string | null) {

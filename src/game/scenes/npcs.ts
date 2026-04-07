@@ -3,6 +3,17 @@
 // dialog data.
 export type NpcTheme = 'purple' | 'black' | 'blue' | 'red' | 'yellow';
 
+export interface NpcPatrol {
+  /** Direction of patrol movement */
+  axis: 'x' | 'y';
+  /** Total distance the NPC walks in each direction from spawn */
+  distance: number;
+  /** Movement speed in px/s */
+  speed: number;
+  /** Pause at each end in ms (default 0) */
+  pauseMs?: number;
+}
+
 export const NPC_REGISTRY: Record<
   string,
   {
@@ -20,6 +31,7 @@ export const NPC_REGISTRY: Record<
     delay?: number;
     flipX?: boolean;
     theme?: NpcTheme;
+    patrol?: NpcPatrol;
   }
 > = {
   'purple-warrior': {
@@ -35,6 +47,7 @@ export const NPC_REGISTRY: Record<
     animated: true,
     repeatDelay: 200,
     delay: 200,
+    // patrol: { axis: 'x', distance: 25, speed: 60, pauseMs: 0 },
   },
   'purple-pawn-idle': {
     name: 'Purple Pawn',
