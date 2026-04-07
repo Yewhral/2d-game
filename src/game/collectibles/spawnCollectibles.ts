@@ -14,6 +14,7 @@ import { questManager } from '../quests/QuestManager';
 import { EventBus } from '../EventBus';
 import { LAYERS } from '../constants';
 import { ITEM_REGISTRY } from './collectibles';
+import { inventory } from '../inventory';
 
 // ---- effect registry --------------------------------------------------------
 /**
@@ -30,7 +31,7 @@ const collectEffects: Record<string, CollectEffect> = {
   },
 
   log: (c) => {
-    // No global counter needed yet — just emit an event for quest/UI hooks
+    inventory.add('log');
     EventBus.emit('wood-collected', {
       id: c.id,
       itemType: c.itemType,

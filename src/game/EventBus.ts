@@ -64,6 +64,12 @@ export type GameEvents = {
     layer: string;
   };
 
+  /** Quest completion: show a previously-hidden tile layer. */
+  "quest:show-layer": {
+    mapKey: string;
+    layer: string;
+  };
+
   /** Trigger a refresh of worldState-controlled decorations. */
   "world:refresh-decorations": undefined;
 

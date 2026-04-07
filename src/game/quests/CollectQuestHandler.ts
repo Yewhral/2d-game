@@ -18,6 +18,7 @@
 
 import type { QuestHandler, QuestStatus, QuestUpdate, ItemCollectedInfo } from './types';
 import { collectibleState } from '../collectibles/CollectibleState';
+import { inventory } from '../inventory';
 
 export interface CollectQuestConfig {
   /** npcId of the quest giver */
@@ -84,7 +85,17 @@ export class CollectQuestHandler implements QuestHandler {
         }
         return { status: 'active', progress };
       }
-      return { status: 'active' };
+      // --- count-based mode: check inventory for items already carried ------
+      const carried = inventory.get(this.itemType);
+      const credit = Math.min(carried, this.requiredCount);
+      const progress = {
+        collected: credit,
+        required: this.requiredCount,
+      };
+      if (credit >= this.requiredCount) {
+        return { status: 'done', progress };
+      }
+      return { status: 'active', progress };
     }
 
     if (status === 'done') return { status: 'complete' };

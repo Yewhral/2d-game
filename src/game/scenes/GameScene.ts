@@ -69,6 +69,7 @@ export class GameScene extends Phaser.Scene {
   private obstaclesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private overheadLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private barriersLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  private passagesLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private mapColliders: Phaser.Physics.Arcade.Collider[] = [];
   private exitZones!: Phaser.Physics.Arcade.StaticGroup;
   private activeExitZone: Phaser.GameObjects.Zone | null = null;
@@ -270,6 +271,24 @@ export class GameScene extends Phaser.Scene {
       this.refreshWorldDecorations();
     });
 
+    EventBus.on("quest:show-layer", ({ mapKey, layer }) => {
+      if (mapKey !== this.currentMapKey) return;
+
+      const tilemapLayer =
+        layer === LAYERS.PASSAGES ? this.passagesLayer : null;
+
+      if (!tilemapLayer) return;
+
+      tilemapLayer.setAlpha(0);
+      tilemapLayer.setVisible(true);
+      this.tweens.add({
+        targets: tilemapLayer,
+        alpha: 1,
+        duration: 800,
+        ease: 'Sine.easeIn',
+      });
+    });
+
     EventBus.on("fx:spawn", ({ type, x, y }) => {
       this.spawnEffect(type, x, y);
     });
@@ -313,6 +332,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("world:refresh-decorations");
     EventBus.off("fx:spawn");
     EventBus.off("npc-dialog");
+    EventBus.off("quest:show-layer");
     EventBus.off("mobile-move");
     EventBus.off("mobile-interact");
   }
@@ -369,6 +389,9 @@ export class GameScene extends Phaser.Scene {
       this.barriersLayer = this.map.getLayer(LAYERS.BARRIERS)
         ? this.map.createLayer(LAYERS.BARRIERS, tilesets)
         : null;
+      this.passagesLayer = this.map.getLayer(LAYERS.PASSAGES)
+        ? this.map.createLayer(LAYERS.PASSAGES, tilesets)
+        : null;
       this.shadowLayer = this.map.getLayer(LAYERS.SHADOW)
         ? this.map.createLayer(LAYERS.SHADOW, tilesets)
         : null;
@@ -383,9 +406,11 @@ export class GameScene extends Phaser.Scene {
       this.obstaclesLayer?.setDepth(DEPTHS.OBSTACLES);
       this.overheadLayer?.setDepth(DEPTHS.OVERHEAD);
       this.barriersLayer?.setDepth(DEPTHS.BARRIERS);
+      this.passagesLayer?.setDepth(DEPTHS.PASSAGES);
+      this.passagesLayer?.setVisible(false);
 
       // Set collisions on collidable layers based on the tile property
-      const collidableLayers = [this.groundLayer, this.highGroundLayer, this.obstaclesLayer, this.barriersLayer]
+      const collidableLayers = [this.groundLayer, this.highGroundLayer, this.obstaclesLayer, this.barriersLayer, this.passagesLayer]
         .filter((l): l is Phaser.Tilemaps.TilemapLayer => l !== null);
 
       for (const layer of collidableLayers) {
@@ -469,6 +494,7 @@ export class GameScene extends Phaser.Scene {
     this.obstaclesLayer?.destroy();
     this.overheadLayer?.destroy();
     this.barriersLayer?.destroy();
+    this.passagesLayer?.destroy();
     this.shadowLayer?.destroy();
     this.highGroundLayer?.destroy();
 
@@ -477,6 +503,7 @@ export class GameScene extends Phaser.Scene {
     this.obstaclesLayer = null;
     this.overheadLayer = null;
     this.barriersLayer = null;
+    this.passagesLayer = null;
     this.shadowLayer = null;
     this.highGroundLayer = null;
 

@@ -19,6 +19,7 @@ import { CollectQuestHandler } from './CollectQuestHandler';
 import { EventBus } from '../EventBus';
 import { LAYERS } from '../constants';
 import { worldState } from '../worldState';
+import { inventory } from '../inventory';
 
 export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
@@ -106,9 +107,51 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     onComplete: (retroactive) => {
       if (!retroactive) {
         EventBus.emit('fx:spawn', { type: 'build_smoke', x: 758, y: 110 });
+        inventory.remove('log', 3);
       }
       worldState.set('pawnHouse', 'built');
       EventBus.emit('world:refresh-decorations');
+    },
+  },
+
+  {
+    id: 'fix-the-bridge',
+    title: 'Wood you like to pass?',
+    description: 'Bring wood to fix the bridge',
+    handler: new CollectQuestHandler({
+      giverNpcId: 'purple-pawn-idle-hammer-18',
+      itemType: 'log',
+      requiredCount: 1,
+    }),
+    dialogs: {
+      'purple-pawn-idle-hammer-18': {
+        inactive:
+          "This bridge is falling apart! I could fix it if I had some wood. Could you find me a log?",
+        active:
+          "Still looking for that log? There should be one somewhere around here.",
+        done: "Perfect, that's exactly what I needed! Let me patch this bridge up right away.",
+        complete: 'The bridge is as good as new! Safe travels, friend!',
+      },
+    },
+    formatProgress: (progress) => {
+      const c = progress.collected as number;
+      const r = progress.required as number;
+      return `${c} / ${r}`;
+    },
+    onComplete: (retroactive) => {
+      if (!retroactive) {
+        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 758, y: 110 });
+        inventory.remove('log', 1);
+      }
+      worldState.set('bridge', 'built');
+      EventBus.emit('quest:fade-layer', {
+        mapKey: '18-json',
+        layer: LAYERS.BARRIERS,
+      });
+      EventBus.emit('quest:show-layer', {
+        mapKey: '18-json',
+        layer: LAYERS.PASSAGES,
+      });
     },
   },
 ];

@@ -15,6 +15,7 @@ export const LAYERS = {
   OVERHEAD: 'Overhead',
   WATER: 'Water',
   BARRIERS: 'Barriers',
+  PASSAGES: 'Passages',
 }
 export const FADE_DURATION = 350;
 export const DEPTHS = {
@@ -23,6 +24,7 @@ export const DEPTHS = {
   SHADOW: 3,
   HIGH_GROUND: 4,
   BARRIERS: 5,
+  PASSAGES: 5,
   INTERACTABLES: 6,
   OBSTACLES: 10,
   OVERHEAD: 30000,
