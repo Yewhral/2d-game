@@ -10,6 +10,7 @@ export const TILESET_IMAGE_KEYS: Record<string, string> = {
   waterRocks2: 'waterRocks2-img',
   waterRocks4: 'waterRocks4-img',
   cloud: 'cloud-img',
+  cloud7: 'cloud7-img',
   bushes: 'bushes-img',
   cursor4: 'cursor4-img',
   woodTable: 'woodTable-img',

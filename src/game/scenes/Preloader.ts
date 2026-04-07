@@ -33,6 +33,7 @@ export class Preloader extends Phaser.Scene {
     this.load.image('shadow-img', 'shadow.png');
     this.load.image('water-img', 'water.png');
     this.load.image('cloud-img', 'cloud.png');
+    this.load.image('cloud7-img', 'cloud7.png');
     this.load.image('waterRocks2-img', 'waterRocks2.png');
     this.load.image('waterRocks4-img', 'waterRocks4.png');
     this.load.image('bushes-img', 'bushes.png');
@@ -94,6 +95,10 @@ export class Preloader extends Phaser.Scene {
       frameHeight: 320,
     });
     this.load.spritesheet('sheep', 'sheepIdle.png', {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
+    this.load.spritesheet('sheepMove', 'sheepMove.png', {
       frameWidth: 128,
       frameHeight: 128,
     });

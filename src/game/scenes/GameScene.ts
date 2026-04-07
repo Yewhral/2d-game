@@ -39,12 +39,25 @@ interface InteractableObject {
   collected: boolean;
 }
 
+interface NpcPatrolState {
+  axis: 'x' | 'y';
+  speed: number;
+  minPos: number;
+  maxPos: number;
+  direction: 1 | -1;
+  defaultFlip: boolean;
+  pauseMs: number;
+  paused: boolean;
+  pauseTimer: number;
+}
+
 interface NpcObject {
   sprite: Phaser.GameObjects.Sprite;
   x: number;
   y: number;
   name: string;
   onInteract: () => void;
+  patrol?: NpcPatrolState;
 }
 
 interface DecorationEntry {
@@ -317,6 +330,7 @@ export class GameScene extends Phaser.Scene {
     if (this.isTransitioning) return;
 
     this.handleMovement();
+    this.updatePatrols();
     this.checkDialogExitRadius();
     this.updateInteractHint();
     this.handleInteract();
@@ -669,99 +683,84 @@ export class GameScene extends Phaser.Scene {
 
     this.npcs.push(npc);
 
-    // ---- patrol behaviour ---------------------------------------------------
+    // ---- patrol behaviour (velocity-based) ----------------------------------
     if (data.patrol) {
       const { axis, distance, speed, pauseMs = 0 } = data.patrol;
       const origin = axis === 'x' ? x : y;
-      const durationMs = (distance / speed) * 1000;
-      const defaultFlip = data.flipX ?? false;
 
-      // Helper: update tracked position so dialog-exit-radius follows the NPC
-      const syncPos = () => {
-        npc.x = sprite.x;
-        npc.y = sprite.y;
+      npc.patrol = {
+        axis,
+        speed,
+        minPos: origin - distance,
+        maxPos: origin + distance,
+        direction: 1,
+        defaultFlip: data.flipX ?? false,
+        pauseMs,
+        paused: false,
+        pauseTimer: 0,
       };
-
-      this.tweens.add({
-        targets: sprite,
-        [axis]: origin + distance, // walk forward
-        duration: durationMs,
-        ease: 'Linear',
-        delay: pauseMs,
-        onStart: () => {
-          sprite.setFlipX(axis === 'x' ? false : defaultFlip);
-        },
-        onUpdate: syncPos,
-        onComplete: () => {
-          syncPos();
-          // pause, then walk back to origin - distance
-          this.tweens.add({
-            targets: sprite,
-            [axis]: origin - distance,
-            duration: durationMs * 2, // double distance
-            ease: 'Linear',
-            delay: pauseMs,
-            onStart: () => {
-              sprite.setFlipX(axis === 'x' ? true : defaultFlip);
-            },
-            onUpdate: syncPos,
-            onComplete: () => {
-              syncPos();
-              // walk back to origin + distance and repeat
-              this.startPatrolLoop(sprite, npc, data);
-            },
-          });
-        },
-      });
     }
   }
 
-  /** Continuous patrol loop after the initial half-cycle */
-  private startPatrolLoop(
-    sprite: Phaser.GameObjects.Sprite,
-    npc: NpcObject,
-    data: (typeof NPC_REGISTRY)[string],
-  ) {
-    if (!data.patrol) return;
-    const { axis, distance, speed, pauseMs = 0 } = data.patrol;
-    const origin = axis === 'x' ? npc.x : npc.y; // current position is origin-distance
-    const defaultFlip = data.flipX ?? false;
-    const durationMs = (distance * 2 / speed) * 1000;
+  /** Drive all patrolling NPCs via physics velocity each frame. */
+  private updatePatrols() {
+    for (const npc of this.npcs) {
+      if (!npc.patrol) continue;
 
-    const syncPos = () => {
-      npc.x = sprite.x;
-      npc.y = sprite.y;
-    };
+      const p = npc.patrol;
+      const body = npc.sprite.body as Phaser.Physics.Arcade.Body;
+      if (!body) continue;
 
-    this.tweens.add({
-      targets: sprite,
-      [axis]: origin + distance * 2, // walk the full distance the other way
-      duration: durationMs,
-      ease: 'Linear',
-      delay: pauseMs,
-      onStart: () => {
-        sprite.setFlipX(axis === 'x' ? false : defaultFlip);
-      },
-      onUpdate: syncPos,
-      onComplete: () => {
-        syncPos();
-        this.tweens.add({
-          targets: sprite,
-          [axis]: origin,
-          duration: durationMs,
-          ease: 'Linear',
-          delay: pauseMs,
-          onStart: () => {
-            sprite.setFlipX(axis === 'x' ? true : defaultFlip);
-          },
-          onUpdate: syncPos,
-          onComplete: () => {
-            syncPos();
-            this.startPatrolLoop(sprite, npc, data);
-          },
-        });
-      },
-    });
+      // ---- pause at endpoints ------------------------------------------------
+      if (p.paused) {
+        p.pauseTimer -= this.game.loop.delta;
+        if (p.pauseTimer <= 0) {
+          p.paused = false;
+        } else {
+          body.setVelocity(0, 0);
+          continue;
+        }
+      }
+
+      // ---- move toward current target ----------------------------------------
+      const currentPos = p.axis === 'x' ? npc.sprite.x : npc.sprite.y;
+      const target = p.direction === 1 ? p.maxPos : p.minPos;
+      const reachedTarget = p.direction === 1
+        ? currentPos >= target
+        : currentPos <= target;
+
+      if (reachedTarget) {
+        // Clamp to exact endpoint
+        if (p.axis === 'x') npc.sprite.x = target;
+        else npc.sprite.y = target;
+
+        body.setVelocity(0, 0);
+        p.direction = (p.direction === 1 ? -1 : 1) as 1 | -1;
+
+        // Flip sprite for new direction
+        if (p.axis === 'x') {
+          npc.sprite.setFlipX(p.direction === -1 ? !p.defaultFlip : p.defaultFlip);
+        }
+
+        if (p.pauseMs > 0) {
+          p.paused = true;
+          p.pauseTimer = p.pauseMs;
+        }
+      } else {
+        // Apply velocity in the patrol direction
+        if (p.axis === 'x') {
+          body.setVelocityX(p.speed * p.direction);
+          body.setVelocityY(0);
+        } else {
+          body.setVelocityX(0);
+          body.setVelocityY(p.speed * p.direction);
+        }
+      }
+
+      // Sync tracked position for dialog-exit-radius
+      npc.x = npc.sprite.x;
+      npc.y = npc.sprite.y;
+    }
   }
 
 private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
