@@ -207,27 +207,9 @@
                  "y":0
                 }, 
                 {
-                 "height":30.174581507,
-                 "id":25,
-                 "name":"effect",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"effectType",
-                         "type":"string",
-                         "value":"shake"
-                        }],
-                 "rotation":0,
-                 "type":"effect",
-                 "visible":true,
-                 "width":119.261441195,
-                 "x":372.463826424,
-                 "y":30
-                }, 
-                {
                  "height":30.1746,
                  "id":26,
-                 "name":"spawn_top",
+                 "name":"spawn_bottom",
                  "opacity":1,
                  "properties":[
                         {
