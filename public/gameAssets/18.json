@@ -428,24 +428,6 @@
                  "width":119.261441195,
                  "x":372.463826424,
                  "y":0
-                }, 
-                {
-                 "height":30.174581507,
-                 "id":25,
-                 "name":"effect",
-                 "opacity":1,
-                 "properties":[
-                        {
-                         "name":"effectType",
-                         "type":"string",
-                         "value":"build"
-                        }],
-                 "rotation":0,
-                 "type":"effect",
-                 "visible":true,
-                 "width":119.261441195,
-                 "x":372.463826424,
-                 "y":53.6043904166175
                 }],
          "opacity":1,
          "type":"objectgroup",
