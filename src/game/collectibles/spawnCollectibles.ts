@@ -12,7 +12,7 @@ import { Collectible } from './Collectible';
 import { collectibleState } from './CollectibleState';
 import { questManager } from '../quests/QuestManager';
 import { EventBus } from '../EventBus';
-import { LAYERS } from '../constants';
+import { LAYERS, DEPTHS } from '../constants';
 import { ITEM_REGISTRY } from './collectibles';
 import { inventory } from '../inventory';
 
@@ -144,6 +144,22 @@ export function spawnCollectibles(
   return spawned;
 }
 
+// ---- per-type float text config ---------------------------------------------
+
+const FLOAT_TEXT_CONFIG: Record<string, {
+  getText: (c: Collectible) => string;
+  color: string;
+}> = {
+  money: {
+    getText: (c) => `+${(c.extra.value as number) ?? 0} 💰`,
+    color: '#fbbf24',
+  },
+  log: {
+    getText: () => '+1 🪵',
+    color: '#c4a76c',
+  },
+};
+
 // ---- shared collect logic ---------------------------------------------------
 
 function handleCollect(scene: Phaser.Scene, collectible: Collectible): void {
@@ -153,10 +169,13 @@ function handleCollect(scene: Phaser.Scene, collectible: Collectible): void {
   // 2. Run type-specific effect (if registered)
   collectEffects[collectible.itemType]?.(collectible);
 
-  // 3. Float text for money items
-  if (collectible.itemType === 'money') {
-    const value = (collectible.extra.value as number) ?? 0;
-    showFloatText(scene, collectible.sprite.x, collectible.sprite.y, `+${value} 💰`);
+  const sx = collectible.sprite.x;
+  const sy = collectible.sprite.y;
+
+  // 3. Float text (driven by config table — works for money, log, and future types)
+  const ftCfg = FLOAT_TEXT_CONFIG[collectible.itemType];
+  if (ftCfg) {
+    showFloatText(scene, sx, sy, ftCfg.getText(collectible), ftCfg.color);
   }
 
   // 4. Notify quest system (with both itemType and collectibleId)
@@ -170,33 +189,36 @@ function handleCollect(scene: Phaser.Scene, collectible: Collectible): void {
     collectible.sprite.body.enable = false;
   }
 
-  scene.tweens.add({
-    targets: collectible.sprite,
-    scaleX: 0,
-    scaleY: 0,
-    alpha: 0,
-    duration: 250,
-    ease: 'Back.In',
-    onComplete: () => collectible.destroySprite(),
+      scene.tweens.add({
+        targets: collectible.sprite,
+        scaleX: 0,
+        scaleY: 0,
+        alpha: 0,
+        duration: 250,
+        ease: 'Back.In',
+        onComplete: () => collectible.destroySprite(),
   });
 }
+
+// ---- helpers ----------------------------------------------------------------
 
 function showFloatText(
   scene: Phaser.Scene,
   x: number,
   y: number,
   text: string,
+  color = '#fbbf24',
 ): void {
   const label = scene.add
     .text(x, y - 16, text, {
       fontFamily: 'monospace',
       fontSize: '13px',
-      color: '#fbbf24',
+      color,
       stroke: '#000',
       strokeThickness: 3,
     })
     .setOrigin(0.5)
-    .setDepth(15);
+    .setDepth(DEPTHS.OVERHEAD + 100);
 
   scene.tweens.add({
     targets: label,

@@ -30,6 +30,8 @@ import { TILESET_IMAGE_KEYS } from "../tilesets";
 import { worldState } from "../worldState";
 import { FX_REGISTRY } from "./effects";
 
+const INITIAL_MAP = '16-json';
+
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
   gfx: Phaser.GameObjects.Arc | Phaser.GameObjects.Rectangle;
@@ -201,7 +203,7 @@ export class GameScene extends Phaser.Scene {
     this.playerShadow.setDepth(this.player.y - 1);
 
     // ---- load initial map ---------------------------------------------------
-    this.changeMap('16-json', 'spawn');
+    this.changeMap(INITIAL_MAP, 'spawn');
 
     // ---- hint text -----------------------------------------------------------
     this.hint = this.add

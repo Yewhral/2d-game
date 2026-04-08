@@ -36,7 +36,6 @@ export class Preloader extends Phaser.Scene {
     this.load.image('cloud7-img', 'cloud7.png');
     this.load.image('waterRocks2-img', 'waterRocks2.png');
     this.load.image('waterRocks4-img', 'waterRocks4.png');
-    this.load.image('bushes-img', 'bushes.png');
     this.load.image('woodLog-img', 'woodLog.png');
     this.load.image('money-img', 'money.png');
     this.load.image('barracks-img', 'barracks.png');
@@ -106,7 +105,15 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 128,
       frameHeight: 128,
     });
+    this.load.spritesheet('bush2', 'bushes2.png', {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
     this.load.spritesheet('tree3', 'tree3.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('tree4', 'tree4.png', {
       frameWidth: 192,
       frameHeight: 192,
     });
