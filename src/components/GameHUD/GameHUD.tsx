@@ -13,6 +13,12 @@ import { QuestLogModal, type Quest } from "./QuestLogModal";
 import { inventory } from "@/game/inventory";
 import { collectibleState } from "@/game/collectibles/CollectibleState";
 
+const getAssetPath = (path: string) => {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, ""); // remove trailing slash
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${p}`;
+};
+
 export function GameHUD() {
   const [money, setMoney] = useState(collectibleState.getMoney());
   const [items, setItems] = useState(inventory.items);
@@ -141,12 +147,12 @@ export function GameHUD() {
       {scene === 'GameScene' && (
         <div className={styles.panel}>
           <div className={styles.inventoryItem}>
-            <img src="/gameAssets/woodLog.png" className={styles.icon} alt="Logs" />
+            <img src={getAssetPath("gameAssets/woodLog.png")} className={styles.icon} alt="Logs" />
             <span className={styles.value}>x {items.log || 0}</span>
           </div>
 
           <div className={styles.inventoryItem}>
-            <img src="/gameAssets/money.png" className={styles.icon} alt="Money" />
+            <img src={getAssetPath("gameAssets/money.png")} className={styles.icon} alt="Money" />
             <span className={styles.value}>x {money}</span>
           </div>
         </div>
@@ -184,7 +190,7 @@ export function GameHUD() {
           <div className={styles.dialogBox}>
             {dialog.portrait && (
               <div className={styles.dialogPortrait}>
-                <img src={dialog.portrait} alt={dialog.npc} className={styles.portraitImg} />
+                <img src={getAssetPath(dialog.portrait)} alt={dialog.npc} className={styles.portraitImg} />
               </div>
             )}
             <div className={styles.dialogContent}>
