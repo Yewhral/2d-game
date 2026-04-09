@@ -138,17 +138,19 @@ export function GameHUD() {
   return (
     <div className={styles.hud}>
       {/* Top-left: inventory */}
-      <div className={styles.panel}>
-        <div className={styles.inventoryItem}>
-          <img src="/gameAssets/woodLog.png" className={styles.icon} alt="Logs" />
-          <span className={styles.value}>x {items.log || 0}</span>
-        </div>
+      {scene === 'GameScene' && (
+        <div className={styles.panel}>
+          <div className={styles.inventoryItem}>
+            <img src="/gameAssets/woodLog.png" className={styles.icon} alt="Logs" />
+            <span className={styles.value}>x {items.log || 0}</span>
+          </div>
 
-        <div className={styles.inventoryItem}>
-          <img src="/gameAssets/money.png" className={styles.icon} alt="Money" />
-          <span className={styles.value}>x {money}</span>
+          <div className={styles.inventoryItem}>
+            <img src="/gameAssets/money.png" className={styles.icon} alt="Money" />
+            <span className={styles.value}>x {money}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Top-right: controls */}
       <div className={styles.controls}>

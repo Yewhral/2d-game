@@ -5,7 +5,7 @@
  * `eventName` / `handler` reference changes.
  *
  * @example
- * useGameEvent("score-changed", ({ score }) => setScore(score));
+ * useGameEvent("scene-changed", ({ scene }) => setScene(scene));
  */
 
 import { EventBus } from "@/game/EventBus";

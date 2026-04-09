@@ -6,11 +6,11 @@
  *
  * Usage in a Phaser scene:
  *   import { EventBus } from "@/game/EventBus";
- *   EventBus.emit("player-health-changed", { current: 80, max: 100 });
+ *   EventBus.emit("scene-changed", { scene: "MainScene" });
  *
  * Usage in React:
  *   import { useGameEvent } from "@/hooks/useGameEvent";
- *   useGameEvent("player-health-changed", ({ current, max }) => { ... });
+ *   useGameEvent("scene-changed", ({ scene }) => { ... });
  */
 
 import mitt from "mitt";

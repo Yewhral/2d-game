@@ -6,7 +6,7 @@
  *   E                 → interact with nearby objects
  *
  * Two-way EventBus integration:
- *   Phaser → React: "score-changed", "player-health-changed", "scene-changed"
+ *   Phaser → React: "scene-changed"
  */
 
 import Phaser from "phaser";
@@ -70,8 +70,6 @@ interface DecorationEntry {
 
 export class GameScene extends Phaser.Scene {
   // --- state -----------------------------------------------------------------
-  private score = 0;
-  private health = { current: 100, max: 100 };
   private isTransitioning = false;
   private currentMapKey = '';
 
@@ -314,8 +312,6 @@ export class GameScene extends Phaser.Scene {
 
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
-    EventBus.emit("score-changed", { score: this.score });
-    EventBus.emit("player-health-changed", { ...this.health });
   }
 
   // ---------------------------------------------------------------------------
