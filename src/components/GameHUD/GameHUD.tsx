@@ -10,10 +10,12 @@ import { useGameEvent } from "@/hooks/useGameEvent";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./GameHUD.module.css";
 import { QuestLogModal, type Quest } from "./QuestLogModal";
+import { inventory } from "@/game/inventory";
+import { collectibleState } from "@/game/collectibles/CollectibleState";
 
 export function GameHUD() {
-  const [score, setScore] = useState(0);
-  const [health, setHealth] = useState({ current: 100, max: 100 });
+  const [money, setMoney] = useState(collectibleState.getMoney());
+  const [items, setItems] = useState(inventory.items);
   const [scene, setScene] = useState("—");
   const [dialog, setDialog] = useState<{
     npc: string;
@@ -44,12 +46,12 @@ export function GameHUD() {
     useCallback(({ scene }) => setScene(scene), []),
   );
   useGameEvent(
-    "score-changed",
-    useCallback(({ score }) => setScore(score), []),
+    "money-changed",
+    useCallback(({ money }) => setMoney(money), []),
   );
   useGameEvent(
-    "player-health-changed",
-    useCallback(({ current, max }) => setHealth({ current, max }), []),
+    "inventory-changed",
+    useCallback(({ items }) => setItems(items), []),
   );
   useGameEvent(
     "npc-dialog",
@@ -130,28 +132,21 @@ export function GameHUD() {
   }, []);
 
 
-  const hpPct = Math.max(0, (health.current / health.max) * 100);
-  const hpColor =
-    hpPct > 60 ? "var(--color-success)" : hpPct > 30 ? "#fbbf24" : "var(--color-danger)";
+
 
 
   return (
     <div className={styles.hud}>
-      {/* Top-left: stats */}
+      {/* Top-left: inventory */}
       <div className={styles.panel}>
-        <div className={styles.stat}>
-          <span className={styles.label}>SCORE</span>
-          <span className={styles.value}>{score}</span>
+        <div className={styles.inventoryItem}>
+          <img src="/gameAssets/woodLog.png" className={styles.icon} alt="Logs" />
+          <span className={styles.value}>x {items.log || 0}</span>
         </div>
 
-        <div className={styles.stat}>
-          <span className={styles.label}>HP</span>
-          <div className={styles.hpBar}>
-            <div className={styles.hpFill} style={{ width: `${hpPct}%`, background: hpColor }} />
-          </div>
-          <span className={styles.value}>
-            {health.current}/{health.max}
-          </span>
+        <div className={styles.inventoryItem}>
+          <img src="/gameAssets/money.png" className={styles.icon} alt="Money" />
+          <span className={styles.value}>x {money}</span>
         </div>
       </div>
 

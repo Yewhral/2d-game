@@ -21,16 +21,11 @@ import type { Emitter } from "mitt";
 // Keys are event names, values are the payload type.
 // ---------------------------------------------------------------------------
 export type GameEvents = {
-
-  /** Fired whenever the player's HP changes. */
-  "player-health-changed": { current: number; max: number };
-
-  /** Fired whenever the score changes. */
-  "score-changed": { score: number };
+  /** Phaser → React: the entire inventory contents changed. */
+  "inventory-changed": { items: Record<string, number> };
 
   /** Fired when the current scene name changes. */
   "scene-changed": { scene: string };
-
 
   /** Phaser → React: an NPC started/stopped speaking. */
   "npc-dialog": { npc: string; text: string; portrait?: string; theme?: string } | null;
