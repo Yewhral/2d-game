@@ -428,6 +428,24 @@
                  "width":119.261441195,
                  "x":372.463826424,
                  "y":0
+                }, 
+                {
+                 "height":185,
+                 "id":27,
+                 "name":"spawn_right",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target_map",
+                         "type":"string",
+                         "value":"28"
+                        }],
+                 "rotation":0,
+                 "type":"spawn",
+                 "visible":true,
+                 "width":49.261441195,
+                 "x":910.433136212,
+                 "y":411.547792788
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -498,7 +516,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":27,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
