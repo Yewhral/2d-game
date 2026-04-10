@@ -140,7 +140,8 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     },
     onComplete: (retroactive) => {
       if (!retroactive) {
-        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 758, y: 110 });
+        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 720, y: 280 });
+        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 720, y: 340 });
         inventory.remove('log', 1);
       }
       worldState.set('bridge', 'built');
