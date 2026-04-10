@@ -255,9 +255,9 @@ export const DECORATION_REGISTRY: Record<
     depthOffset: -40,
     hasCollision: true,
     hitbox: {
-      width: 110,
-      height: 10,
-      offsetX: 12,
+      width: 80,
+      height: 20,
+      offsetX: 20,
       offsetY: -16,
     },
     bodyOffset: { x: -12, y: 24 },
