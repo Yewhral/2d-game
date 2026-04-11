@@ -142,23 +142,6 @@ export class GameScene extends Phaser.Scene {
       }
     });
 
-    // ---- NPC animations -----------------------------------------------------
-    Object.values(NPC_REGISTRY).forEach((data) => {
-      if (data.animated) {
-        if (!this.anims.exists(`anim-${data.spriteKey}`)) {
-          this.anims.create({
-            key: `anim-${data.spriteKey}`,
-            frames: this.anims.generateFrameNumbers(data.spriteKey, {}),
-            frameRate: 10,
-            repeatDelay: data.repeatDelay ?? 0,
-            delay: data.delay ?? 0,
-            randomFrame: true,
-            repeat: -1,
-          });
-        }
-      }
-    });
-
     // ---- decoration animations -----------------------------------------------
     Object.values(DECORATION_REGISTRY).forEach((data) => {
       if (data.animated) {
@@ -611,7 +594,7 @@ export class GameScene extends Phaser.Scene {
 
       if (npcIdProp) {
         const npcId = String(npcIdProp.value);
-        const data = NPC_REGISTRY[npcId];
+        const data = NPC_REGISTRY[this.currentMapKey]?.[npcId];
         if (data?.portrait) {
           portraitsToLoad.add(data.portrait);
         }
@@ -632,9 +615,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnNpc(x: number, y: number, npcId: string) {
-    const data = NPC_REGISTRY[npcId];
+    const data = NPC_REGISTRY[this.currentMapKey]?.[npcId];
     if (!data) {
-      console.warn(`Unknown npcId "${npcId}" — skipping spawn at (${x}, ${y}).`);
+      console.warn(`Unknown npcId "${npcId}" on map "${this.currentMapKey}" — skipping spawn at (${x}, ${y}).`);
       return;
     }
 
@@ -651,7 +634,18 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player, sprite);
 
     if (data.animated) {
-      const animKey = `anim-${data.spriteKey}`;
+      const animKey = `anim-${this.currentMapKey}-${npcId}`;
+      if (!this.anims.exists(animKey)) {
+        this.anims.create({
+          key: animKey,
+          frames: this.anims.generateFrameNumbers(data.spriteKey, {}),
+          frameRate: 10,
+          repeatDelay: data.repeatDelay ?? 0,
+          delay: data.delay ?? 0,
+          randomFrame: true,
+          repeat: -1,
+        });
+      }
       sprite.play({ key: animKey, startFrame: data.frame });
     }
 
