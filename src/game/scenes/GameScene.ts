@@ -249,16 +249,18 @@ export class GameScene extends Phaser.Scene {
 
       if (!tilemapLayer) return;
 
+      // Persist so returning to this map skips the animation
+      const stateKey = `hiddenLayer_${mapKey}_${layer}`;
+      if (worldState.get(stateKey)) return; // already hidden
+      worldState.set(stateKey, 'hidden');
+
       this.tweens.add({
         targets: tilemapLayer,
         alpha: 0,
         duration: 800,
         ease: "Sine.easeOut",
         onComplete: () => {
-          tilemapLayer.forEachTile((tile) => {
-            tilemapLayer.removeTileAt(tile.x, tile.y);
-          });
-          tilemapLayer.setAlpha(1);
+          this.hideLayer(tilemapLayer);
         },
       });
     });
@@ -274,6 +276,11 @@ export class GameScene extends Phaser.Scene {
         layer === LAYERS.PASSAGES ? this.passagesLayer : null;
 
       if (!tilemapLayer) return;
+
+      // Persist so returning to this map shows it immediately
+      const stateKey = `shownLayer_${mapKey}_${layer}`;
+      if (worldState.get(stateKey)) return; // already shown
+      worldState.set(stateKey, 'shown');
 
       tilemapLayer.setAlpha(0);
       tilemapLayer.setVisible(true);
@@ -416,6 +423,9 @@ export class GameScene extends Phaser.Scene {
         const collider = this.physics.add.collider(this.player, collidableLayers);
         this.mapColliders.push(collider);
       }
+
+      // --- restore previously hidden/shown layers (no animation) ---------------
+      this.restoreLayerStates(mapKey);
     }
 
     // --- position player at spawn point --------------------------------------
@@ -524,6 +534,56 @@ export class GameScene extends Phaser.Scene {
 
     if (this.map) {
       this.map.destroy();
+    }
+  }
+
+  /**
+   * Hide a tilemap layer: make it invisible and disable all its tile collisions.
+   */
+  private hideLayer(layer: Phaser.Tilemaps.TilemapLayer) {
+    layer.setVisible(false);
+    layer.setAlpha(1);
+    layer.forEachTile((tile) => {
+      tile.setCollision(false);
+    });
+  }
+
+  /**
+   * Show a tilemap layer: make it visible and re-enable collisions
+   * based on the tile's `collides` property.
+   */
+  private showLayer(layer: Phaser.Tilemaps.TilemapLayer) {
+    layer.setVisible(true);
+    layer.setAlpha(1);
+    layer.setCollisionByProperty({ collides: '1' });
+  }
+
+  /**
+   * On map load, check worldState for layers that were previously
+   * hidden (fade-layer) or shown (show-layer) and apply immediately.
+   */
+  private restoreLayerStates(mapKey: string) {
+    // Layers that can be hidden via quest:fade-layer
+    const hideable: Array<{ name: string; layer: Phaser.Tilemaps.TilemapLayer | null }> = [
+      { name: LAYERS.OBSTACLES, layer: this.obstaclesLayer },
+      { name: LAYERS.BARRIERS, layer: this.barriersLayer },
+    ];
+
+    for (const { name, layer } of hideable) {
+      if (layer && worldState.get(`hiddenLayer_${mapKey}_${name}`)) {
+        this.hideLayer(layer);
+      }
+    }
+
+    // Layers that can be shown via quest:show-layer
+    const showable: Array<{ name: string; layer: Phaser.Tilemaps.TilemapLayer | null }> = [
+      { name: LAYERS.PASSAGES, layer: this.passagesLayer },
+    ];
+
+    for (const { name, layer } of showable) {
+      if (layer && worldState.get(`shownLayer_${mapKey}_${name}`)) {
+        this.showLayer(layer);
+      }
     }
   }
 
