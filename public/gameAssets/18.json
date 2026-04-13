@@ -329,8 +329,8 @@
                  "type":"bush",
                  "visible":true,
                  "width":0,
-                 "x":230.604269673558,
-                 "y":200.451178451179
+                 "x":886.194750140554,
+                 "y":438.439503552212
                 }, 
                 {
                  "height":0,
@@ -348,8 +348,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":299.881043884512,
-                 "y":244.934675374089
+                 "x":859.37812515977,
+                 "y":424.548505639019
                 }, 
                 {
                  "height":0,
@@ -399,6 +399,25 @@
                  "width":0,
                  "x":755.413631374114,
                  "y":213.551541762299
+                }, 
+                {
+                 "height":0,
+                 "id":28,
+                 "name":"duck",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"duck"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":484.957341715312,
+                 "y":454.422990570274
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -516,7 +535,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":28,
+ "nextobjectid":29,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

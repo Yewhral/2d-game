@@ -121,6 +121,10 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64,
     });
+    this.load.spritesheet('duck', 'duck.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
     this.load.tilemapTiledJSON('16-json', '16.json');
     this.load.tilemapTiledJSON('16b-json', '16b.json');
     this.load.tilemapTiledJSON('17-json', '17.json');

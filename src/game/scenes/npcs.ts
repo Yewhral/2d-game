@@ -173,6 +173,27 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       repeatDelay: 100,
       delay: 200,
     },
+    'duck': {
+      name: 'Duck',
+      text: 'Quack',
+      spriteKey: 'duck',
+      frame: 0,
+      scale: 1,
+      bodySize: { width: 32, height: 32 },
+      bodyOffset: { x: 0, y: 0 },
+      portrait: 'gameAssets/purplePawnAvatar.png',
+      flipX: true,
+      theme: 'red',
+      animated: true,
+      repeatDelay: 100,
+      delay: 100,
+      patrol: {
+        axis: 'x',
+        distance: 90,
+        speed: 80,
+        pauseMs: 1000,
+      }
+    }
   },
 
   '26-json': {

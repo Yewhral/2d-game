@@ -72,7 +72,11 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
           "<i>Monk seems to be back to meditating and humming</i>",
       },
     },
-    onComplete: () => {
+    onComplete: (retroactive) => {
+      // worldState for layers is set by the event handlers themselves,
+      // and restoreLayerStates applies it on map load — skip re-emitting.
+      if (retroactive) return;
+
       EventBus.emit('quest:fade-layer', {
         mapKey: '16-json',
         layer: LAYERS.BARRIERS,
@@ -139,12 +143,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       return `${c} / ${r}`;
     },
     onComplete: (retroactive) => {
-      if (!retroactive) {
-        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 720, y: 280 });
-        EventBus.emit('fx:spawn', { type: 'build_smoke', x: 720, y: 340 });
-        inventory.remove('log', 1);
-      }
       worldState.set('bridge', 'built');
+      if (retroactive) return;
+
+      EventBus.emit('fx:spawn', { type: 'build_smoke', x: 720, y: 280 });
+      EventBus.emit('fx:spawn', { type: 'build_smoke', x: 720, y: 340 });
+      inventory.remove('log', 1);
       EventBus.emit('quest:fade-layer', {
         mapKey: '18-json',
         layer: LAYERS.BARRIERS,
