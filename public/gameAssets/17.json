@@ -679,6 +679,11 @@
                          "name":"effectType",
                          "type":"string",
                          "value":"shake"
+                        }, 
+                        {
+                         "name":"failQuestId",
+                         "type":"string",
+                         "value":"collect-wood, talk-to-stranger"
                         }],
                  "rotation":0,
                  "type":"effect",

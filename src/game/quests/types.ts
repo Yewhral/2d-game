@@ -6,7 +6,7 @@
  */
 
 // ---- Quest status -----------------------------------------------------------
-export type QuestStatus = 'inactive' | 'active' | 'done' | 'complete';
+export type QuestStatus = 'inactive' | 'active' | 'done' | 'complete' | 'failed';
 
 // ---- Quest type -------------------------------------------------------------
 export type QuestType = 'talk' | 'collect';

@@ -19,6 +19,8 @@ const getAssetPath = (path: string) => {
   return `${base}${p}`;
 };
 
+const QUEST_NOTIFICATION_DURATION = 3000;
+
 export function GameHUD() {
   const [money, setMoney] = useState(collectibleState.getMoney());
   const [items, setItems] = useState(inventory.items);
@@ -67,16 +69,24 @@ export function GameHUD() {
     "quest-updated",
     useCallback(
       (payload) => {
-        // Show notification toast
-        setQuestNotification({
-          message: payload.message,
-          status: payload.status,
-        });
+        if (!payload.silent) {
+          // Show notification toast
+          setQuestNotification({
+            message: payload.message,
+            status: payload.status,
+          });
 
-        // Show red dot on Q button
-        setHasUnseenQuests(true);
+          // Show red dot on Q button
+          setHasUnseenQuests(true);
 
-        // Update quest tracker
+          // Clear previous timer
+          if (notifTimer.current) clearTimeout(notifTimer.current);
+          notifTimer.current = setTimeout(() => {
+            setQuestNotification(null);
+          }, QUEST_NOTIFICATION_DURATION);
+        }
+
+        // Update quest tracker (always, even if silent)
         setQuests((prev) => {
           const existing = prev.find((q) => q.questId === payload.questId);
           if (existing) {
@@ -86,6 +96,7 @@ export function GameHUD() {
                 : q,
             );
           }
+          if (payload.questId === 'batch-fail') return prev; // Don't add batch item to list
           return [
             ...prev,
             {
@@ -97,12 +108,6 @@ export function GameHUD() {
             },
           ];
         });
-
-        // Clear previous timer
-        if (notifTimer.current) clearTimeout(notifTimer.current);
-        notifTimer.current = setTimeout(() => {
-          setQuestNotification(null);
-        }, 3000);
       },
       [],
     ),
@@ -212,7 +217,9 @@ export function GameHUD() {
               ? styles.questNotifComplete
               : questNotification.status === 'done'
                 ? styles.questNotifDone
-                : styles.questNotifNew
+                : questNotification.status === 'failed'
+                  ? styles.questNotifFailed
+                  : styles.questNotifNew
           }`}
         >
           <span className={styles.questNotifIcon}>
@@ -220,7 +227,9 @@ export function GameHUD() {
               ? '✦'
               : questNotification.status === 'done'
                 ? '◆'
-                : '!'}
+                : questNotification.status === 'failed'
+                  ? '✘'
+                  : '!'}
           </span>
           <span className={styles.questNotifText}>
             {questNotification.message}

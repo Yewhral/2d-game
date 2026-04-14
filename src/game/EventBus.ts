@@ -33,12 +33,14 @@ export type GameEvents = {
   /** Phaser → React: a quest state changed. */
   "quest-updated": {
     questId: string;
-    status: 'inactive' | 'active' | 'done' | 'complete';
+    status: 'inactive' | 'active' | 'done' | 'complete' | 'failed';
     title: string;
     description?: string;
     message: string;
     /** Optional progress string, e.g. "1 / 2" */
     progress?: string;
+    /** If true, don't show a notification toast. */
+    silent?: boolean;
   };
 
   /** Phaser → React: the player's money total changed. */

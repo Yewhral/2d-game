@@ -41,11 +41,45 @@ class QuestManager {
     const result: Array<{ id: string; title: string; status: QuestStatus }> = [];
     for (const [id, def] of this.definitions) {
       const status = this.getStatus(id);
-      if (status === 'active' || status === 'done') {
+      if (status === 'active' || status === 'done' || status === 'failed') {
         result.push({ id, title: def.title, status });
       }
     }
     return result;
+  }
+
+  failQuest(questId: string): void {
+    const currentStatus = this.getStatus(questId);
+    if (currentStatus === 'active' || currentStatus === 'done') {
+      this.applyUpdate(questId, { status: 'failed' });
+    }
+  }
+
+  failQuests(questIds: string[]): void {
+    const toFail = questIds.filter(id => {
+      const status = this.getStatus(id);
+      return status === 'active' || status === "done";
+    });
+
+    if (toFail.length === 0) return;
+
+    if (toFail.length === 1) {
+      this.failQuest(toFail[0]);
+      return;
+    }
+
+    // Batch update
+    for (const id of toFail) {
+      this.applyUpdate(id, { status: 'failed' }, true);
+    }
+
+    // Emit aggregated event
+    EventBus.emit('quest-updated', {
+      questId: 'batch-fail',
+      status: 'failed',
+      title: `Failed ${toFail.length} quests`,
+      message: `Failed ${toFail.length} quests`,
+    });
   }
 
   // ---- NPC dialog -----------------------------------------------------------
@@ -120,7 +154,7 @@ class QuestManager {
    * If the quest transitions to 'active', its initial progress is seeded
    * from the handler's `getInitialProgress()`.
    */
-  private applyUpdate(questId: string, update: QuestUpdate): void {
+  private applyUpdate(questId: string, update: QuestUpdate, silent = false): void {
     const def = this.definitions.get(questId);
     if (!def) return;
 
@@ -144,7 +178,7 @@ class QuestManager {
       }
 
       this.states.set(questId, update.status);
-      this.emitStatusChange(questId, update.status);
+      this.emitStatusChange(questId, update.status, silent);
 
       if (update.status === 'complete' && def.onComplete) {
         def.onComplete(false);
@@ -155,7 +189,7 @@ class QuestManager {
     }
   }
 
-  private emitStatusChange(questId: string, status: QuestStatus): void {
+  private emitStatusChange(questId: string, status: QuestStatus, silent = false): void {
     const def = this.definitions.get(questId);
     const progress = this.getProgress(questId);
     const progressStr = def?.formatProgress?.(progress) ?? undefined;
@@ -171,6 +205,9 @@ class QuestManager {
       case 'complete':
         message = `Quest complete: ${def?.title}`;
         break;
+      case 'failed':
+        message = `Quest failed: ${def?.title}`;
+        break;
     }
 
     EventBus.emit('quest-updated', {
@@ -180,6 +217,7 @@ class QuestManager {
       description: def?.description,
       message,
       progress: progressStr,
+      silent,
     });
   }
 

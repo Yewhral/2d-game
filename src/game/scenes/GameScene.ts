@@ -963,6 +963,11 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
       zone.setData('height', obj.height);
       zone.setData('name', obj.name);
 
+      const failQuestIdProp = props?.find((p) => p.name === 'failQuestId');
+      if (failQuestIdProp) {
+        zone.setData('failQuestId', String(failQuestIdProp.value));
+      }
+
       this.exitZones.add(zone);
     }
 
@@ -996,6 +1001,12 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     const zoneY = (zone as Phaser.GameObjects.Zone).getData('y') as number;
     const zoneW = (zone as Phaser.GameObjects.Zone).getData('width') as number;
     const zoneH = (zone as Phaser.GameObjects.Zone).getData('height') as number;
+    const failQuestId = (zone as Phaser.GameObjects.Zone).getData('failQuestId') as string;
+
+    if (failQuestId) {
+      const ids = failQuestId.split(',').map(id => id.trim());
+      questManager.failQuests(ids);
+    }
 
     // Determine exit direction based on zone aspect ratio:
     // - Tall/narrow zone → left/right exit → track Y position
@@ -1021,6 +1032,7 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
 
       const props = obj.properties as Array<{ name: string; value: unknown }> | undefined;
       const effectTypeProp = props?.find((p) => p.name === 'effectType');
+      const failQuestIdProp = props?.find((p) => p.name === 'failQuestId');
 
       if (obj.type !== 'effect' && !effectTypeProp) continue;
 
@@ -1042,6 +1054,9 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
       this.physics.add.existing(zone, true);
       zone.setData('effectType', effectType);
       zone.setData('worldStateId', worldStateId);
+      if (failQuestIdProp) {
+        zone.setData('failQuestId', String(failQuestIdProp.value));
+      }
 
       this.effectZones.add(zone);
     }
@@ -1064,6 +1079,12 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     const z = zone as Phaser.GameObjects.Zone;
     const effectType = z.getData('effectType') as string;
     const worldStateId = z.getData('worldStateId') as string;
+    const failQuestId = z.getData('failQuestId') as string;
+
+    if (failQuestId) {
+      const ids = failQuestId.split(',').map(id => id.trim());
+      questManager.failQuests(ids);
+    }
 
     if (FX_REGISTRY[effectType]) {
       this.spawnEffect(effectType, this.player.x, this.player.y);

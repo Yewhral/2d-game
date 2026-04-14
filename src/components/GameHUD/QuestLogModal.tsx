@@ -50,10 +50,12 @@ export function QuestLogModal({
                   className={`${styles.questStatus} ${
                     q.status === "done" || q.status === "complete"
                       ? styles.questStatusDone
+                      : q.status === "failed"
+                      ? styles.questStatusFailed
                       : ""
                   }`}
                 >
-                  {q.status === "complete" ? "✦" : q.status === "done" ? "◆" : "○"}
+                  {q.status === "complete" ? "✦" : q.status === "done" ? "◆" : q.status === "failed" ? "✘" : "○"}
                 </span>
                 <div className={styles.questItemInfo}>
                   <span className={styles.questItemTitle}>{q.title}</span>

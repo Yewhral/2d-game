@@ -135,6 +135,10 @@
   color: #4ade80;
 }
 
+.questStatusFailed {
+  color: #f87171;
+}
+
 /* Quest Details (Right side) */
 .questDetails {
   flex: 1;
