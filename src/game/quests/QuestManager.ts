@@ -214,7 +214,7 @@ class QuestManager {
       questId,
       status,
       title: def?.title ?? questId,
-      description: def?.description,
+      description: this.getQuestDescription(def, status),
       message,
       progress: progressStr,
       silent,
@@ -231,12 +231,20 @@ class QuestManager {
       questId,
       status,
       title: def?.title ?? questId,
-      description: def?.description,
+      description: this.getQuestDescription(def, status),
       message: progressStr
         ? `${def?.title}: ${progressStr}`
         : `${def?.title}`,
       progress: progressStr,
     });
+  }
+
+  private getQuestDescription(def: QuestDefinition | undefined, status: QuestStatus): string | undefined {
+    if (!def || status === 'inactive') return undefined;
+    const progress = this.getProgress(def.id);
+    const template = def.description[status] || "";
+
+    return template ? this.interpolate(template, progress) : undefined;
   }
 
   /** Replace `{key}` placeholders in a template with progress values. */

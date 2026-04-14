@@ -25,8 +25,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
     id: 'talk-to-stranger',
     title: 'The Stranger in the Fields',
-    description:
-      'Find and talk to the mysterious stranger in the eastern fields.',
+    description: {
+      active: "The Purple Warrior mentioned a mysterious stranger lurking in the eastern fields.\n\nGo explore the area and find out what they want. Be cautious!",
+      done: "You've spoken to the stranger. They seem to be coordinating something with the Purple Warrior.\n\nGo back and report what you found.",
+      complete: "The mission is accomplished. The stranger's message was delivered, and the gears of fate are turning.",
+      failed: "The connection was lost. You failed to bridge the gap between the warrior and the stranger."
+    },
     handler: new TalkQuestHandler({
       giverNpcId: 'purple-warrior',
       targetNpcId: 'black-warrior',
@@ -55,8 +59,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     {
     id: 'wait-a-minute',
     title: 'Morning Meditation',
-    description:
-      'Wait for the monk to finish meditating.',
+    description: {
+      active: "The Purple Monk is deep in meditation. He asked you to wait a minute.\n\nJust be patient. Patience is a virtue.",
+      done: "The meditation is over. The air feels clearer.\n\nGo speak with the monk to receive his blessing.",
+      complete: "You showed great patience. The monk has shared his wisdom and reward with you.",
+      failed: "You couldn't wait. The moment of enlightenment has passed."
+    },
     handler: new TalkQuestHandler({
       giverNpcId: 'purple-monk',
       targetNpcId: 'purple-monk',
@@ -87,7 +95,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
     id: 'collect-wood',
     title: 'Lumber Support',
-    description: 'Collect 3 wood logs for the Purple Pawn.',
+    description: {
+      active: "Life of a pawn is hard. They need some wood to build a shelter but can't leave their post.\n\nCollect 3 logs from the surrounding area.\n\nProgress: {collected} / {required}",
+      done: "You have found enough wood for the shelter!\n\nDeliver the logs to the Purple Pawn so they can start building.",
+      complete: "With your help, the Purple Pawn now has a sturdy shelter. They'll be safe from the elements tonight.",
+      failed: "The shelter remains unbuilt. You left the pawn to fend for themselves."
+    },
     handler: new CollectQuestHandler({
       giverNpcId: 'purple-pawn-idle-wood',
       itemType: 'log',
@@ -121,7 +134,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
     id: 'fix-the-bridge',
     title: 'Wood you like to pass?',
-    description: 'Bring wood to fix the bridge',
+    description: {
+      active: "The bridge to the south is broken, blocking the path to the next region.\n\nA local pawn needs a wood log to repair it.",
+      done: "You have the log! Return to the bridge and give it to the pawn to fix the crossing.",
+      complete: "The bridge is repaired! The path to the south is now open for all travelers.",
+      failed: "The bridge remains in ruins. You failed to provide the materials for its repair."
+    },
     handler: new CollectQuestHandler({
       giverNpcId: 'purple-pawn-idle-hammer-18',
       itemType: 'log',

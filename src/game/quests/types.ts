@@ -87,8 +87,8 @@ export interface QuestDefinition {
   id: string;
   /** Human-readable title shown in the tracker */
   title: string;
-  /** Longer description (for journal / tooltip) */
-  description: string;
+  /** Description for each status of the quest */
+  description: Record<'active' | 'done' | 'complete' | 'failed', string>;
   /** Stateless handler containing gameplay logic */
   handler: QuestHandler;
   /** NPC dialog templates, interpolated with progress data */
