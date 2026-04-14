@@ -69,6 +69,46 @@
   color: var(--color-text);
 }
 
+.filterBar {
+  display: flex;
+  padding: 8px 24px;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filterBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.filterBtn:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filterBtnActive {
+  color: #d8b4fe;
+  background: rgba(216, 180, 254, 0.15);
+}
+
+.emptyFilter {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
 .questLogContent {
   flex: 1;
   display: flex;

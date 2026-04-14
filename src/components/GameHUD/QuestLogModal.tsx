@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styles from "./QuestLogModal.module.css";
 
 export interface Quest {
@@ -23,9 +24,33 @@ export function QuestLogModal({
   selectedQuestId,
   onSelectQuest,
 }: QuestLogModalProps) {
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'failed'>('all');
+
   if (!isOpen) return null;
 
-  const selectedQuest = quests.find((q) => q.questId === selectedQuestId);
+  const filteredQuests = quests.filter((q) => {
+    if (filter === 'all') return true;
+    if (filter === 'active') return q.status === 'active' || q.status === 'done';
+    if (filter === 'completed') return q.status === 'complete';
+    if (filter === 'failed') return q.status === 'failed';
+    return true;
+  });
+
+  const handleFilterChange = (newFilter: typeof filter) => {
+    setFilter(newFilter);
+    const newFiltered = quests.filter((q) => {
+      if (newFilter === 'all') return true;
+      if (newFilter === 'active') return q.status === 'active' || q.status === 'done';
+      if (newFilter === 'completed') return q.status === 'complete';
+      if (newFilter === 'failed') return q.status === 'failed';
+      return true;
+    });
+    if (newFiltered.length > 0) {
+      onSelectQuest(newFiltered[newFiltered.length - 1].questId);
+    }
+  };
+
+  const selectedQuest = filteredQuests.find((q) => q.questId === selectedQuestId);
 
   return (
     <div className={styles.questLogOverlay} onClick={onClose}>
@@ -36,33 +61,52 @@ export function QuestLogModal({
             ×
           </button>
         </div>
+
+        <div className={styles.filterBar}>
+          {(['active', 'completed', 'failed', 'all'] as const).map((f) => (
+            <button
+              key={f}
+              className={`${styles.filterBtn} ${filter === f ? styles.filterBtnActive : ""}`}
+              onClick={() => handleFilterChange(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
         <div className={styles.questLogContent}>
           <div className={styles.questList}>
-            {quests.map((q) => (
-              <div
-                key={q.questId}
-                className={`${styles.questItem} ${
-                  selectedQuestId === q.questId ? styles.questItemActive : ""
-                }`}
-                onClick={() => onSelectQuest(q.questId)}
-              >
-                <span
-                  className={`${styles.questStatus} ${
-                    q.status === "done" || q.status === "complete"
-                      ? styles.questStatusDone
-                      : q.status === "failed"
-                      ? styles.questStatusFailed
-                      : ""
+            {filteredQuests.length > 0 ? (
+              filteredQuests.map((q) => (
+                <div
+                  key={q.questId}
+                  className={`${styles.questItem} ${
+                    selectedQuestId === q.questId ? styles.questItemActive : ""
                   }`}
+                  onClick={() => onSelectQuest(q.questId)}
                 >
-                  {q.status === "complete" ? "✦" : q.status === "done" ? "◆" : q.status === "failed" ? "✘" : "○"}
-                </span>
-                <div className={styles.questItemInfo}>
-                  <span className={styles.questItemTitle}>{q.title}</span>
-                  <span className={styles.questItemStatusText}>{q.status}</span>
+                  <span
+                    className={`${styles.questStatus} ${
+                      q.status === "done" || q.status === "complete"
+                        ? styles.questStatusDone
+                        : q.status === "failed"
+                        ? styles.questStatusFailed
+                        : ""
+                    }`}
+                  >
+                    {q.status === "complete" ? "✦" : q.status === "done" ? "◆" : q.status === "failed" ? "✘" : "○"}
+                  </span>
+                  <div className={styles.questItemInfo}>
+                    <span className={styles.questItemTitle}>{q.title}</span>
+                    <span className={styles.questItemStatusText}>{q.status}</span>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className={styles.emptyFilter}>
+                {filter === 'all' ? 'No quests' : `No ${filter} quests`}
               </div>
-            ))}
+            )}
           </div>
           <div className={styles.questDetails}>
             {selectedQuest ? (
@@ -77,7 +121,9 @@ export function QuestLogModal({
               </>
             ) : (
               <div className={styles.noQuestSelected}>
-                Select a quest to see details
+                {filteredQuests.length === 0
+                  ? (filter === 'all' ? 'No quests found' : `No ${filter} quests found`)
+                  : "Select a quest to see details"}
               </div>
             )}
           </div>
