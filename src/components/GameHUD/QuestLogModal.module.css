@@ -125,17 +125,27 @@
 }
 
 .questItem {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
   padding: 12px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .questItem:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.questItem:focus-visible {
+  outline: 2px solid #d8b4fe;
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .questItemActive {

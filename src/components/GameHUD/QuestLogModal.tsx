@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./QuestLogModal.module.css";
 
 export interface Quest {
@@ -24,9 +24,8 @@ export function QuestLogModal({
   selectedQuestId,
   onSelectQuest,
 }: QuestLogModalProps) {
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'failed'>('all');
-
-  if (!isOpen) return null;
+  const [filter, setFilter] = useState<'active' | 'completed' | 'failed' | 'all'>('active');
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const filteredQuests = quests.filter((q) => {
     if (filter === 'all') return true;
@@ -50,14 +49,51 @@ export function QuestLogModal({
     }
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, selectedQuestId, filteredQuests, onClose, onSelectQuest]);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      const firstBtn = modalRef.current.querySelector('button');
+      firstBtn?.focus();
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
   const selectedQuest = filteredQuests.find((q) => q.questId === selectedQuestId);
 
   return (
-    <div className={styles.questLogOverlay} onClick={onClose}>
-      <div className={styles.questLogBox} onClick={(e) => e.stopPropagation()}>
+    <div 
+      className={styles.questLogOverlay} 
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="quest-log-title"
+    >
+      <div 
+        ref={modalRef}
+        className={styles.questLogBox} 
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.questLogHeader}>
-          <h2>Quest Log</h2>
-          <button className={styles.questLogClose} onClick={onClose}>
+          <h2 id="quest-log-title">Quest Log</h2>
+          <button 
+            className={styles.questLogClose} 
+            onClick={onClose}
+            aria-label="Close Quest Log"
+          >
             ×
           </button>
         </div>
@@ -75,17 +111,20 @@ export function QuestLogModal({
         </div>
 
         <div className={styles.questLogContent}>
-          <div className={styles.questList}>
+          <div className={styles.questList} role="listbox" aria-label="Quest List">
             {filteredQuests.length > 0 ? (
               filteredQuests.map((q) => (
-                <div
+                <button
                   key={q.questId}
                   className={`${styles.questItem} ${
                     selectedQuestId === q.questId ? styles.questItemActive : ""
                   }`}
                   onClick={() => onSelectQuest(q.questId)}
+                  role="option"
+                  aria-selected={selectedQuestId === q.questId}
                 >
                   <span
+                    aria-hidden="true"
                     className={`${styles.questStatus} ${
                       q.status === "done" || q.status === "complete"
                         ? styles.questStatusDone
@@ -100,10 +139,10 @@ export function QuestLogModal({
                     <span className={styles.questItemTitle}>{q.title}</span>
                     <span className={styles.questItemStatusText}>{q.status}</span>
                   </div>
-                </div>
+                </button>
               ))
             ) : (
-              <div className={styles.emptyFilter}>
+              <div className={styles.emptyFilter} role="status">
                 {filter === 'all' ? 'No quests' : `No ${filter} quests`}
               </div>
             )}
