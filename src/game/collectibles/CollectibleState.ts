@@ -23,6 +23,10 @@ class CollectibleState {
     return this.money;
   }
 
+  getCollectedIds(): string[] {
+    return Array.from(this.collected);
+  }
+
   // ---- mutations ---------------------------------------------------------------
 
   markCollected(id: string): void {

@@ -12,6 +12,7 @@
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
 import { questManager } from "../quests/QuestManager";
+import { saveManager } from "../saveManager";
 import { QUEST_DEFINITIONS } from "../quests/definitions";
 import { Collectible } from "../collectibles/Collectible";
 import { spawnCollectibles } from "../collectibles/spawnCollectibles";
@@ -31,6 +32,13 @@ import { worldState } from "../worldState";
 import { FX_REGISTRY } from "./effects";
 
 const INITIAL_MAP = '16-json';
+
+interface SceneData {
+  loadSave?: boolean;
+  mapKey?: string;
+  playerX?: number;
+  playerY?: number;
+}
 
 // ---- types -----------------------------------------------------------------
 interface InteractableObject {
@@ -70,6 +78,7 @@ interface DecorationEntry {
 
 export class GameScene extends Phaser.Scene {
   // --- state -----------------------------------------------------------------
+  private sceneData: SceneData = {};
   private isTransitioning = false;
   private currentMapKey = '';
 
@@ -117,6 +126,10 @@ export class GameScene extends Phaser.Scene {
 
   constructor() {
     super("GameScene");
+  }
+
+  init(data?: SceneData) {
+    this.sceneData = data ?? {};
   }
 
   // ---------------------------------------------------------------------------
@@ -184,7 +197,17 @@ export class GameScene extends Phaser.Scene {
     this.playerShadow.setDepth(this.player.y - 1);
 
     // ---- load initial map ---------------------------------------------------
-    this.changeMap(INITIAL_MAP, 'spawn');
+    if (this.sceneData.loadSave && this.sceneData.mapKey) {
+      // Continuing a saved game — load the saved map
+      this.changeMap(this.sceneData.mapKey, 'spawn');
+      // Override spawn with saved position
+      if (this.sceneData.playerX != null && this.sceneData.playerY != null) {
+        this.player.setPosition(this.sceneData.playerX, this.sceneData.playerY);
+        this.playerShadow.setPosition(this.sceneData.playerX - 2, this.sceneData.playerY - 10);
+      }
+    } else {
+      this.changeMap(INITIAL_MAP, 'spawn');
+    }
 
     // ---- hint text -----------------------------------------------------------
     this.hint = this.add
@@ -302,6 +325,12 @@ export class GameScene extends Phaser.Scene {
 
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
+
+    // After loading a save, we need to tell React about the restored quest states.
+    // We wait a tiny bit to ensure GameHUD is mounted and listening.
+    setTimeout(() => {
+      questManager.emitAllStates();
+    }, 100);
   }
 
   // ---------------------------------------------------------------------------
@@ -1173,6 +1202,9 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
 
         // Change the map with relative positioning
         this.changeMap(mapKey, destinationSpawnName, relativePos);
+
+        // Auto-save after map transition
+        saveManager.save(mapKey, this.player.x, this.player.y);
 
         // Fade back in
         this.cameras.main.fadeIn(FADE_DURATION, 0, 0);

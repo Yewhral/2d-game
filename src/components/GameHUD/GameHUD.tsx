@@ -24,7 +24,6 @@ const QUEST_NOTIFICATION_DURATION = 3000;
 export function GameHUD() {
   const [money, setMoney] = useState(collectibleState.getMoney());
   const [items, setItems] = useState(inventory.items);
-  const [scene, setScene] = useState("—");
   const [dialog, setDialog] = useState<{
     npc: string;
     text: string;
@@ -49,10 +48,6 @@ export function GameHUD() {
   }, []);
 
   // Subscribe to Phaser events
-  useGameEvent(
-    "scene-changed",
-    useCallback(({ scene }) => setScene(scene), []),
-  );
   useGameEvent(
     "money-changed",
     useCallback(({ money }) => setMoney(money), []),
@@ -121,7 +116,7 @@ export function GameHUD() {
   // Keyboard shortcut: Q for Quest Log
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'q' && !dialog && scene === 'GameScene') {
+      if (e.key.toLowerCase() === 'q' && !dialog) {
         setIsQuestLogOpen((prev) => {
           if (!prev) setHasUnseenQuests(false);
           return !prev;
@@ -133,7 +128,7 @@ export function GameHUD() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [dialog, isQuestLogOpen, scene]);
+  }, [dialog, isQuestLogOpen]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -149,7 +144,7 @@ export function GameHUD() {
   return (
     <div className={styles.hud}>
       {/* Top-left: inventory */}
-      {scene === 'GameScene' && (
+      {(
         <div className={styles.panel}>
           <div className={styles.inventoryItem}>
             <img src={getAssetPath("gameAssets/woodLog.png")} className={styles.icon} alt="Logs" />
@@ -165,7 +160,7 @@ export function GameHUD() {
 
       {/* Top-right: controls */}
       <div className={styles.controls}>
-        {scene === "GameScene" && (
+        {(
           <button 
             className={`${styles.btn} ${styles.questLogBtn} ${hasUnseenQuests ? styles.hasNotification : ''}`}
             onClick={() => {
@@ -238,7 +233,7 @@ export function GameHUD() {
       )}
 
       {/* Mobile Controls */}
-      {isTouch && scene === "GameScene" && (
+      {isTouch && (
         <div className={styles.mobileControls}>
           {/* Virtual Joystick */}
           <div className={styles.joystickContainer}>

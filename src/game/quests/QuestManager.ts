@@ -137,7 +137,55 @@ class QuestManager {
     }
   }
 
+  // ---- Persistence -----------------------------------------------------------
+
+  /** Serialize quest states + progress for saving. */
+  serialize(): { states: Record<string, string>; progress: Record<string, Record<string, unknown>> } {
+    const states: Record<string, string> = {};
+    const progress: Record<string, Record<string, unknown>> = {};
+
+    for (const [id] of this.definitions) {
+      states[id] = this.states.get(id) ?? 'inactive';
+      progress[id] = this.progressMap.get(id) ?? {};
+    }
+
+    return { states, progress };
+  }
+
+  /** Restore quest states + progress from a save. */
+  deserialize(data: { states: Record<string, string>; progress: Record<string, Record<string, unknown>> }): void {
+    this.reset();
+    for (const [id] of this.definitions) {
+      this.states.set(id, (data.states[id] as QuestStatus) ?? 'inactive');
+      this.progressMap.set(id, data.progress[id] ?? {});
+    }
+  }
+
   // ---- Lifecycle ------------------------------------------------------------
+
+  /**
+   * Emit quest-updated for every non-inactive quest (silently).
+   * Used after loading a save to sync React HUD with restored quest state.
+   */
+  emitAllStates(): void {
+    for (const [id, def] of this.definitions) {
+      const status = this.getStatus(id);
+      if (status === 'inactive') continue;
+
+      const progress = this.getProgress(id);
+      const progressStr = def.formatProgress?.(progress) ?? undefined;
+
+      EventBus.emit('quest-updated', {
+        questId: id,
+        status,
+        title: def.title,
+        description: this.getQuestDescription(def, status),
+        message: '',
+        progress: progressStr,
+        silent: true,
+      });
+    }
+  }
 
   reset(): void {
     for (const [id] of this.definitions) {

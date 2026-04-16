@@ -1,66 +1,91 @@
 /**
- * MainMenu — title screen.
- * Emits "scene-changed" so React can update the UI layer,
- * then waits for a click/tap to start the game.
+ * MainMenu — title screen (Phaser scene).
+ *
+ * Only renders the animated background. The actual UI buttons
+ * live in the React <MainMenuOverlay>.
+ *
+ * Listens for "menu:start-game" from React to transition
+ * to the GameScene with the appropriate state.
  */
 
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
+import { saveManager } from "../saveManager";
 
 export class MainMenu extends Phaser.Scene {
+  private particles: Phaser.GameObjects.Arc[] = [];
+
   constructor() {
     super("MainMenu");
   }
 
   create() {
     const { width, height } = this.scale;
-    const cx = width / 2;
-    const cy = height / 2;
 
-    // Background gradient panel
+    // ---- Background gradient panel  -----------------------------------------
     const panel = this.add.graphics();
     panel.fillGradientStyle(0x0f0f13, 0x0f0f13, 0x1a1a24, 0x1a1a24, 1);
     panel.fillRect(0, 0, width, height);
 
-    // Title
-    this.add
-      .text(cx, cy - 80, "2D GAME", {
-        fontFamily: "monospace",
-        fontSize: "56px",
-        color: "#7c6af7",
-        stroke: "#2e2e42",
-        strokeThickness: 4,
-      })
-      .setOrigin(0.5);
+    // ---- Floating particles -------------------------------------------------
+    for (let i = 0; i < 30; i++) {
+      const x = Phaser.Math.Between(0, width);
+      const y = Phaser.Math.Between(0, height);
+      const radius = Phaser.Math.FloatBetween(1, 3);
+      const alpha = Phaser.Math.FloatBetween(0.1, 0.4);
 
-    // Subtitle
-    const prompt = this.add
-      .text(cx, cy + 20, "Click anywhere to play", {
-        fontFamily: "monospace",
-        fontSize: "20px",
-        color: "#888899",
-      })
-      .setOrigin(0.5);
+      const dot = this.add.circle(x, y, radius, 0x7c6af7, alpha);
+      dot.setDepth(1);
 
-    // Blink the prompt
-    this.tweens.add({
-      targets: prompt,
-      alpha: 0,
-      duration: 800,
-      ease: "Sine.InOut",
-      yoyo: true,
-      repeat: -1,
-    });
+      // Gentle drift animation
+      this.tweens.add({
+        targets: dot,
+        y: y - Phaser.Math.Between(40, 120),
+        alpha: 0,
+        duration: Phaser.Math.Between(3000, 8000),
+        ease: "Sine.InOut",
+        repeat: -1,
+        yoyo: true,
+        delay: Phaser.Math.Between(0, 3000),
+      });
 
-    // Start game on pointer down
-    this.input.once("pointerdown", () => {
-      this.scene.start("GameScene");
-    });
+      this.particles.push(dot);
+    }
 
+    // ---- Listen for React menu buttons --------------------------------------
+    const startHandler = ({ newGame }: { newGame: boolean }) => {
+      EventBus.off("menu:start-game", startHandler);
 
+      if (!newGame) {
+        // Continue — load saved state
+        const data = saveManager.load();
+        if (data) {
+          saveManager.apply(data);
+          this.scene.start("GameScene", {
+            loadSave: true,
+            mapKey: data.mapKey,
+            playerX: data.playerX,
+            playerY: data.playerY,
+          });
+          return;
+        }
+      }
+
+      // New game or no save found — start fresh
+      saveManager.resetAll();
+      this.scene.start("GameScene", { loadSave: false });
+    };
+
+    EventBus.on("menu:start-game", startHandler);
+
+    // ---- Tell React we're on the main menu ----------------------------------
     EventBus.emit("scene-changed", { scene: "MainMenu" });
+    EventBus.emit("loading-progress", { progress: 0 });
   }
 
   shutdown() {
+    EventBus.off("menu:start-game");
+    for (const p of this.particles) p.destroy();
+    this.particles = [];
   }
 }

@@ -81,6 +81,12 @@ export type GameEvents = {
 
   /** Phaser → React: notify if interaction is currently possible for UI visibility. */
   "mobile-interact-possible": boolean;
+
+  /** React → Phaser: start a game from the main menu. */
+  "menu:start-game": { newGame: boolean };
+
+  /** Phaser → React: asset loading progress (0.0 to 1.0). */
+  "loading-progress": { progress: number };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

@@ -1,9 +1,12 @@
 /**
  * Preloader — loads all game assets, then moves to MainMenu.
- * Shows a simple progress bar while loading.
+ *
+ * The Phaser canvas is hidden behind a React overlay during this phase,
+ * so no visual loading bar is needed here.
  */
 
 import Phaser from "phaser";
+import { EventBus } from "../EventBus";
 
 export class Preloader extends Phaser.Scene {
   constructor() {
@@ -11,18 +14,10 @@ export class Preloader extends Phaser.Scene {
   }
 
   init() {
-    const { width, height } = this.scale;
-    const cx = width / 2;
-    const cy = height / 2;
-
-    // Background bar
-    this.add.rectangle(cx, cy, 468, 32, 0x1a1a24).setStrokeStyle(1, 0x2e2e42);
-
-    // Fill bar — updated by the 'progress' event
-    const bar = this.add.rectangle(cx - 230, cy, 4, 28, 0x7c6af7);
+    EventBus.emit("scene-changed", { scene: "Preloader" });
 
     this.load.on("progress", (progress: number) => {
-      bar.width = 4 + 460 * progress;
+      EventBus.emit("loading-progress", { progress });
     });
   }
 
