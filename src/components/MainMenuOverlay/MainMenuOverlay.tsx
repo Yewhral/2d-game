@@ -20,6 +20,7 @@ export function MainMenuOverlay() {
   const hasSave = saveManager.hasSave();
   const [confirming, setConfirming] = useState(false);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const handleStartGame = () => {
     EventBus.emit("menu:start-game", { newGame: true });
@@ -38,6 +39,15 @@ export function MainMenuOverlay() {
     saveManager.deleteSave();
     EventBus.emit("menu:start-game", { newGame: true });
     setConfirming(false);
+  };
+
+  const handleClearData = () => {
+    if (!clearing) {
+      setClearing(true);
+      return;
+    }
+    saveManager.deleteSave();
+    window.location.reload();
   };
 
   return (
@@ -86,6 +96,16 @@ export function MainMenuOverlay() {
           >
             Credits
           </button>
+
+          {hasSave && (
+            <button 
+              className={styles.dangerBtn}
+              onClick={handleClearData}
+              onMouseLeave={() => setClearing(false)}
+            >
+              {clearing ? "⚠ Wipe all data?" : "Clear Save Data"}
+            </button>
+          )}
         </div>
 
         {/* Footer hint */}
