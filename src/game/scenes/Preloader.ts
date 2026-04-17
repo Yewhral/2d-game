@@ -56,6 +56,42 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 192,
       frameHeight: 256,
     });
+    this.load.spritesheet('house2Blue', 'house2Blue.png', {
+      frameWidth: 128,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('house3Blue', 'house3Blue.png', {
+      frameWidth: 128,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('barracksBlue', 'barracksBlue.png', {
+      frameWidth: 192,
+      frameHeight: 256,
+    });
+    this.load.spritesheet('archeryBlue', 'archeryBlue.png', {
+      frameWidth: 192,
+      frameHeight: 256,
+    });
+    this.load.spritesheet('towerBlue', 'towerBlue.png', {
+      frameWidth: 128,
+      frameHeight: 256,
+    });
+    this.load.spritesheet('castleBlue', 'castleBlue.png', {
+      frameWidth: 320,
+      frameHeight: 256,
+    });
+    this.load.spritesheet('monasteryBlue', 'monasteryBlue.png', {
+      frameWidth: 192,
+      frameHeight: 320,
+    });
+    this.load.spritesheet('blueMonkHeal', 'blueMonkHeal.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('bluePawnIdleKnife', 'bluePawnIdleKnife.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
     this.load.spritesheet('purple-warrior-idle', 'purpleWarriorIdle.png', {
       frameWidth: 192,
       frameHeight: 192,
@@ -120,6 +156,7 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
+    
     this.load.tilemapTiledJSON('16-json', '16.json');
     this.load.tilemapTiledJSON('16b-json', '16b.json');
     this.load.tilemapTiledJSON('17-json', '17.json');
