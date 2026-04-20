@@ -85,6 +85,19 @@
   color: var(--color-text);
 }
 
+.paragraph a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom 0.2s, opacity 0.2s;
+  font-weight: 500;
+}
+
+.paragraph a:hover {
+  border-bottom-color: var(--color-accent);
+  opacity: 0.8;
+}
+
 .footer {
   padding: 16px 24px;
   border-top: 1px solid var(--color-border);

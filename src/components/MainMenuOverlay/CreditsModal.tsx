@@ -36,8 +36,10 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
           <div className={styles.textSection}>
             <h3>Assets</h3>
             <p className={styles.paragraph}>
-              Sprites and tilesets are used for educational and demonstration purposes. 
-              The engine logic is custom-built using Phaser 3 and React 18.
+              Environment and Sprites: <a href="https://pixelfrog-assets.itch.io/tiny-swords" target="_blank" rel="noopener noreferrer">Tiny Swords by Pixel Frog</a>
+            </p>
+            <p className={styles.paragraph}>
+              Player Sprite: <a href="https://axulart.itch.io/small-8-direction-characters" target="_blank" rel="noopener noreferrer">Small 8-direction characters by AxulArt</a>
             </p>
           </div>
           <div className={styles.textSection}>
