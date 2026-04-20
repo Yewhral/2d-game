@@ -316,21 +316,21 @@
                 {
                  "height":0,
                  "id":7,
-                 "name":"bush",
+                 "name":"tree4",
                  "opacity":1,
                  "point":true,
                  "properties":[
                         {
                          "name":"decorationId",
                          "type":"string",
-                         "value":"bush"
+                         "value":"tree4"
                         }],
                  "rotation":0,
-                 "type":"bush",
+                 "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":221.900562714694,
-                 "y":82.5676174312155
+                 "x":216.184317144784,
+                 "y":94.0001085710349
                 }, 
                 {
                  "height":0,
@@ -348,8 +348,27 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":744.143419177733,
-                 "y":111.042320246713
+                 "x":741.997426265877,
+                 "y":120.477555184406
+                }, 
+                {
+                 "height":0,
+                 "id":31,
+                 "name":"tree3",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"tree3"
+                        }],
+                 "rotation":0,
+                 "type":"tree",
+                 "visible":true,
+                 "width":0,
+                 "x":828.743853612396,
+                 "y":124.202032147936
                 }, 
                 {
                  "height":0,
@@ -498,7 +517,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":31,
+ "nextobjectid":32,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
