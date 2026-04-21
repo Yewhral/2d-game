@@ -403,21 +403,78 @@
                 {
                  "height":0,
                  "id":26,
-                 "name":"purplePawnIdleHammer",
+                 "name":"blueMonkHeal",
                  "opacity":1,
                  "point":true,
                  "properties":[
                         {
                          "name":"npcId",
                          "type":"string",
-                         "value":"purple-pawn-idle-hammer-18"
+                         "value":"blueMonkHeal"
                         }],
                  "rotation":0,
                  "type":"NPC",
                  "visible":true,
                  "width":0,
-                 "x":245.518404365965,
-                 "y":336.950843275687
+                 "x":225.970204598253,
+                 "y":344.920645830855
+                }, 
+                {
+                 "height":0,
+                 "id":32,
+                 "name":"blueMonkHealReverse",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"blueMonkHealReverse"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":331.95162155528,
+                 "y":344.920645830855
+                }, 
+                {
+                 "height":0,
+                 "id":33,
+                 "name":"blueMonkHealReverse2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"blueMonkHealReverse2"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":381.148664343786,
+                 "y":402.859465737514
+                }, 
+                {
+                 "height":0,
+                 "id":34,
+                 "name":"blueMonkHeal2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"blueMonkHeal2"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":180.800232288037,
+                 "y":397.052264808362
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -517,7 +574,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":32,
+ "nextobjectid":35,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
