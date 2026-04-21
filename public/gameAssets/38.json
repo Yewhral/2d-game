@@ -633,8 +633,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":691.796997492526,
-                 "y":507.074666698814
+                 "x":732.616790515235,
+                 "y":514.537084757141
                 }, 
                 {
                  "height":0,
@@ -652,8 +652,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":588.291997492526,
-                 "y":511.138666698814
+                 "x":563.40450364871,
+                 "y":521.181002769078
                 }, 
                 {
                  "height":0,
@@ -671,8 +671,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":515.960997492526,
-                 "y":510.174666698814
+                 "x":445.156168579461,
+                 "y":519.605034028057
                 }, 
                 {
                  "height":0,
@@ -690,8 +690,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":637.476997492526,
-                 "y":509.210666698814
+                 "x":599.153046535255,
+                 "y":522.883434219076
                 }, 
                 {
                  "height":0,
@@ -709,8 +709,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":559.358997492526,
-                 "y":511.138666698814
+                 "x":516.104188727604,
+                 "y":521.181002769078
                 }, 
                 {
                  "height":0,
@@ -728,8 +728,8 @@
                  "type":"tree",
                  "visible":true,
                  "width":0,
-                 "x":732.953997492526,
-                 "y":503.423666698814
+                 "x":799.901173787209,
+                 "y":508.568348373877
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -745,14 +745,14 @@
                 {
                  "height":0,
                  "id":26,
-                 "name":"purplePawnIdleHammer",
+                 "name":"bluePawnIdleKnifeReverse",
                  "opacity":1,
                  "point":true,
                  "properties":[
                         {
                          "name":"npcId",
                          "type":"string",
-                         "value":"purple-pawn-idle-hammer-18"
+                         "value":"bluePawnIdleKnifeReverse"
                         }],
                  "rotation":0,
                  "type":"NPC",
@@ -2948,6 +2948,15 @@
                         }]
                 }, 
                 {
+                 "id":759,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"string",
+                         "value":"1"
+                        }]
+                }, 
+                {
                  "id":768,
                  "properties":[
                         {
@@ -3036,7 +3045,8 @@
                          "type":"string",
                          "value":"1"
                         }]
-                }, 
+                },
+            
                 {
                  "id":785,
                  "properties":[
@@ -3045,8 +3055,7 @@
                          "type":"string",
                          "value":"1"
                         }]
-                },
-            
+                }, 
                 {
                  "id":786,
                  "properties":[
@@ -3094,6 +3103,24 @@
                 }, 
                 {
                  "id":791,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"string",
+                         "value":"1"
+                        }]
+                }, 
+                {
+                 "id":794,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"string",
+                         "value":"1"
+                        }]
+                }, 
+                {
+                 "id":795,
                  "properties":[
                         {
                          "name":"collides",
@@ -3256,6 +3283,33 @@
                 }, 
                 {
                  "id":827,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"string",
+                         "value":"1"
+                        }]
+                }, 
+                {
+                 "id":829,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"string",
+                         "value":"1"
+                        }]
+                }, 
+                {
+                 "id":830,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"string",
+                         "value":"1"
+                        }]
+                }, 
+                {
+                 "id":831,
                  "properties":[
                         {
                          "name":"collides",

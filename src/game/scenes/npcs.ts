@@ -285,4 +285,20 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       delay: 200,
     },
   },
+
+  '38-json': {
+    'bluePawnIdleKnifeReverse': {
+      name: 'Blue Pawn',
+      text: 'I keep my blade sharp!',
+      spriteKey: 'bluePawnIdleKnife',
+      frame: 0,
+      scale: 0.75,
+      bodySize: { width: 35, height: 35 },
+      bodyOffset: { x: 80, y: 85 },
+      portrait: 'gameAssets/purplePawnAvatar.png',
+      theme: 'blue',
+      flipX: true,
+      animated: true,
+    },
+  },
 };
