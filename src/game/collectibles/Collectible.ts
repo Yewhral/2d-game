@@ -14,6 +14,7 @@
  */
 
 import Phaser from 'phaser';
+import { FX_REGISTRY } from '../scenes/effects';
 
 export type CollectibleType = 'auto' | 'interact';
 
@@ -41,6 +42,8 @@ export interface CollectibleConfig {
   hitbox?: { width: number; height: number; offsetX?: number; offsetY?: number };
   /** Whether the player should physically collide (block) with this item */
   collides?: boolean;
+  /** Optional visual effect from FX_REGISTRY to loop on top of the item */
+  fxType?: string;
   /** Callback invoked when the item is collected */
   onCollect: (collectible: Collectible) => void;
 }
@@ -55,6 +58,7 @@ export class Collectible {
 
   private _collected = false;
   private onCollect: (collectible: Collectible) => void;
+  private fxSprite?: Phaser.GameObjects.Sprite;
 
   constructor(config: CollectibleConfig) {
     this.id = config.id;
@@ -97,6 +101,18 @@ export class Collectible {
         repeat: -1,
       });
     }
+
+    // ---- optional FX ----------------------------------------------------
+    if (config.fxType) {
+      const fx = FX_REGISTRY[config.fxType];
+      if (fx?.spriteKey && fx?.animKey) {
+        this.fxSprite = config.scene.add.sprite(config.x, config.y, fx.spriteKey);
+        this.fxSprite.setScale(fx.scale ?? 1);
+        this.fxSprite.setDepth(config.y + (fx.depthOffset ?? 0));
+        // Force the animation to loop indefinitely even if it's normally a 1-shot
+        this.fxSprite.play({ key: fx.animKey, repeat: -1 });
+      }
+    }
   }
 
   // ---- public API --------------------------------------------------------
@@ -112,11 +128,19 @@ export class Collectible {
   collect(): void {
     if (this._collected) return;
     this._collected = true;
+
+    // Stop and hide the FX immediately on collection
+    if (this.fxSprite) {
+      this.fxSprite.stop();
+      this.fxSprite.setVisible(false);
+    }
+
     this.onCollect(this);
   }
 
   /** Destroy the underlying sprite (called after collect animation). */
   destroySprite(): void {
     this.sprite.destroy();
+    this.fxSprite?.destroy();
   }
 }

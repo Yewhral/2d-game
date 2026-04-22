@@ -1,9 +1,10 @@
 interface ItemConfig {
-  textureKey: string;
+  textureKey?: string;
   scale: number;
   bob: boolean;
   collides: boolean;
   hitbox?: { width: number; height: number; offsetX?: number; offsetY?: number };
+  fxType?: string;
 }
 
 export const ITEM_REGISTRY: Record<string, ItemConfig> = {
@@ -18,6 +19,14 @@ export const ITEM_REGISTRY: Record<string, ItemConfig> = {
     scale: 0.7,
     bob: false,
     collides: true,
+    hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
+  },
+  'artifact': {
+    fxType: 'heal',
+    scale: 0.8,
+    bob: true,
+    collides: true,
+    textureKey: 'money-img',
     hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
 };

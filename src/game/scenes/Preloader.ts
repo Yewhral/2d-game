@@ -174,6 +174,10 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 24
     });
+    this.load.spritesheet('heal', 'heal.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
   }
 
   create() {

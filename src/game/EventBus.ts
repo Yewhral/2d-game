@@ -49,6 +49,9 @@ export type GameEvents = {
   /** Phaser → React: a wood log was collected. */
   "wood-collected": { id: string; itemType: string };
 
+  /** Global event for any item collected. */
+  "item-collected": { id: string; itemType: string };
+
   /** Quest completion: remove specific tiles from a map layer. */
   "quest:remove-tiles": {
     mapKey: string;

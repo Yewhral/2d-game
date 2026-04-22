@@ -572,7 +572,36 @@
          "draworder":"topdown",
          "id":7,
          "name":"Collectibles",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":54,
+                 "name":"artifact",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"artifact1"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"artifact"
+                        }],
+                 "rotation":0,
+                 "type":"artifact",
+                 "visible":true,
+                 "width":0,
+                 "x":285.828502898261,
+                 "y":412.752348590845
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -631,7 +660,7 @@
          "y":0
         }],
  "nextlayerid":25,
- "nextobjectid":53,
+ "nextobjectid":55,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",

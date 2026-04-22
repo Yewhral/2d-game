@@ -106,8 +106,9 @@ export function spawnCollectibles(
     const config = ITEM_REGISTRY[itemType];
     let textureKey = config?.textureKey ?? 'money-img';
     let frame: number | undefined;
+    let fxType = getProp(obj, 'fxType') || config?.fxType;
 
-    if (!config && obj.gid != null) {
+    if ((!config || !config.textureKey) && obj.gid != null) {
       // Find the tileset this gid belongs to
       for (const ts of map.tilesets) {
         if (obj.gid >= ts.firstgid && obj.gid < ts.firstgid + ts.total) {
@@ -135,6 +136,7 @@ export function spawnCollectibles(
       bob: config?.bob ?? false,
       collides: config?.collides ?? false,
       hitbox: config?.hitbox,
+      fxType,
       onCollect: (c) => handleCollect(scene, c),
     });
 
@@ -168,6 +170,9 @@ function handleCollect(scene: Phaser.Scene, collectible: Collectible): void {
 
   // 2. Run type-specific effect (if registered)
   collectEffects[collectible.itemType]?.(collectible);
+
+  // 3. Emit global collection event
+  EventBus.emit('item-collected', { id: collectible.id, itemType: collectible.itemType });
 
   const sx = collectible.sprite.x;
   const sy = collectible.sprite.y;

@@ -43,4 +43,10 @@ export const FX_REGISTRY: Record<
     movePlayer: { x: -80, y: 0 },
     repeatable: true
   },
+  heal: {
+    spriteKey: 'heal',
+    animKey: 'anim-heal',
+    scale: 0.5,
+    depthOffset: 10,
+  },
 };

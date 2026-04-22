@@ -30,6 +30,7 @@ import { DECORATION_REGISTRY } from "./decorations";
 import { TILESET_IMAGE_KEYS } from "../tilesets";
 import { worldState } from "../worldState";
 import { FX_REGISTRY } from "./effects";
+import { collectibleState } from "../collectibles/CollectibleState";
 
 const INITIAL_MAP = '16-json';
 
@@ -68,6 +69,7 @@ interface NpcObject {
   name: string;
   onInteract: () => void;
   patrol?: NpcPatrolState;
+  data?: import('./npcs').NpcData;
 }
 
 interface DecorationEntry {
@@ -323,6 +325,17 @@ export class GameScene extends Phaser.Scene {
       if (!payload) this.activeDialogNpc = null;
     });
 
+    EventBus.on('item-collected', ({ id }) => {
+      if (id === 'artifact1' && this.currentMapKey === '27-json') {
+        this.npcs.forEach(npc => {
+          npc.sprite.anims.stop();
+          if (npc.data) {
+            npc.sprite.setFrame(npc.data.frame);
+          }
+        });
+      }
+    });
+
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
 
@@ -366,6 +379,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("quest:show-layer");
     EventBus.off("mobile-move");
     EventBus.off("mobile-interact");
+    EventBus.off("item-collected");
   }
 
   // ---- map management -------------------------------------------------------
@@ -722,7 +736,10 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player, sprite);
 
-    if (data.animated) {
+    const isMap27 = this.currentMapKey === '27-json';
+    const artifactCollected = collectibleState.isCollected('artifact1');
+
+    if (data.animated && !(isMap27 && artifactCollected)) {
       const animKey = `anim-${this.currentMapKey}-${npcId}`;
       if (!this.anims.exists(animKey)) {
         this.anims.create({
@@ -743,6 +760,7 @@ export class GameScene extends Phaser.Scene {
       x,
       y,
       name: data.name,
+      data,
       onInteract: () => {
         // 1. Ask the quest system for dialog (reads current state)
         const questDialog = questManager.getNpcDialog(npcId);
