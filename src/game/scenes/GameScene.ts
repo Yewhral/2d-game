@@ -326,14 +326,12 @@ export class GameScene extends Phaser.Scene {
     });
 
     EventBus.on('item-collected', ({ id }) => {
-      if (id === 'artifact1' && this.currentMapKey === '27-json') {
-        this.npcs.forEach(npc => {
+      this.npcs.forEach(npc => {
+        if (npc.data?.stopAnimWhenCollected === id) {
           npc.sprite.anims.stop();
-          if (npc.data) {
-            npc.sprite.setFrame(npc.data.frame);
-          }
-        });
-      }
+          npc.sprite.setFrame(npc.data.frame);
+        }
+      });
     });
 
     // ---- initial React sync -------------------------------------------------
@@ -736,23 +734,28 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player, sprite);
 
-    const isMap27 = this.currentMapKey === '27-json';
-    const artifactCollected = collectibleState.isCollected('artifact1');
+    const shouldAnimate = data.animated &&
+      !(data.stopAnimWhenCollected && collectibleState.isCollected(data.stopAnimWhenCollected));
 
-    if (data.animated && !(isMap27 && artifactCollected)) {
+    if (shouldAnimate) {
       const animKey = `anim-${this.currentMapKey}-${npcId}`;
       if (!this.anims.exists(animKey)) {
-        this.anims.create({
-          key: animKey,
-          frames: this.anims.generateFrameNumbers(data.spriteKey, {}),
-          frameRate: 10,
-          repeatDelay: data.repeatDelay ?? 0,
-          delay: data.delay ?? 0,
-          randomFrame: true,
-          repeat: -1,
-        });
+        const frames = this.anims.generateFrameNumbers(data.spriteKey, {});
+        if (frames.length > 0) {
+          this.anims.create({
+            key: animKey,
+            frames,
+            frameRate: 10,
+            repeatDelay: data.repeatDelay ?? 0,
+            delay: data.delay ?? 0,
+            randomFrame: true,
+            repeat: -1,
+          });
+        }
       }
-      sprite.play({ key: animKey, startFrame: data.frame });
+      if (this.anims.exists(animKey)) {
+        sprite.play({ key: animKey, startFrame: data.frame });
+      }
     }
 
     const npc: NpcObject = {

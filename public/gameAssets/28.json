@@ -568,21 +568,21 @@
                 {
                  "height":0,
                  "id":26,
-                 "name":"purplePawnIdleHammer",
+                 "name":"temp",
                  "opacity":1,
                  "point":true,
                  "properties":[
                         {
                          "name":"npcId",
                          "type":"string",
-                         "value":"purple-pawn-idle-hammer-18"
+                         "value":"temp"
                         }],
                  "rotation":0,
                  "type":"NPC",
                  "visible":true,
                  "width":0,
-                 "x":755.413631374114,
-                 "y":213.551541762299
+                 "x":495.423260647104,
+                 "y":237.624724237022
                 }, 
                 {
                  "height":0,

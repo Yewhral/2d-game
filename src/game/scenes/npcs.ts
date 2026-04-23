@@ -29,6 +29,8 @@ export interface NpcData {
   flipX?: boolean;
   theme?: NpcTheme;
   patrol?: NpcPatrol;
+  /** If set, the NPC stops animating once this collectible has been collected */
+  stopAnimWhenCollected?: string;
 }
 
 export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
@@ -171,6 +173,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 500,
       delay: 500,
+      stopAnimWhenCollected: 'artifact1',
     },
     'blueMonkHeal2': {
       name: 'Blue Monk',
@@ -185,6 +188,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 700,
       delay: 400,
+      stopAnimWhenCollected: 'artifact1',
     },
     'blueMonkHealReverse': {
       name: 'Blue Monk',
@@ -200,6 +204,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 1000,
       delay: 1000,
+      stopAnimWhenCollected: 'artifact1',
     },
     'blueMonkHealReverse2': {
       name: 'Blue Monk',
@@ -215,6 +220,20 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 400,
       delay: 1000,
+      stopAnimWhenCollected: 'artifact1',
+    },
+    'bluePawnAxeIdle': {
+      name: 'Blue Pawn',
+      text: 'Those guys are nuts!',
+      spriteKey: 'bluePawnAxeIdle',
+      frame: 0,
+      scale: 0.8,
+      bodySize: { width: 35, height: 35 },
+      bodyOffset: { x: 80, y: 85 },
+      portrait: 'gameAssets/bluePawnAvatar.png',
+      theme: 'blue',
+      animated: true,
+      flipX: true,
     },
   },
 

@@ -40,6 +40,14 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 128,
       frameHeight: 192,
     });
+    this.load.spritesheet('stump3', 'stump3.png', {
+      frameWidth: 128,
+      frameHeight: 256,
+    });
+    this.load.spritesheet('stump4', 'stump4.png', {
+      frameWidth: 128,
+      frameHeight: 256,
+    });
     this.load.spritesheet('house2', 'house2.png', {
       frameWidth: 128,
       frameHeight: 192,
@@ -89,6 +97,10 @@ export class Preloader extends Phaser.Scene {
       frameHeight: 192,
     });
     this.load.spritesheet('bluePawnIdleKnife', 'bluePawnIdleKnife.png', {
+      frameWidth: 192,
+      frameHeight: 192,
+    });
+    this.load.spritesheet('bluePawnAxeIdle', 'bluePawnAxeIdle.png', {
       frameWidth: 192,
       frameHeight: 192,
     });

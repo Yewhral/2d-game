@@ -397,5 +397,34 @@ export const DECORATION_REGISTRY: Record<
     },
     bodyOffset: { x: -16, y: 24 },
   },
-  
+  'stump3': {
+    name: 'stump3',
+    spriteKey: 'stump3',
+    scale: 1,
+    frame: 0,
+    depthOffset: -20,
+    hasCollision: true,
+    hitbox: {
+      width: 8,
+      height: 12,
+      offsetX: 20,
+      offsetY: 0,
+    },
+    bodyOffset: { x: -90, y: 24 },
+  },
+  'stump4': {
+    name: 'stump4',
+    spriteKey: 'stump4',
+    scale: 1,
+    frame: 0,
+    depthOffset: -20,
+    hasCollision: true,
+    hitbox: {
+      width: 8,
+      height: 12,
+      offsetX: 20,
+      offsetY: 0,
+    },
+    bodyOffset: { x: -90, y: 24 },
+  },
 };
