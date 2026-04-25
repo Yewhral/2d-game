@@ -25,7 +25,7 @@ import {
   NPC_EXIT_RADIUS, 
   PLAYER_SPEED 
 } from "../constants";
-import { NPC_REGISTRY } from "./npcs";
+import { NPC_REGISTRY, type NpcData } from "./npcs";
 import { DECORATION_REGISTRY } from "./decorations";
 import { TILESET_IMAGE_KEYS } from "../tilesets";
 import { worldState } from "../worldState";
@@ -69,7 +69,7 @@ interface NpcObject {
   name: string;
   onInteract: () => void;
   patrol?: NpcPatrolState;
-  data?: import('./npcs').NpcData;
+  data?: NpcData;
 }
 
 interface DecorationEntry {

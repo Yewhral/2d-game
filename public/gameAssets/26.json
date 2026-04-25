@@ -984,6 +984,25 @@
                 }, 
                 {
                  "height":0,
+                 "id":77,
+                 "name":"purple-pawn-idle-flip",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"npcId",
+                         "type":"string",
+                         "value":"purple-pawn-idle-flip"
+                        }],
+                 "rotation":0,
+                 "type":"NPC",
+                 "visible":true,
+                 "width":0,
+                 "x":345.348482789871,
+                 "y":505.044691788552
+                }, 
+                {
+                 "height":0,
                  "id":29,
                  "name":"sheep",
                  "opacity":1,
@@ -1205,7 +1224,7 @@
          "y":0
         }],
  "nextlayerid":17,
- "nextobjectid":77,
+ "nextobjectid":78,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
