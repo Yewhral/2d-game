@@ -21,6 +21,11 @@
   --radius: 8px;
   --radius-lg: 12px;
   --font: "Inter", system-ui, sans-serif;
+
+  /* HUD layout */
+  --hud-height: 40px;
+  --hud-spacing: 4px;
+  --hud-breakpoint: 1008px; /* 960px canvas + 40px hud + 4px*2 spacing */
 }
 
 html,

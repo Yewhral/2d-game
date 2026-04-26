@@ -8,20 +8,17 @@
 /* ---- Stats panel (top-left) ---- */
 .panel {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: var(--hud-spacing);
+  left: 4px;
   display: flex;
-  flex-direction: column;
   gap: 10px;
   background: rgba(15, 15, 19, 0.75);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 12px 16px;
+  padding: 8px 12px;
   pointer-events: auto;
   min-width: 100px;
 }
-
-
 
 .value {
   font-size: 16px;
@@ -51,8 +48,8 @@
 /* ---- Controls (top-right) ---- */
 .controls {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: var(--hud-spacing);
+  right: 4px;
   display: flex;
   gap: 8px;
   pointer-events: auto;
@@ -428,4 +425,20 @@
   transform: scale(0.9);
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.6);
+}
+
+
+@media (min-width: 1008px /* = --hud-breakpoint */) {
+  .controls {
+    top: 16px;
+    right: 16px;
+  }
+
+  .panel {
+    top: 16px;
+    left: 16px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 16px;
+  }
 }
