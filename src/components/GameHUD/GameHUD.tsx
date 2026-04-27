@@ -142,7 +142,7 @@ export function GameHUD() {
 
 
   return (
-    <div className={styles.hud}>
+    <div className={`${styles.hud}${isTouch ? ` ${styles.hasMobileControls}` : ''}`}>
       {/* Top-left: inventory */}
       {(
         <div className={styles.panel}>

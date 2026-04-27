@@ -82,7 +82,7 @@
 /* ---- NPC Dialog Bubble ---- */
 .dialogOverlay {
   position: absolute;
-  bottom: 40px;
+  bottom: var(--dialog-bottom, 32px);
   left: 0;
   right: 0;
   display: flex;
@@ -91,6 +91,11 @@
   gap: 12px;
   pointer-events: none;
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* When mobile controls (200 px strip) are visible, push dialog above them */
+.hasMobileControls {
+  --dialog-bottom: 232px; /* 200px controls + 32px gap */
 }
 
 /* Theme presets */
