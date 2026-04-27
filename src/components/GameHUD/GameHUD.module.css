@@ -93,9 +93,9 @@
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* When mobile controls (200 px strip) are visible, push dialog above them */
+/* When mobile controls are visible, push dialog above them */
 .hasMobileControls {
-  --dialog-bottom: 232px; /* 200px controls + 32px gap */
+  --dialog-bottom: 180px; 
 }
 
 /* Theme presets */
@@ -368,7 +368,6 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
