@@ -15,8 +15,9 @@ export interface NpcPatrol {
 
 export interface NpcData {
   name: string;
-  /** Default text when no quest overrides the dialog */
-  text: string;
+  /** Default text when no quest overrides the dialog.
+   *  Use string[] for multi-page dialogs (one entry per page). */
+  text: string | string[];
   spriteKey: string;
   frame: number;
   scale: number;
@@ -391,6 +392,25 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       portrait: 'gameAssets/bluePawnAvatar.png',
       theme: 'blue',
       flipX: true,
+      animated: true,
+    },
+  },
+
+  '28-json': {
+    'temp': {
+      name: 'Temp NPC',
+      text: [
+        "Hello there, traveler. I've been waiting for someone to come by.",
+        "There are things happening in this region that I'm not sure I should speak of freely...",
+        "Find me again once you've explored a bit more. I may have a task for you.",
+      ],
+      spriteKey: 'bluePawnIdleKnife',
+      frame: 0,
+      scale: 0.75,
+      bodySize: { width: 35, height: 35 },
+      bodyOffset: { x: 80, y: 85 },
+      portrait: 'gameAssets/bluePawnAvatar.png',
+      theme: 'blue',
       animated: true,
     },
   },

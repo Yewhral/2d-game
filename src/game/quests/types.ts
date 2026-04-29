@@ -71,10 +71,12 @@ export interface QuestHandler {
  * Dialog templates keyed by npcId → quest status.
  * Placeholders like `{collected}` are interpolated from progress data
  * by the QuestManager at runtime.
+ *
+ * Use string[] for multi-page dialogs (one entry per page).
  */
 export type QuestDialogs = Record<
   string,
-  Partial<Record<QuestStatus, string>>
+  Partial<Record<QuestStatus, string | string[]>>
 >;
 
 // ---- Quest definition (full package) ----------------------------------------

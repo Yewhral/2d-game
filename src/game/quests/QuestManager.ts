@@ -92,9 +92,9 @@ class QuestManager {
    *
    * Priority: active/done > inactive > complete.
    */
-  getNpcDialog(npcId: string): string | null {
-    let inactiveDialog: string | null = null;
-    let completeDialog: string | null = null;
+  getNpcDialog(npcId: string): string | string[] | null {
+    let inactiveDialog: string | string[] | null = null;
+    let completeDialog: string | string[] | null = null;
 
     for (const [id, def] of this.definitions) {
       const status = this.getStatus(id);
@@ -105,7 +105,7 @@ class QuestManager {
       if (!template) continue;
 
       const progress = this.getProgress(id);
-      const resolved = this.interpolate(template, progress);
+      const resolved = this.interpolateAny(template, progress);
 
       if (status === 'active' || status === 'done') return resolved;
       if (status === 'inactive' && inactiveDialog === null) inactiveDialog = resolved;
@@ -303,6 +303,17 @@ class QuestManager {
     return template.replace(/\{(\w+)\}/g, (match, key: string) => {
       return progress[key] !== undefined ? String(progress[key]) : match;
     });
+  }
+
+  /** Interpolate a single string or every page of a string[]. */
+  private interpolateAny(
+    template: string | string[],
+    progress: Record<string, unknown>,
+  ): string | string[] {
+    if (Array.isArray(template)) {
+      return template.map((t) => this.interpolate(t, progress));
+    }
+    return this.interpolate(template, progress);
   }
 }
 

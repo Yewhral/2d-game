@@ -767,7 +767,8 @@ export class GameScene extends Phaser.Scene {
       onInteract: () => {
         // 1. Ask the quest system for dialog (reads current state)
         const questDialog = questManager.getNpcDialog(npcId);
-        const text = questDialog ?? data.text;
+        const raw = questDialog ?? data.text;
+        const pages = Array.isArray(raw) ? raw : [raw];
 
         // 2. Notify the quest system (may advance quest state)
         questManager.handleNpcInteract(npcId);
@@ -776,7 +777,7 @@ export class GameScene extends Phaser.Scene {
         this.activeDialogNpc = npc;
         EventBus.emit('npc-dialog', {
           npc: data.name,
-          text,
+          text: pages,
           portrait: data?.portrait,
           theme: data.theme ?? 'purple',
         });
@@ -953,9 +954,11 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
         onInteract: () => {}
       };
 
+      const fxPages = Array.isArray(fx.dialog.text) ? fx.dialog.text : [fx.dialog.text];
+
       EventBus.emit('npc-dialog', {
         npc: fx.dialog.npc || '',
-        text: fx.dialog.text,
+        text: fxPages,
         portrait: fx.dialog.portrait || '',
         theme: fx.dialog.theme || 'purple',
       });
@@ -1348,10 +1351,9 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
   private handleInteract() {
     const pressed = Phaser.Input.Keyboard.JustDown(this.keyE) || this.mobileInteractPressed;
     if (pressed) {
-      // If dialog is open, close it first
+      // If dialog is open, let React advance the page (or close on last page)
       if (this.activeDialogNpc) {
-        this.activeDialogNpc = null;
-        EventBus.emit('npc-dialog', null);
+        EventBus.emit('npc-dialog-advance', undefined);
         return;
       }
       const target = this.nearestInteractable();

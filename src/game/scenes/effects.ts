@@ -13,7 +13,7 @@ export const FX_REGISTRY: Record<
     scale?: number;
     depthOffset?: number;
     shake?: { duration: number; intensity: number };
-    dialog?: { text: string; npc?: string; portrait?: string; theme?: string };
+    dialog?: { text: string | string[]; npc?: string; portrait?: string; theme?: string };
     movePlayer?: { x: number; y: number };
     repeatable?: boolean;
   }

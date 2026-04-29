@@ -27,8 +27,12 @@ export type GameEvents = {
   /** Fired when the current scene name changes. */
   "scene-changed": { scene: string };
 
-  /** Phaser → React: an NPC started/stopped speaking. */
-  "npc-dialog": { npc: string; text: string; portrait?: string; theme?: string } | null;
+  /** Phaser → React: an NPC started/stopped speaking.
+   *  `text` is always an array — one entry per dialog page. */
+  "npc-dialog": { npc: string; text: string[]; portrait?: string; theme?: string } | null;
+
+  /** Phaser → React: player pressed [E] while dialog is open — advance or close. */
+  "npc-dialog-advance": undefined;
 
   /** Phaser → React: a quest state changed. */
   "quest-updated": {

@@ -26,10 +26,11 @@ export function GameHUD() {
   const [items, setItems] = useState(inventory.items);
   const [dialog, setDialog] = useState<{
     npc: string;
-    text: string;
+    text: string[];
     portrait?: string;
     theme?: string;
   } | null>(null);
+  const [dialogPage, setDialogPage] = useState(0);
   const [questNotification, setQuestNotification] = useState<{
     message: string;
     status: string;
@@ -41,6 +42,11 @@ export function GameHUD() {
   const [isTouch, setIsTouch] = useState(false);
   const [mobileInteractPossible, setMobileInteractPossible] = useState(false);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Refs to avoid stale closures in the advance handler
+  const dialogRef = useRef(dialog);
+  const dialogPageRef = useRef(dialogPage);
+  dialogRef.current = dialog;
+  dialogPageRef.current = dialogPage;
 
   // Check for touch device on mount
   useEffect(() => {
@@ -58,7 +64,10 @@ export function GameHUD() {
   );
   useGameEvent(
     "npc-dialog",
-    useCallback((payload) => setDialog(payload ?? null), []),
+    useCallback((payload) => {
+      setDialog(payload ?? null);
+      setDialogPage(0);
+    }, []),
   );
   useGameEvent(
     "quest-updated",
@@ -111,6 +120,24 @@ export function GameHUD() {
   useGameEvent(
     "mobile-interact-possible",
     useCallback((possible) => setMobileInteractPossible(possible), []),
+  );
+
+  // Handle E-key advance: move to next page or close dialog
+  useGameEvent(
+    "npc-dialog-advance",
+    useCallback(() => {
+      const dlg = dialogRef.current;
+      if (!dlg) return;
+      const page = dialogPageRef.current;
+      if (page < dlg.text.length - 1) {
+        setDialogPage(page + 1);
+      } else {
+        // Last page — close dialog and notify Phaser
+        setDialog(null);
+        setDialogPage(0);
+        EventBus.emit('npc-dialog', null);
+      }
+    }, []),
   );
 
   // Keyboard shortcut: Q for Quest Log
@@ -183,7 +210,11 @@ export function GameHUD() {
           className={`${styles.dialogOverlay} ${styles[`theme-${dialog.theme ?? 'purple'}`]}`}
           onClick={() => {
             if ('ontouchstart' in window) {
-              EventBus.emit('npc-dialog', null);
+              if (dialogPage < dialog.text.length - 1) {
+                setDialogPage((p) => p + 1);
+              } else {
+                EventBus.emit('npc-dialog', null);
+              }
             }
           }}
         >
@@ -195,12 +226,21 @@ export function GameHUD() {
             )}
             <div className={styles.dialogContent}>
               <span className={styles.dialogNpcName}>{dialog.npc}</span>
-              <p className={styles.dialogText} dangerouslySetInnerHTML={{ __html: dialog.text }} />
+              <p className={styles.dialogText} dangerouslySetInnerHTML={{ __html: dialog.text[dialogPage] }} />
             </div>
           </div>
-          <span className={styles.dialogHint}>
-            {'ontouchstart' in window ? 'Tap to close' : 'Press [E] to close'}
-          </span>
+          <div className={styles.dialogFooter}>
+            {dialog.text.length > 1 && (
+              <span className={styles.dialogPageIndicator}>
+                {dialogPage + 1} / {dialog.text.length}
+              </span>
+            )}
+            <span className={styles.dialogHint}>
+              {'ontouchstart' in window
+                ? (dialogPage < dialog.text.length - 1 ? 'Tap to continue' : 'Tap to close')
+                : (dialogPage < dialog.text.length - 1 ? 'Press [E] to continue' : 'Press [E] to close')}
+            </span>
+          </div>
         </div>
       )}
 
