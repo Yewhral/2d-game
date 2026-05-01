@@ -765,22 +765,33 @@ export class GameScene extends Phaser.Scene {
       name: data.name,
       data,
       onInteract: () => {
-        // 1. Ask the quest system for dialog (reads current state)
+        // 1. Capture the pre-interaction dialog (inactive=intro, active=progress, etc.)
+        //    This ensures quest-accept interactions show the correct 'inactive' dialog.
         const questDialog = questManager.getNpcDialog(npcId);
         const raw = questDialog ?? data.text;
-        const pages = Array.isArray(raw) ? raw : [raw];
+        const defaultPages = Array.isArray(raw) ? raw : [raw];
 
-        // 2. Notify the quest system (may advance quest state)
+        // 2. Run quest logic. If a delivery happens, onDelivered will emit an
+        //    'npc-dialog' override we capture here.
+        let dialogOverride: { npc: string; text: string[]; portrait?: string; theme?: string } | null = null;
+        const captureOverride = (payload: typeof dialogOverride) => { dialogOverride = payload; };
+        EventBus.on('npc-dialog', captureOverride);
         questManager.handleNpcInteract(npcId);
+        EventBus.off('npc-dialog', captureOverride);
 
-        // 3. Show dialog
+        // 3. If onDelivered emitted a receipt dialog, show that; otherwise show the
+        //    pre-interaction default (quest intro for inactive, progress for active, etc.)
         this.activeDialogNpc = npc;
-        EventBus.emit('npc-dialog', {
-          npc: data.name,
-          text: pages,
-          portrait: data?.portrait,
-          theme: data.theme ?? 'purple',
-        });
+        if (dialogOverride) {
+          EventBus.emit('npc-dialog', dialogOverride);
+        } else {
+          EventBus.emit('npc-dialog', {
+            npc: data.name,
+            text: defaultPages,
+            portrait: data?.portrait,
+            theme: data.theme ?? 'purple',
+          });
+        }
       },
     };
 

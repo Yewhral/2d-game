@@ -41,8 +41,8 @@ export type GameEvents = {
     title: string;
     description?: string;
     message: string;
-    /** Optional progress string, e.g. "1 / 2" */
-    progress?: string;
+    /** Optional progress data, e.g. "1 / 2" or sub-task array */
+    progress?: any;
     /** If true, don't show a notification toast. */
     silent?: boolean;
   };

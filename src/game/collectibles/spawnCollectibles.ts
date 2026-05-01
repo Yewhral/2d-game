@@ -37,6 +37,14 @@ const collectEffects: Record<string, CollectEffect> = {
       itemType: c.itemType,
     });
   },
+
+  artifact: (_c) => {
+    inventory.add('artifact');
+  },
+
+  artifact2: (_c) => {
+    inventory.add('artifact2');
+  },
 };
 
 /**
@@ -159,6 +167,14 @@ const FLOAT_TEXT_CONFIG: Record<string, {
   log: {
     getText: () => '+1 🪵',
     color: '#c4a76c',
+  },
+  artifact: {
+    getText: () => '✨ Artifact found!',
+    color: '#a78bfa',
+  },
+  artifact2: {
+    getText: () => '✨ Artifact found!',
+    color: '#a78bfa',
   },
 };
 

@@ -398,11 +398,10 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
 
   '28-json': {
     'temp': {
-      name: 'Temp NPC',
+      name: 'Blue Warrior',
       text: [
-        "Hello there, traveler. I've been waiting for someone to come by.",
-        "There are things happening in this region that I'm not sure I should speak of freely...",
-        "Find me again once you've explored a bit more. I may have a task for you.",
+        "The ancient forces are stirring in this region.",
+        "I've been stationed here to keep watch. If you find anything unusual, bring it to me.",
       ],
       spriteKey: 'bluePawnIdleKnife',
       frame: 0,

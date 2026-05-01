@@ -223,6 +223,51 @@
   color: #d8b4fe;
 }
 
+.progressList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressListHeader {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.progressListItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.progressIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.iconFound {
+  color: #fbbf24; /* Amber */
+}
+
+.iconComplete {
+  color: #4ade80; /* Green */
+}
+
+.textComplete {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
 .noQuestSelected {
   height: 100%;
   display: flex;

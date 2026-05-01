@@ -9,7 +9,8 @@
 export type QuestStatus = 'inactive' | 'active' | 'done' | 'complete' | 'failed';
 
 // ---- Quest type -------------------------------------------------------------
-export type QuestType = 'talk' | 'collect';
+export type QuestType = 'talk' | 'collect' | 'deliver';
+
 
 // ---- Item collection info ---------------------------------------------------
 /** Passed to handlers when a collectible is picked up. */
@@ -96,7 +97,7 @@ export interface QuestDefinition {
   /** NPC dialog templates, interpolated with progress data */
   dialogs: QuestDialogs;
   /** Optional formatter for the progress badge in the quest tracker */
-  formatProgress?: (progress: Record<string, unknown>) => string | null;
+  formatProgress?: (progress: Record<string, unknown>) => any;
   /** Optional callback fired when the quest transitions to 'complete'.
    *  `retroactive` is true when re-applying on map load (skip one-time FX). */
   onComplete?: (retroactive?: boolean) => void;

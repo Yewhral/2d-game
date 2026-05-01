@@ -173,7 +173,7 @@ class QuestManager {
       if (status === 'inactive') continue;
 
       const progress = this.getProgress(id);
-      const progressStr = def.formatProgress?.(progress) ?? undefined;
+      const progressData = def.formatProgress?.(progress) ?? undefined;
 
       EventBus.emit('quest-updated', {
         questId: id,
@@ -181,7 +181,7 @@ class QuestManager {
         title: def.title,
         description: this.getQuestDescription(def, status),
         message: '',
-        progress: progressStr,
+        progress: progressData,
         silent: true,
       });
     }
@@ -240,7 +240,7 @@ class QuestManager {
   private emitStatusChange(questId: string, status: QuestStatus, silent = false): void {
     const def = this.definitions.get(questId);
     const progress = this.getProgress(questId);
-    const progressStr = def?.formatProgress?.(progress) ?? undefined;
+    const progressData = def?.formatProgress?.(progress) ?? undefined;
 
     let message = '';
     switch (status) {
@@ -264,7 +264,7 @@ class QuestManager {
       title: def?.title ?? questId,
       description: this.getQuestDescription(def, status),
       message,
-      progress: progressStr,
+      progress: progressData,
       silent,
     });
   }
@@ -273,17 +273,17 @@ class QuestManager {
     const def = this.definitions.get(questId);
     const status = this.getStatus(questId);
     const progress = this.getProgress(questId);
-    const progressStr = def?.formatProgress?.(progress) ?? undefined;
+    const progressData = def?.formatProgress?.(progress) ?? undefined;
 
     EventBus.emit('quest-updated', {
       questId,
       status,
       title: def?.title ?? questId,
       description: this.getQuestDescription(def, status),
-      message: progressStr
-        ? `${def?.title}: ${progressStr}`
+      message: progressData && typeof progressData === 'string'
+        ? `${def?.title}: ${progressData}`
         : `${def?.title}`,
-      progress: progressStr,
+      progress: progressData,
     });
   }
 

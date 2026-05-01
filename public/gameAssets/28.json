@@ -432,6 +432,11 @@
                          "name":"decorationId",
                          "type":"string",
                          "value":"barracksBlue"
+                        }, 
+                        {
+                         "name":"worldStateId",
+                         "type":"string",
+                         "value":"barracksBlueVisible"
                         }],
                  "rotation":0,
                  "type":"building",
@@ -489,6 +494,11 @@
                          "name":"decorationId",
                          "type":"string",
                          "value":"towerBlue"
+                        }, 
+                        {
+                         "name":"worldStateId",
+                         "type":"string",
+                         "value":"towerBlueVisible"
                         }],
                  "rotation":0,
                  "type":"building",
@@ -582,7 +592,7 @@
                  "visible":true,
                  "width":0,
                  "x":495.423260647104,
-                 "y":237.624724237022
+                 "y":236.624724237022
                 }, 
                 {
                  "height":0,

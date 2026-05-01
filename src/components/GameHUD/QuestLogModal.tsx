@@ -6,7 +6,7 @@ export interface Quest {
   title: string;
   status: string;
   description?: string;
-  progress?: string;
+  progress?: any;
 }
 
 interface QuestLogModalProps {
@@ -154,7 +154,24 @@ export function QuestLogModal({
                 <p className={styles.questDescription}>{selectedQuest.description}</p>
                 {selectedQuest.progress && (
                   <div className={styles.questProgressDetail}>
-                    Progress: {selectedQuest.progress}
+                    {typeof selectedQuest.progress === 'string' ? (
+                      <div>Progress: {selectedQuest.progress}</div>
+                    ) : Array.isArray(selectedQuest.progress) ? (
+                      <div className={styles.progressList}>
+                        <div className={styles.progressListHeader}>Objectives:</div>
+                        {selectedQuest.progress.map((item: any, i: number) => (
+                          <div key={i} className={styles.progressListItem}>
+                            <span className={`${styles.progressIcon} ${item.isDelivered ? styles.iconComplete : item.isFound ? styles.iconFound : ''}`}>
+                              {item.isDelivered ? '✦' : item.isFound ? '◆' : '○'}
+                            </span>
+                            <span className={item.isDelivered ? styles.textComplete : ''}>
+                              {item.label} 
+                              {item.isDelivered ? ' (Gave back)' : item.isFound ? ' (Found)' : ''}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 )}
               </>

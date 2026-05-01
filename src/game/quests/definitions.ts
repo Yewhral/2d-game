@@ -16,6 +16,7 @@
 import type { QuestDefinition } from './types';
 import { TalkQuestHandler } from './TalkQuestHandler';
 import { CollectQuestHandler } from './CollectQuestHandler';
+import { DeliverQuestHandler } from './DeliverQuestHandler';
 import { EventBus } from '../EventBus';
 import { LAYERS } from '../constants';
 import { worldState } from '../worldState';
@@ -175,6 +176,119 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
         mapKey: '18-json',
         layer: LAYERS.PASSAGES,
       });
+    },
+  },
+
+  // ---- Gather the Artifacts --------------------------------------------------
+  // Add more items to `items` when a 3rd (or 4th …) artifact is placed in the
+  // world.  The handler and worldState logic scale automatically.
+  {
+    id: 'gather-the-artifacts',
+    title: 'Echoes of the Ancient',
+    description: {
+      active:
+        "A mysterious figure asked you to find ancient artifacts scattered across the region.\\n\\nBring each one back when you find it — you don't need to collect them all at once.\\n\\nArtifacts delivered: {delivered} / {required}",
+      done: // 'done' is never reached with DeliverQuestHandler (goes active→complete)
+        "You have gathered all the artifacts.\\n\\nReturn to the Blue Warrior to claim your reward.",
+      complete:
+        "The artifacts have been returned. The ancient power stirs once more.\\n\\nThe region will never be the same.",
+      failed:
+        "The artifacts are lost. The ancient power fades into memory.",
+    },
+    handler: new DeliverQuestHandler({
+      giverNpcId: 'temp',
+      items: [
+        {
+          // artifact → reveals barracksBlue on map 28
+          itemType: 'artifact',
+          onDelivered: () => {
+            worldState.set('barracksBlueVisible', 'true');
+            EventBus.emit('world:refresh-decorations');
+            EventBus.emit('npc-dialog', {
+              npc: 'Blue Warrior',
+              portrait: 'gameAssets/bluePawnAvatar.png',
+              theme: 'blue' as const,
+              text: [
+                "This is one of the lost artifacts! I can already feel its power resonating.",
+                "With this, our barracks can be restored. The troops will have shelter once more.",
+                "Bring me the other artifact when you find it. Every piece matters.",
+              ],
+            });
+          },
+        },
+        {
+          // artifact2 → reveals towerBlue on map 28
+          itemType: 'artifact2',
+          onDelivered: () => {
+            worldState.set('towerBlueVisible', 'true');
+            EventBus.emit('world:refresh-decorations');
+            EventBus.emit('npc-dialog', {
+              npc: 'Blue Warrior',
+              portrait: 'gameAssets/bluePawnAvatar.png',
+              theme: 'blue' as const,
+              text: [
+                "The second artifact — incredible. The ancient energy is overwhelming!",
+                "Our watchtower rises from the ruins. We can defend this land once more.",
+                "You've done it, traveler. The region is in your debt.",
+              ],
+            });
+          },
+        },
+        // ── Add a third artifact here when ready ──────────────────────────
+        // {
+        //   itemType: 'artifact3',
+        //   onDelivered: () => {
+        //     worldState.set('artifact3StructureVisible', 'true');
+        //     EventBus.emit('world:refresh-decorations');
+        //     EventBus.emit('npc-dialog', {
+        //       npc: 'Blue Warrior',
+        //       portrait: 'gameAssets/bluePawnAvatar.png',
+        //       theme: 'blue' as const,
+        //       text: ["..."],
+        //     });
+        //   },
+        // },
+      ],
+    }),
+    dialogs: {
+      temp: {
+        inactive: [
+          "Hello there, traveler. I've been waiting for someone like you.",
+          "There are ancient artifacts hidden in this region. They must not fall into the wrong hands.",
+          "Find them and bring them to me — you needn't carry them all at once. I'll take each one as you find it.",
+        ],
+        active: [
+          "You're making progress — {delivered} of {required} artifacts delivered so far.",
+          "The others are still out there. Seek them in the wetlands to the north.",
+        ],
+        complete: [
+          "You've done it. All the artifacts are safe.",
+          "The ancient power is restored. This region owes you a great debt, traveler.",
+        ],
+      },
+    },
+    formatProgress: (progress) => {
+      const deliveredIds = (progress.deliveredIds as string[]) || [];
+      const requiredItems = [
+        { id: 'artifact', label: 'Ancient Relic' },
+        { id: 'artifact2', label: 'Mysterious Totem' },
+      ];
+
+      return requiredItems.map((item) => ({
+        label: item.label,
+        isDelivered: deliveredIds.includes(item.id),
+        isFound: deliveredIds.includes(item.id) || inventory.get(item.id) > 0,
+      }));
+    },
+    onComplete: (retroactive) => {
+      // Ensure both structures are visible on retroactive restore (save/load)
+      worldState.set('barracksBlueVisible', 'true');
+      worldState.set('towerBlueVisible', 'true');
+      EventBus.emit('world:refresh-decorations');
+      if (retroactive) return;
+
+      // One-time visual celebration on first completion
+      EventBus.emit('fx:spawn', { type: 'heal', x: 400, y: 300 });
     },
   },
 ];

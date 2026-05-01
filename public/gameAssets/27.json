@@ -1089,6 +1089,35 @@
                 {
                  "height":0,
                  "id":54,
+                 "name":"artifact2",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"artifact2"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"artifact2"
+                        }],
+                 "rotation":0,
+                 "type":"artifact",
+                 "visible":true,
+                 "width":0,
+                 "x":534.683053253126,
+                 "y":499.169022744111
+                }, 
+                {
+                 "height":0,
+                 "id":85,
                  "name":"artifact",
                  "opacity":1,
                  "point":true,
@@ -1112,8 +1141,8 @@
                  "type":"artifact",
                  "visible":true,
                  "width":0,
-                 "x":285.828502898261,
-                 "y":396.752348590845
+                 "x":281.196657982212,
+                 "y":389.902075285239
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1173,7 +1202,7 @@
          "y":0
         }],
  "nextlayerid":25,
- "nextobjectid":85,
+ "nextobjectid":86,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
