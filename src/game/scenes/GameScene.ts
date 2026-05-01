@@ -126,6 +126,12 @@ export class GameScene extends Phaser.Scene {
   private mobileInteractPressed = false;
   private canInteract = false;
 
+  // --- interact throttle -----------------------------------------------------
+  private lastInteractCheck = 0;
+  private cachedNearestInteractable: InteractableObject | null = null;
+  private cachedNearestNpc: NpcObject | null = null;
+  private cachedNearestCollectible: Collectible | null = null;
+
   constructor() {
     super("GameScene");
   }
@@ -345,7 +351,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   // ---------------------------------------------------------------------------
-  update() {
+  update(time: number) {
     if (!this.cursors) return;
 
     if (this.player && this.playerShadow) {
@@ -360,6 +366,15 @@ export class GameScene extends Phaser.Scene {
     this.handleMovement();
     this.updatePatrols();
     this.checkDialogExitRadius();
+
+    // Refresh nearest-object cache at most 10×/s (every 100 ms)
+    if (time - this.lastInteractCheck > 100) {
+      this.cachedNearestInteractable = this.nearestInteractable();
+      this.cachedNearestNpc = this.nearestNpc();
+      this.cachedNearestCollectible = this.nearestCollectible();
+      this.lastInteractCheck = time;
+    }
+
     this.updateInteractHint();
     this.handleInteract();
 
@@ -1314,9 +1329,9 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
   }
 
   private updateInteractHint() {
-    const nearest = this.nearestInteractable();
-    const nearestNpc = this.nearestNpc();
-    const nearestCol = this.nearestCollectible();
+    const nearest = this.cachedNearestInteractable;
+    const nearestNpc = this.cachedNearestNpc;
+    const nearestCol = this.cachedNearestCollectible;
     const canInteract = !!(nearest || nearestNpc || nearestCol);
 
     // If we are in range OF something OR a dialog is already open
@@ -1367,17 +1382,23 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
         EventBus.emit('npc-dialog-advance', undefined);
         return;
       }
-      const target = this.nearestInteractable();
+      // Refresh cache immediately on key press so we never act on stale data
+      this.cachedNearestInteractable = this.nearestInteractable();
+      this.cachedNearestNpc = this.nearestNpc();
+      this.cachedNearestCollectible = this.nearestCollectible();
+      this.lastInteractCheck = this.time.now;
+
+      const target = this.cachedNearestInteractable;
       if (target) {
         target.onInteract();
         return;
       }
-      const col = this.nearestCollectible();
+      const col = this.cachedNearestCollectible;
       if (col) {
         col.collect();
         return;
       }
-      const npc = this.nearestNpc();
+      const npc = this.cachedNearestNpc;
       if (npc) npc.onInteract();
     }
   }
