@@ -16,6 +16,7 @@
  *
  * Lifecycle:
  *   1. Player talks to giver NPC              → inactive → active
+ *      (items already in inventory are delivered immediately — retroactive credit)
  *   2. Player collects an item, returns, talks → active   (partial progress)
  *   3. All items delivered on the last return  → active   → complete
  *
@@ -79,7 +80,31 @@ export class DeliverQuestHandler implements QuestHandler {
 
     // ── Activate the quest ─────────────────────────────────────────────────
     if (status === 'inactive') {
-      return { status: 'active' };
+      // Retroactive credit: if the player already holds any required items,
+      // process them immediately upon quest activation (mirrors the fix in
+      // CollectQuestHandler for items collected before the quest started).
+      const deliveredIds: string[] = [];
+      for (const item of this.items) {
+        if (inventory.get(item.itemType) > 0) {
+          inventory.remove(item.itemType, 1);
+          deliveredIds.push(item.itemType);
+          item.onDelivered?.();
+        }
+      }
+
+      if (deliveredIds.length === 0) {
+        return { status: 'active' };
+      }
+
+      const delivered = deliveredIds.length;
+      const required = this.items.length;
+      const retroProgress = { delivered, required, deliveredIds };
+
+      if (delivered >= required) {
+        return { status: 'complete', progress: retroProgress };
+      }
+
+      return { status: 'active', progress: retroProgress };
     }
 
     // ── Try to accept a delivery ────────────────────────────────────────────
