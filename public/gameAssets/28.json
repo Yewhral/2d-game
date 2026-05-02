@@ -116,7 +116,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5092, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -696,17 +696,6 @@
                  "x":925.331460005095,
                  "y":104.332220386018
                 }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":7,
-         "name":"Collectibles",
-         "objects":[],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -5049,141 +5038,8 @@
          "transparentcolor":"#ff00ff"
         }, 
         {
-         "columns":64,
-         "firstgid":4801,
-         "image":"waterRocks2.png",
-         "imageheight":64,
-         "imagewidth":1024,
-         "margin":0,
-         "name":"waterRocks2",
-         "spacing":0,
-         "tilecount":256,
-         "tileheight":16,
-         "tilewidth":16,
-         "transparentcolor":"#ff00ff"
-        }, 
-        {
-         "columns":64,
-         "firstgid":5057,
-         "image":"waterRocks4.png",
-         "imageheight":64,
-         "imagewidth":1024,
-         "margin":0,
-         "name":"waterRocks4",
-         "spacing":0,
-         "tilecount":256,
-         "tileheight":16,
-         "tilewidth":16,
-         "transparentcolor":"#ff00ff"
-        }, 
-        {
-         "columns":64,
-         "firstgid":5313,
-         "image":"bushes.png",
-         "imageheight":128,
-         "imagewidth":1024,
-         "margin":0,
-         "name":"bushes",
-         "spacing":0,
-         "tilecount":512,
-         "tileheight":16,
-         "tiles":[
-                {
-                 "id":195,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":196,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":243,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":244,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":251,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":252,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":291,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":292,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":307,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":308,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }],
-         "tilewidth":16,
-         "transparentcolor":"#ff00ff"
-        }, 
-        {
          "columns":8,
-         "firstgid":5825,
+         "firstgid":4801,
          "image":"house.png",
          "imageheight":192,
          "imagewidth":128,
@@ -5197,7 +5053,7 @@
         }, 
         {
          "columns":8,
-         "firstgid":5921,
+         "firstgid":4897,
          "image":"house2.png",
          "imageheight":192,
          "imagewidth":128,
@@ -5374,7 +5230,7 @@
         }, 
         {
          "columns":12,
-         "firstgid":6017,
+         "firstgid":4993,
          "image":"shadow.png",
          "imageheight":192,
          "imagewidth":192,
@@ -5388,7 +5244,7 @@
         }, 
         {
          "columns":8,
-         "firstgid":6161,
+         "firstgid":5137,
          "image":"cursor4.png",
          "imageheight":128,
          "imagewidth":128,
@@ -5968,93 +5824,6 @@
                 }, 
                 {
                  "id":63,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }],
-         "tilewidth":16,
-         "transparentcolor":"#ff00ff"
-        }, 
-        {
-         "columns":28,
-         "firstgid":6225,
-         "image":"woodTable.png",
-         "imageheight":448,
-         "imagewidth":448,
-         "margin":0,
-         "name":"woodTable",
-         "spacing":0,
-         "tilecount":784,
-         "tileheight":16,
-         "tiles":[
-                {
-                 "id":339,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":360,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":367,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":388,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":395,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":416,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":423,
-                 "properties":[
-                        {
-                         "name":"collides",
-                         "type":"string",
-                         "value":"1"
-                        }]
-                }, 
-                {
-                 "id":444,
                  "properties":[
                         {
                          "name":"collides",
