@@ -98,6 +98,8 @@ export class GameScene extends Phaser.Scene {
   private exitZones!: Phaser.Physics.Arcade.StaticGroup;
   private activeExitZone: Phaser.GameObjects.Zone | null = null;
   private effectZones!: Phaser.Physics.Arcade.StaticGroup;
+  private teleportZones!: Phaser.Physics.Arcade.StaticGroup;
+  private activeLandedZone: Phaser.GameObjects.Zone | null = null;
 
   // --- scene objects ---------------------------------------------------------
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -530,6 +532,7 @@ export class GameScene extends Phaser.Scene {
     this.spawnCollectibles();
     this.createExitZones();
     this.createEffectZones();
+    this.createTeleportZones();
     this.checkRetroactiveQuests();
   }
 
@@ -548,6 +551,9 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.effectZones) {
       this.effectZones.clear(true, true);
+    }
+    if (this.teleportZones) {
+      this.teleportZones.clear(true, true);
     }
 
     this.waterLayer?.destroy();
@@ -1180,6 +1186,147 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     } else {
       console.warn(`Effect zone triggered unknown effect: ${effectType}`);
     }
+  }
+
+  // ---- intra-map teleport zones ---------------------------------------------
+
+  /**
+   * Create physics zones for each Markers-layer object with type="teleport".
+   * The zone's `target` property must name a marker with type="landing" on the
+   * same map.  When the player enters the zone a short fade-out/-in plays and
+   * the player is repositioned at the centre of the landing marker.
+   *
+   * Naming convention (scalable to N pairs):
+   *   Tiled type "teleport"  →  property target: "landing_2"
+   *   Tiled type "landing"   →  name: "landing_2"
+   */
+  private createTeleportZones() {
+    this.teleportZones = this.physics.add.staticGroup();
+
+    const markersLayer = this.map.getObjectLayer(LAYERS.MARKERS);
+    if (!markersLayer) return;
+
+    // Build a quick lookup: landing name → {cx, cy}
+    const landingPoints = new Map<string, { cx: number; cy: number }>();
+    for (const obj of markersLayer.objects) {
+      if (obj.type !== 'landing') continue;
+      if (obj.x == null || obj.y == null || !obj.name) continue;
+      const w = obj.width ?? 0;
+      const h = obj.height ?? 0;
+      landingPoints.set(obj.name, { cx: obj.x + w / 2, cy: obj.y + h / 2 });
+    }
+
+    for (const obj of markersLayer.objects) {
+      if (obj.type !== 'teleport') continue;
+      if (!obj.width || !obj.height || obj.x == null || obj.y == null) continue;
+
+      const props = obj.properties as Array<{ name: string; value: unknown }> | undefined;
+      const targetProp = props?.find((p) => p.name === 'target');
+      if (!targetProp) continue;
+
+      const targetName = String(targetProp.value);
+      if (!landingPoints.has(targetName)) {
+        console.warn(`Teleport "${obj.name}" points to unknown landing "${targetName}" — skipping.`);
+        continue;
+      }
+
+      const zone = this.add.zone(
+        obj.x + obj.width / 2,
+        obj.y + obj.height / 2,
+        obj.width,
+        obj.height,
+      );
+      this.physics.add.existing(zone, true);
+      zone.setData('targetName', targetName);
+
+      this.teleportZones.add(zone);
+    }
+
+    if (this.teleportZones.getLength() === 0) return;
+
+    this.physics.add.overlap(
+      this.player,
+      this.teleportZones,
+      this.handleTeleportOverlap as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this,
+    );
+  }
+
+  private handleTeleportOverlap(
+    _player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    zone: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+  ) {
+    if (this.isTransitioning) return;
+
+    // Don't re-trigger if the player just landed here
+    if (this.activeLandedZone === zone) return;
+
+    this.isTransitioning = true;
+
+    const z = zone as Phaser.GameObjects.Zone;
+    const targetName = z.getData('targetName') as string;
+
+    // Re-resolve the landing point at trigger time (map is already loaded)
+    const markersLayer = this.map.getObjectLayer(LAYERS.MARKERS);
+    const landingObj = markersLayer?.objects.find(
+      (o) => o.name === targetName && o.type === 'landing',
+    );
+
+    if (!landingObj || landingObj.x == null || landingObj.y == null) {
+      console.warn(`Landing "${targetName}" not found — teleport aborted.`);
+      this.isTransitioning = false;
+      return;
+    }
+
+    const w = landingObj.width ?? 0;
+    const h = landingObj.height ?? 0;
+    const destX = landingObj.x + w / 2;
+    const destY = landingObj.y + h / 2;
+
+    // Stop player movement
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.setVelocity(0, 0);
+    this.player.anims.stop();
+
+    // ── Phase 1: smoke at departure, hide player ────────────────────────────
+    const smokeOut = this.add.sprite(this.player.x, this.player.y, 'dust2');
+    smokeOut.setScale(FX_REGISTRY['build_smoke'].scale ?? 1);
+    smokeOut.setDepth(this.player.y + (FX_REGISTRY['build_smoke'].depthOffset ?? 0));
+    smokeOut.play('anim-dust2');
+    this.player.setVisible(false);
+    this.playerShadow.setVisible(false);
+
+    smokeOut.once('animationcomplete', () => {
+      smokeOut.destroy();
+
+      // ── Phase 2: move player, smoke at landing, show player ───────────────
+      this.player.setPosition(destX, destY);
+      this.playerShadow.setPosition(destX - 2, destY + 26);
+
+      // Suppress re-trigger for the zone that now contains the player
+      this.activeLandedZone = null;
+      for (const child of this.teleportZones.getChildren()) {
+        const lz = child as Phaser.GameObjects.Zone;
+        const bounds = lz.getBounds();
+        if (Phaser.Geom.Rectangle.Contains(bounds, destX, destY)) {
+          this.activeLandedZone = lz;
+          break;
+        }
+      }
+
+      const smokeIn = this.add.sprite(destX, destY, 'dust2');
+      smokeIn.setScale(FX_REGISTRY['build_smoke'].scale ?? 1);
+      smokeIn.setDepth(destY + (FX_REGISTRY['build_smoke'].depthOffset ?? 0));
+      smokeIn.play('anim-dust2');
+      this.player.setVisible(true);
+      this.playerShadow.setVisible(true);
+
+      smokeIn.once('animationcomplete', () => {
+        smokeIn.destroy();
+        this.isTransitioning = false;
+      });
+    });
   }
 
   /**

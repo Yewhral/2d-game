@@ -326,6 +326,36 @@
                  "width":167.372379358294,
                  "x":636.146700150256,
                  "y":-0.154584712722409
+                }, 
+                {
+                 "height":35.8347,
+                 "id":31,
+                 "name":"teleport_1_L",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_2"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":634.394060709543,
+                 "y":125.319227499526
+                }, 
+                {
+                 "height":35.8347,
+                 "id":32,
+                 "name":"landing_2",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":399.144582432176,
+                 "y":487.679310975147
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -385,7 +415,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":31,
+ "nextobjectid":33,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
