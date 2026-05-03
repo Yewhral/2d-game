@@ -347,6 +347,96 @@
                 }, 
                 {
                  "height":35.8347,
+                 "id":37,
+                 "name":"teleport_1_R",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_0"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":746.327280212483,
+                 "y":123.422054287611
+                }, 
+                {
+                 "height":35.8347,
+                 "id":38,
+                 "name":"teleport_2_B",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_0"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":499.694762663631,
+                 "y":549.33744036236
+                }, 
+                {
+                 "height":35.8347,
+                 "id":39,
+                 "name":"teleport_2_T",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_3"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":500.643349269588,
+                 "y":438.352807465376
+                }, 
+                {
+                 "height":35.8347,
+                 "id":40,
+                 "name":"teleport_3_L",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_4"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":285.314189717321,
+                 "y":102.553148956555
+                }, 
+                {
+                 "height":35.8347,
+                 "id":41,
+                 "name":"teleport_3_B",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_0"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":395.350236008348,
+                 "y":219.229301489281
+                }, 
+                {
+                 "height":35.8347,
                  "id":32,
                  "name":"landing_2",
                  "opacity":1,
@@ -356,6 +446,90 @@
                  "width":59.2331269208879,
                  "x":399.144582432176,
                  "y":487.679310975147
+                }, 
+                {
+                 "height":35.8347,
+                 "id":36,
+                 "name":"landing_0",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":692.257843672927,
+                 "y":50.3808856289128
+                }, 
+                {
+                 "height":35.8347,
+                 "id":33,
+                 "name":"landing_3",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":393.453062796433,
+                 "y":105.398908774426
+                }, 
+                {
+                 "height":35.8347,
+                 "id":34,
+                 "name":"landing_4",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":870.592125592867,
+                 "y":347.288493293493
+                }, 
+                {
+                 "height":35.8347,
+                 "id":35,
+                 "name":"landing_5",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331269208879,
+                 "x":182.866836273952,
+                 "y":431.712701223677
+                }, 
+                {
+                 "height":35.8347,
+                 "id":42,
+                 "name":"teleport_4_B",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_5"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331,
+                 "x":771.93913203377,
+                 "y":406.100862862834
+                }, 
+                {
+                 "height":35.8347,
+                 "id":43,
+                 "name":"teleport_4_T",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_0"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331,
+                 "x":770.041958821855,
+                 "y":294.167643359894
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -415,7 +589,7 @@
          "y":0
         }],
  "nextlayerid":24,
- "nextobjectid":33,
+ "nextobjectid":44,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
