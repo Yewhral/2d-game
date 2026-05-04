@@ -157,7 +157,19 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
   },
 
   '17-json': {
-    // Empty for now
+    'purple-pawn-idle': {
+      name: 'Purple Pawn',
+      text: 'I love my life!',
+      spriteKey: 'purple-pawn-idle',
+      frame: 0,
+      scale: 0.8,
+      bodySize: { width: 35, height: 35 },
+      bodyOffset: { x: 80, y: 85 },
+      portrait: 'gameAssets/purplePawnAvatar.png',
+      theme: 'purple',
+      animated: true,
+      repeatDelay: 500,
+    }
   },
 
   '27-json': {
