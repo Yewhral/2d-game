@@ -728,6 +728,66 @@
                  "width":119.261,
                  "x":371.88592208246,
                  "y":608.202924701823
+                }, 
+                {
+                 "height":35.8347,
+                 "id":47,
+                 "name":"teleport_17",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_17_1"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331,
+                 "x":685.749309541149,
+                 "y":452.69791827808
+                }, 
+                {
+                 "height":35.8347,
+                 "id":48,
+                 "name":"teleport_17_2",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"target",
+                         "type":"string",
+                         "value":"landing_17_2"
+                        }],
+                 "rotation":0,
+                 "type":"teleport",
+                 "visible":true,
+                 "width":59.2331,
+                 "x":792.803565243583,
+                 "y":148.836622411385
+                }, 
+                {
+                 "height":35.8347,
+                 "id":49,
+                 "name":"landing_17_2",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331,
+                 "x":596.365639628078,
+                 "y":450.041441688493
+                }, 
+                {
+                 "height":35.8347,
+                 "id":50,
+                 "name":"landing_17_1",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"landing",
+                 "visible":true,
+                 "width":59.2331,
+                 "x":715.101452444561,
+                 "y":346.14760547407
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -798,7 +858,7 @@
          "y":0
         }],
  "nextlayerid":18,
- "nextobjectid":47,
+ "nextobjectid":51,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
