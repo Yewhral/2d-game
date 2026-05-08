@@ -18,7 +18,7 @@
     "react-dom": "^19.1.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
+    "allowedBuildScripts": ["@biomejs/biome", "esbuild"]
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
