@@ -40,7 +40,7 @@ jobs:
         run: npm install -g pnpm@latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --config.only-built-dependencies=@biomejs/biome,esbuild
 
       - name: Build
         run: pnpm run build
