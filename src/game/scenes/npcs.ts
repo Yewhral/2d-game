@@ -159,7 +159,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
   '17-json': {
     'purple-pawn-idle': {
       name: 'Purple Pawn',
-      text: 'I love my life!',
+      text: ['Watch out for any green winds around here!', "I have seen a pirate touch it and POOF! He was gone."],
       spriteKey: 'purple-pawn-idle',
       frame: 0,
       scale: 0.8,

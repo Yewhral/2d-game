@@ -12,7 +12,8 @@ export const ITEM_REGISTRY: Record<string, ItemConfig> = {
     textureKey: 'money-img',
     scale: 0.5,
     bob: true,
-    collides: false,
+    collides: true,
+    hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
   log: {
     textureKey: 'woodLog-img',

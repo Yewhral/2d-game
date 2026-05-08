@@ -628,6 +628,44 @@
                  "width":0,
                  "x":310.852817948371,
                  "y":316.258953912691
+                }, 
+                {
+                 "height":0,
+                 "id":52,
+                 "name":"stump4",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"stump4"
+                        }],
+                 "rotation":0,
+                 "type":"stump",
+                 "visible":true,
+                 "width":0,
+                 "x":638.187923694779,
+                 "y":205.006821372446
+                }, 
+                {
+                 "height":0,
+                 "id":53,
+                 "name":"stump3",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"decorationId",
+                         "type":"string",
+                         "value":"stump3"
+                        }],
+                 "rotation":0,
+                 "type":"stump",
+                 "visible":true,
+                 "width":0,
+                 "x":680.984808800419,
+                 "y":187.357604330365
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -809,7 +847,41 @@
          "draworder":"topdown",
          "id":7,
          "name":"Collectibles",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":51,
+                 "name":"money",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"collectible",
+                         "type":"string",
+                         "value":"interact"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"money_1"
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"money"
+                        }, 
+                        {
+                         "name":"value",
+                         "type":"string",
+                         "value":"15"
+                        }],
+                 "rotation":0,
+                 "type":"money",
+                 "visible":true,
+                 "width":0,
+                 "x":901.264711018,
+                 "y":247.075257552
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -868,7 +940,7 @@
          "y":0
         }],
  "nextlayerid":18,
- "nextobjectid":51,
+ "nextobjectid":54,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.1",
