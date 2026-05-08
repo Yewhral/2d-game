@@ -110,8 +110,8 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       delay: 200,
     },
     'black-warrior-16b': {
-      name: 'Mysterious Stranger',
-      text: '...',
+      name: 'The Mysterious Stranger',
+      text: [`Soon, we'll conquer all.`, `You helped, so I'll let you live.`, `Go, don't test my patience.`],
       spriteKey: 'black-warrior-idle',
       frame: 4,
       scale: 0.75,
@@ -158,7 +158,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
 
   '17-json': {
     'purple-pawn-idle': {
-      name: 'Purple Pawn',
+      name: 'Justin - Just Justin',
       text: ['Watch out for any green winds around here!', "I have seen a pirate touch it and POOF! He was gone."],
       spriteKey: 'purple-pawn-idle',
       frame: 0,
@@ -252,7 +252,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
 
   '18-json': {
     'purple-pawn-idle-hammer-18': {
-      name: 'Purple Pawn',
+      name: 'Jayce - The Builder',
       text: 'Life of a pawn is hard',
       spriteKey: 'purple-pawn-idle-hammer',
       frame: 0,
@@ -349,7 +349,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       flipX: true,
     },
     'black-warrior': {
-      name: 'Mysterious Stranger',
+      name: 'The Mysterious Stranger',
       text: '...',
       spriteKey: 'black-warrior-idle',
       frame: 0,

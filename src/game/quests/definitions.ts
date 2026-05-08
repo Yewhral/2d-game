@@ -39,9 +39,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     dialogs: {
       'purple-warrior': {
         inactive:
-          "Hey traveler! I've heard rumors of a mysterious stranger in the eastern fields. Could you go find them and see what they want?",
+          "Hey traveler! I've heard rumors of a mysterious stranger in the eastern fields. Could you go find him and see what he wants?",
         active:
-          'Have you found the stranger yet? Head east through the fields to find them.',
+          'Have you found the stranger yet? Head east through the fields to find him.',
         done: 'So it begins. Open the gates!',
         complete:
           "The gates are open! The time has come!",
@@ -49,8 +49,8 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       'black-warrior': {
         inactive: "... Who are you? I don't know what you want.",
         active:
-          'Ah, so the Purple Warrior sent you? Tell them the message has been received. The preparations are underway.',
-        done: "Go tell the Purple Warrior what I said. They'll be waiting for you.",
+          'Ah, so the Purple Warrior sent you? Tell him the message has been received. The preparations are underway.',
+        done: "Go tell the Purple Warrior what I said. He'll be waiting for you.",
         complete:
           "The winds of change are coming... but that's a story for another day.",
       },
@@ -110,17 +110,12 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     dialogs: {
       'purple-pawn-idle-wood': {
         inactive:
-          "Life of a pawn is hard... I need some wood to build a shelter but I can't leave my post. Could you collect 3 logs for me?",
+          "Life of a pawn is hard... I need some wood to build a shelter but my hands are occupied. Could you collect those 3 logs for me?",
         active:
-          "How's the wood gathering going? You've found {collected} out of {required} logs so far.",
-        done: "You found them all! Thank you so much, adventurer! Now I can build a proper shelter.",
-        complete: 'This shelter will keep me warm. Thank you, friend!',
+          "How's the wood gathering going? I could use some help.",
+        done: "Thank you so much, adventurer! Now you can build a proper shelter.",
+        complete: ['This shelter will keep me warm. Thank you, friend!', 'Oh, the log?', "I've been holding it so long already, I may go for Guiness World Records!"],
       },
-    },
-    formatProgress: (progress) => {
-      const c = progress.collected as number;
-      const r = progress.required as number;
-      return `${c} / ${r}`;
     },
     onComplete: (retroactive) => {
       if (!retroactive) {
@@ -151,7 +146,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
         inactive:
           "This bridge is falling apart! I could fix it if I had some wood. Could you find me a log?",
         active:
-          "Still looking for that log? There should be one somewhere around here.",
+          "Still looking for that log? Maybe you should ask John.",
         done: "Perfect, that's exactly what I needed! Let me patch this bridge up right away.",
         complete: 'The bridge is as good as new! Safe travels, friend!',
       },
