@@ -37,7 +37,7 @@ export interface NpcData {
 export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
   '16-json': {
     'purple-warrior': {
-      name: 'Purple Warrior',
+      name: 'Sir James - The Protector',
       text: 'Hey there, traveler.',
       spriteKey: 'purple-warrior-idle',
       frame: 0,
@@ -51,7 +51,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       delay: 200,
     },
     'purple-pawn-idle': {
-      name: 'Purple Pawn',
+      name: 'Jake - The Pawn',
       text: 'I love my life!',
       spriteKey: 'purple-pawn-idle',
       frame: 0,
@@ -78,7 +78,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       delay: 1000,
     },
     'purple-pawn-idle-wood': {
-      name: 'Purple Pawn',
+      name: 'John - The Builder',
       text: 'Life of a pawn is hard',
       spriteKey: 'purple-pawn-idle-wood',
       frame: 0,
@@ -96,7 +96,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
 
   '16b-json': {
     'purple-warrior-black': {
-      name: 'Purple? Warrior',
+      name: 'Sir James - The Protector of His Bussiness',
       text: 'Hey there, traveler.',
       spriteKey: 'black-warrior-idle',
       frame: 0,
@@ -291,7 +291,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
 
   '26-json': {
     'purple-pawn-idle-26': {
-      name: 'Purple Pawn Sheppard',
+      name: 'Jack - The Sheppard',
       text: 'I used to be a warrior, but this life suits me better!',
       spriteKey: 'purple-pawn-idle',
       frame: 0,
@@ -315,7 +315,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
     },
     'sheep-26-2': {
       name: 'Sheep',
-      text: 'Baa!',
+      text: 'Baa! Baaaa! Baa!',
       spriteKey: 'sheep',
       frame: 0,
       scale: 0.75,
@@ -336,7 +336,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
     },
     'purple-pawn-idle-flip': {
-      name: 'Purple Pawn',
+      name: 'Jeff - The kid no one listens to',
       text: `I swear I've seen something in the bushes down there!`,
       spriteKey: 'purple-pawn-idle',
       frame: 0,
