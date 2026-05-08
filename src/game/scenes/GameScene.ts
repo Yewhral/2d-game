@@ -108,6 +108,7 @@ export class GameScene extends Phaser.Scene {
   private npcs: NpcObject[] = [];
   private decorations: DecorationEntry[] = [];
   private collectibles: Collectible[] = [];
+  private teleportFxSprites: Phaser.GameObjects.Sprite[] = [];
   private collectibleOverlap: Phaser.Physics.Arcade.Collider | null = null;
   private hint!: Phaser.GameObjects.Text;
   private activeDialogNpc: NpcObject | null = null;
@@ -555,6 +556,11 @@ export class GameScene extends Phaser.Scene {
     if (this.teleportZones) {
       this.teleportZones.clear(true, true);
     }
+
+    for (const fxSprite of this.teleportFxSprites) {
+      fxSprite.destroy();
+    }
+    this.teleportFxSprites = [];
 
     this.waterLayer?.destroy();
     this.groundLayer?.destroy();
@@ -1230,16 +1236,39 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
         continue;
       }
 
-      const zone = this.add.zone(
-        obj.x + obj.width / 2,
-        obj.y + obj.height / 2,
-        obj.width,
-        obj.height,
-      );
+      const cx = obj.x + obj.width / 2;
+      const cy = obj.y + obj.height / 2;
+
+      const zone = this.add.zone(cx, cy, obj.width, obj.height);
       this.physics.add.existing(zone, true);
       zone.setData('targetName', targetName);
 
       this.teleportZones.add(zone);
+
+      // Spawn a looping visual effect if the teleport has a 'sprite' property
+      const spriteProp = props?.find((p) => p.name === 'sprite');
+      if (spriteProp) {
+        const fxType = String(spriteProp.value);
+        const fx = FX_REGISTRY[fxType];
+        if (fx?.spriteKey && fx?.animKey) {
+          const loopKey = `loop-${fx.animKey}`;
+          if (!this.anims.exists(loopKey)) {
+            this.anims.create({
+              key: loopKey,
+              frames: this.anims.generateFrameNumbers(fx.spriteKey, {}),
+              frameRate: 10,
+              repeat: -1,
+            });
+          }
+          const fxSprite = this.add.sprite(cx, cy, fx.spriteKey);
+          fxSprite.setScale(fx.scale ?? 1);
+          fxSprite.setDepth(cy + (fx.depthOffset ?? 0));
+          const frameCount = this.anims.get(loopKey)?.frames.length ?? 1;
+          const randomStart = Phaser.Math.Between(0, frameCount - 1);
+          fxSprite.play({ key: loopKey, startFrame: randomStart });
+          this.teleportFxSprites.push(fxSprite);
+        }
+      }
     }
 
     if (this.teleportZones.getLength() === 0) return;

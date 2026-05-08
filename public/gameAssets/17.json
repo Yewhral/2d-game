@@ -730,11 +730,16 @@
                  "y":608.202924701823
                 }, 
                 {
-                 "height":35.8347,
+                 "height":24.4849531866597,
                  "id":47,
                  "name":"teleport_17",
                  "opacity":1,
                  "properties":[
+                        {
+                         "name":"sprite",
+                         "type":"string",
+                         "value":"heal"
+                        }, 
                         {
                          "name":"target",
                          "type":"string",
@@ -743,16 +748,21 @@
                  "rotation":0,
                  "type":"teleport",
                  "visible":true,
-                 "width":59.2331,
-                 "x":685.749309541149,
-                 "y":452.69791827808
+                 "width":32.1683191374192,
+                 "x":709.321860615009,
+                 "y":461.42849274988
                 }, 
                 {
-                 "height":35.8347,
+                 "height":21.8657808451196,
                  "id":48,
                  "name":"teleport_17_2",
                  "opacity":1,
                  "properties":[
+                        {
+                         "name":"sprite",
+                         "type":"string",
+                         "value":"heal"
+                        }, 
                         {
                          "name":"target",
                          "type":"string",
@@ -761,9 +771,9 @@
                  "rotation":0,
                  "type":"teleport",
                  "visible":true,
-                 "width":59.2331,
-                 "x":792.803565243583,
-                 "y":148.836622411385
+                 "width":29.5491467958792,
+                 "x":816.376116317444,
+                 "y":154.948024541645
                 }, 
                 {
                  "height":35.8347,
