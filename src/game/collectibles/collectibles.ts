@@ -37,4 +37,11 @@ export const ITEM_REGISTRY: Record<string, ItemConfig> = {
     textureKey: 'money-img',
     hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
+  'artifact3': {
+    scale: 0.8,
+    bob: true,
+    collides: true,
+    textureKey: 'money-img',
+    hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
+  },
 };

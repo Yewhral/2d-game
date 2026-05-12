@@ -229,20 +229,19 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
             });
           },
         },
-        // ── Add a third artifact here when ready ──────────────────────────
-        // {
-        //   itemType: 'artifact3',
-        //   onDelivered: () => {
-        //     worldState.set('artifact3StructureVisible', 'true');
-        //     EventBus.emit('world:refresh-decorations');
-        //     EventBus.emit('npc-dialog', {
-        //       npc: 'Blue Warrior',
-        //       portrait: 'gameAssets/bluePawnAvatar.png',
-        //       theme: 'blue' as const,
-        //       text: ["..."],
-        //     });
-        //   },
-        // },
+        {
+          itemType: 'artifact3',
+          onDelivered: () => {
+            worldState.set('artifact3StructureVisible', 'true'); // TODO: adjust
+            EventBus.emit('world:refresh-decorations');
+            EventBus.emit('npc-dialog', {
+              npc: 'Blue Warrior',
+              portrait: 'gameAssets/bluePawnAvatar.png',
+              theme: 'blue' as const,
+              text: ["..."], // TODO: adjust
+            });
+          },
+        },
       ],
     }),
     dialogs: {
@@ -267,6 +266,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       const requiredItems = [
         { id: 'artifact', label: 'Ancient Relic' },
         { id: 'artifact2', label: 'Mysterious Totem' },
+        { id: 'artifact3', label: 'Mysterious Hammer' },
       ];
 
       return requiredItems.map((item) => ({

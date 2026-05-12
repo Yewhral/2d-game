@@ -593,25 +593,6 @@
                  "width":0,
                  "x":495.423260647104,
                  "y":236.624724237022
-                }, 
-                {
-                 "height":0,
-                 "id":28,
-                 "name":"duck",
-                 "opacity":1,
-                 "point":true,
-                 "properties":[
-                        {
-                         "name":"npcId",
-                         "type":"string",
-                         "value":"duck"
-                        }],
-                 "rotation":0,
-                 "type":"NPC",
-                 "visible":true,
-                 "width":0,
-                 "x":484.957341715312,
-                 "y":454.422990570274
                 }],
          "opacity":1,
          "type":"objectgroup",

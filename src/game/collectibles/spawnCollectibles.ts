@@ -45,6 +45,10 @@ const collectEffects: Record<string, CollectEffect> = {
   artifact2: (_c) => {
     inventory.add('artifact2');
   },
+
+  artifact3: (_c) => {
+    inventory.add('artifact3');
+  },
 };
 
 /**
