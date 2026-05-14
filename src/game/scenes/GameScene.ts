@@ -364,10 +364,11 @@ export class GameScene extends Phaser.Scene {
       this.player.setDepth(this.player.y);
     }
 
+    this.updatePatrols();
+
     if (this.isTransitioning) return;
 
     this.handleMovement();
-    this.updatePatrols();
     this.checkDialogExitRadius();
 
     // Refresh nearest-object cache at most 10×/s (every 100 ms)

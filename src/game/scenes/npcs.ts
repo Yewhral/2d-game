@@ -425,4 +425,64 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
     },
   },
+
+  '29-json': {
+    'duck': {
+      name: 'Magic Duck',
+      text: [
+        "Quack",
+      ],
+      spriteKey: 'duck',
+      frame: 0,
+      scale: 1,
+      flipX: true,
+      bodySize: { width: 32, height: 32 },
+      bodyOffset: { x: 0, y: 0 },
+      portrait: 'gameAssets/duck.png',
+      theme: 'red',
+      animated: false,
+      repeatDelay: 200,
+      delay: 200,
+      
+    },
+    'sheep2': {
+      name: 'Sheep',
+      text: 'Baa!',
+      spriteKey: 'sheepMove',
+      frame: 1,
+      scale: 0.85,
+      bodySize: { width: 35, height: 30 },
+      bodyOffset: { x: 50, y: 50 },
+      theme: 'red',
+      animated: true,
+      repeatDelay: 100,
+      delay: 100,
+      patrol: {
+        axis: 'x',
+        distance: 20,
+        speed: 90,
+        pauseMs: 100,
+      }
+    },
+    'sheep1': {
+      name: 'Sheep',
+      text: `This sheep doesn't talk`,
+      spriteKey: 'sheepMove',
+      portrait: 'gameAssets/duck.png',
+      frame: 1,
+      scale: 0.85,
+      bodySize: { width: 35, height: 30 },
+      bodyOffset: { x: 50, y: 50 },
+      theme: 'red',
+      animated: true,
+      repeatDelay: 100,
+      delay: 100,
+      patrol: {
+        axis: 'x',
+        distance: 40,
+        speed: 80,
+        pauseMs: 1000,
+      }
+    },
+  },
 };
