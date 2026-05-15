@@ -3,7 +3,7 @@
 /* ── Wrapper – now a <button>, holds caps and handles transform/focus ── */
 .ribbonWrapper {
   --ribbon-h: 54px;
-  --cap-w: 60px;
+  --cap-w: 59px;
 
   /* reset <button> defaults */
   appearance: none;
