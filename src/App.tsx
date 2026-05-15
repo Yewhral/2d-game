@@ -16,19 +16,14 @@ import { GameHUD } from "./components/GameHUD/GameHUD";
 import { MainMenuOverlay } from "./components/MainMenuOverlay/MainMenuOverlay";
 import { PhaserCanvas } from "./components/PhaserCanvas/PhaserCanvas";
 import { useGameEvent } from "./hooks/useGameEvent";
+import { Loader } from "./components/MainMenuOverlay/Loader";
 
 export default function App() {
   const [scene, setScene] = useState("Boot");
-  const [loadingProgress, setLoadingProgress] = useState(0);
 
   useGameEvent(
     "scene-changed",
     useCallback(({ scene }) => setScene(scene), []),
-  );
-
-  useGameEvent(
-    "loading-progress",
-    useCallback(({ progress }) => setLoadingProgress(progress), []),
   );
 
   const isLoading = scene === "Boot" || scene === "Preloader";
@@ -41,15 +36,7 @@ export default function App() {
         <div className={styles.loadingCover}>
           <div className={styles.loaderContainer}>
             <div className={styles.loaderTitle}>LOADING ASSETS</div>
-            <div className={styles.progressBar}>
-              <div 
-                className={styles.progressFill} 
-                style={{ width: `${loadingProgress * 100}%` }} 
-              />
-            </div>
-            <div className={styles.loaderPercent}>
-              {Math.round(loadingProgress * 100)}%
-            </div>
+            <Loader />
           </div>
         </div>
       )}

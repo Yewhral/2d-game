@@ -13,13 +13,13 @@
 import { useState } from "react";
 import { EventBus } from "@/game/EventBus";
 import { saveManager } from "@/game/saveManager";
-import { CreditsModal } from "./CreditsModal";
 import styles from "./MainMenuOverlay.module.css";
+import { RibbonButton } from "./RibbonButton";
+import { CreditsButton } from "./CreditsButton";
 
 export function MainMenuOverlay() {
   const hasSave = saveManager.hasSave();
   const [confirming, setConfirming] = useState(false);
-  const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const [clearing, setClearing] = useState(false);
 
   const handleStartGame = () => {
@@ -54,6 +54,7 @@ export function MainMenuOverlay() {
     <>
       <div className={styles.overlay}>
         {/* Title */}
+        <div className={styles.overlayContent}>
         <div className={styles.titleBlock}>
           <h1 className={styles.title}>2D GAME</h1>
           <div className={styles.titleGlow} />
@@ -63,42 +64,34 @@ export function MainMenuOverlay() {
         <div className={styles.buttons}>
           {hasSave ? (
             <>
-              <button
-                className={`${styles.menuBtn} ${styles.primary}`}
-                onClick={handleContinue}
-              >
-                <span className={styles.btnIcon}>▶</span>
-                Continue
-              </button>
+              {/* Continue — purple ribbon */}
+              <RibbonButton color="purple" onClick={handleContinue}>
+                ▶ Continue
+              </RibbonButton>
 
-              <button
-                className={`${styles.menuBtn} ${styles.secondary} ${confirming ? styles.confirming : ""}`}
+              {/* New Game — teal ribbon; turns red when confirming */}
+              <RibbonButton
+                color={confirming ? "red" : "teal"}
                 onClick={handleNewGame}
                 onMouseLeave={() => setConfirming(false)}
               >
-                <span className={styles.btnIcon}>{confirming ? "⚠" : "✦"}</span>
-                {confirming ? "Are you sure?" : "New Game"}
-              </button>
+                {confirming ? "⚠ Are you sure?" : "✦ New Game"}
+              </RibbonButton>
             </>
           ) : (
-            <button
-              className={`${styles.menuBtn} ${styles.primary}`}
-              onClick={handleStartGame}
-            >
-              <span className={styles.btnIcon}>▶</span>
-              Start Game
-            </button>
+            /* Start Game — purple ribbon */
+            <RibbonButton color="purple" onClick={handleStartGame}>
+              ▶ Start Game
+            </RibbonButton>
           )}
 
-          <button 
-            className={styles.creditsBtn}
-            onClick={() => setIsCreditsOpen(true)}
-          >
-            Credits
-          </button>
+          {/* Credits — yellow ribbon (owns its modal) */}
+          <div className={styles.creditsBtnWrapper}>
+            <CreditsButton />
+          </div>
 
           {hasSave && (
-            <button 
+            <button
               className={styles.dangerBtn}
               onClick={handleClearData}
               onMouseLeave={() => setClearing(false)}
@@ -115,11 +108,7 @@ export function MainMenuOverlay() {
             : "Begin your adventure"}
         </span>
       </div>
-
-      <CreditsModal 
-        isOpen={isCreditsOpen} 
-        onClose={() => setIsCreditsOpen(false)} 
-      />
+      </div>
     </>
   );
 }

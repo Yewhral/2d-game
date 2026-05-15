@@ -80,7 +80,7 @@ export class MainMenu extends Phaser.Scene {
 
     // ---- Tell React we're on the main menu ----------------------------------
     EventBus.emit("scene-changed", { scene: "MainMenu" });
-    EventBus.emit("loading-progress", { progress: 0 });
+
   }
 
   shutdown() {

@@ -193,6 +193,8 @@ export class Preloader extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("MainMenu");
+    this.time.delayedCall(200, () => {
+      this.scene.start("MainMenu");
+    });
   }
 }

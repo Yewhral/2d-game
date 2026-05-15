@@ -1,0 +1,77 @@
+/* SwordLoader.module.css */
+.loaderArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loader {
+  --sword-h: 88px;
+  --handle-w: 105px;
+  --middle-w: 64px;     /* szerokość jednego "tile'a" klingi */
+  --middle-tiles: 4;    /* ile razy powtórzyć klingę = długość loadera */
+  --tip-w: 92px;
+  
+  position: relative;
+  display: inline-flex;
+  height: var(--sword-h);
+  image-rendering: pixelated;
+}
+
+@media (max-width: 1024px) {
+  .loader {
+    --middle-tiles: 1;
+  }
+}
+
+.handle {
+  width: var(--handle-w);
+  height: 100%;
+  background-image: var(--handle-img);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+.blade {
+  display: flex;
+  height: 100%;
+  /* clip-path animuje się płynnie */
+  transition: clip-path 0.2s ease-out;
+}
+
+.middle {
+  width: calc(var(--middle-w) * var(--middle-tiles));
+  height: 100%;
+  background-image: var(--middle-img);
+  background-repeat: repeat-x;
+  background-size: var(--middle-w) 100%;
+  flex-shrink: 0;
+}
+
+.tip {
+  width: var(--tip-w);
+  height: 100%;
+  background-image: var(--tip-img);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+/* Wariant kolorystyczny — powiel dla pozostałych */
+.sword_purple {
+  --handle-img: url('/UI/sword_4_purple_handle.png');
+  --middle-img: url('/UI/sword_4_purple_middle.png');
+  --tip-img:    url('/UI/sword_4_purple_tip.png');
+}
+
+.loaderPercent {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(124, 106, 247, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
