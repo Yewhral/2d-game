@@ -395,7 +395,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
   '38-json': {
     'bluePawnIdleKnifeReverse': {
       name: 'Blue Pawn',
-      text: 'I keep my blade sharp!',
+      text: [`I look dangerous, but don't worry. The dev decided I'll just stand here menacingly.`],
       spriteKey: 'bluePawnIdleKnife',
       frame: 0,
       scale: 0.75,
