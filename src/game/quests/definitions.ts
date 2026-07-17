@@ -21,6 +21,7 @@ import { EventBus } from '../EventBus';
 import { LAYERS } from '../constants';
 import { worldState } from '../worldState';
 import { inventory } from '../inventory';
+import { collectibleState } from '../collectibles/CollectibleState';
 
 export const QUEST_DEFINITIONS: QuestDefinition[] = [
   {
@@ -42,9 +43,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
           "Hey traveler! I've heard rumors of a mysterious stranger in the eastern fields. Could you go find him and see what he wants?",
         active:
           'Have you found the stranger yet? Head east through the fields to find him.',
-        done: 'So it begins. Open the gates!',
+        done: `So it begins. I'll let you go.`,
         complete:
-          "The gates are open! The time has come!",
+          "The gates are open! Make haste!",
       },
       'black-warrior': {
         inactive: "... Who are you? I don't know what you want.",
@@ -52,8 +53,15 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
           'Ah, so the Purple Warrior sent you? Tell him the message has been received. The preparations are underway.',
         done: "Go tell the Purple Warrior what I said. He'll be waiting for you.",
         complete:
-          "The winds of change are coming... but that's a story for another day.",
+          "The winds of change are coming...",
       },
+    },
+    onComplete: (retroactive) => {
+      if (retroactive) return;
+      EventBus.emit('quest:fade-layer', {
+        mapKey: '16-json',
+        layer: LAYERS.BARRIERS,
+      });
     },
   },
 
@@ -86,10 +94,8 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       // and restoreLayerStates applies it on map load — skip re-emitting.
       if (retroactive) return;
 
-      EventBus.emit('quest:fade-layer', {
-        mapKey: '16-json',
-        layer: LAYERS.BARRIERS,
-      });
+      collectibleState.addMoney(1);
+      EventBus.emit('money-changed', { money: collectibleState.getMoney() });
     },
   },
 

@@ -1088,35 +1088,6 @@
          "objects":[
                 {
                  "height":0,
-                 "id":54,
-                 "name":"artifact2",
-                 "opacity":1,
-                 "point":true,
-                 "properties":[
-                        {
-                         "name":"collectible",
-                         "type":"string",
-                         "value":"interact"
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"string",
-                         "value":"artifact2"
-                        }, 
-                        {
-                         "name":"type",
-                         "type":"string",
-                         "value":"artifact2"
-                        }],
-                 "rotation":0,
-                 "type":"artifact",
-                 "visible":true,
-                 "width":0,
-                 "x":534.683053253126,
-                 "y":499.169022744111
-                }, 
-                {
-                 "height":0,
                  "id":85,
                  "name":"artifact",
                  "opacity":1,
