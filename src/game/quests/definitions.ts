@@ -181,32 +181,29 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
   },
 
   // ---- Gather the Artifacts --------------------------------------------------
-  // Add more items to `items` when a 3rd (or 4th …) artifact is placed in the
-  // world.  The handler and worldState logic scale automatically.
   {
     id: 'gather-the-artifacts',
     title: 'Echoes of the Ancient',
     description: {
       active:
-        "A mysterious figure asked you to find ancient artifacts scattered across the region.\\n\\nBring each one back when you find it — you don't need to collect them all at once.\\n\\nArtifacts delivered: {delivered} / {required}",
+        "The Blue Tribe asked you to collect their ancient artifacts scattered across the region.\\n\\nBring each one back when you find it — you don't need to collect them all at once.\\n\\nArtifacts delivered: {delivered} / {required}",
       done: // 'done' is never reached with DeliverQuestHandler (goes active→complete)
-        "You have gathered all the artifacts.\\n\\nReturn to the Blue Warrior to claim your reward.",
+        "You have gathered all the artifacts.\\n\\nReturn to the Blue Tribe Mayor to claim your reward.",
       complete:
-        "The artifacts have been returned. The ancient power stirs once more.\\n\\nThe region will never be the same.",
+        "Thanks to your help, we can defend our land. You're amazing, traveller!",
       failed:
         "The artifacts are lost. The ancient power fades into memory.",
     },
     handler: new DeliverQuestHandler({
-      giverNpcId: 'temp',
+      giverNpcId: 'mayor',
       items: [
         {
-          // artifact → reveals barracksBlue on map 28
-          itemType: 'artifact',
+          itemType: 'artifact1sword',
           onDelivered: () => {
             worldState.set('barracksBlueVisible', 'true');
             EventBus.emit('world:refresh-decorations');
             EventBus.emit('npc-dialog', {
-              npc: 'Blue Warrior',
+              npc: 'Blue Tribe Mayor',
               portrait: 'gameAssets/bluePawnAvatar.png',
               theme: 'blue' as const,
               text: [
@@ -218,40 +215,43 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
           },
         },
         {
-          // artifact2 → reveals towerBlue on map 28
-          itemType: 'artifact2',
+          itemType: 'artifact2shield',
           onDelivered: () => {
             worldState.set('towerBlueVisible', 'true');
             EventBus.emit('world:refresh-decorations');
             EventBus.emit('npc-dialog', {
-              npc: 'Blue Warrior',
+              npc: 'Blue Tribe Mayor',
               portrait: 'gameAssets/bluePawnAvatar.png',
               theme: 'blue' as const,
               text: [
-                "The second artifact — incredible. The ancient energy is overwhelming!",
-                "Our watchtower rises from the ruins. We can defend this land once more.",
-                "You've done it, traveler. The region is in your debt.",
+                "The monks did well, didn't they!",
+                "I feel the holy energy beaming from this shield!",
+                "It will set the foundation for our watchtower.",
               ],
             });
           },
         },
         {
-          itemType: 'artifact3',
+          itemType: 'artifact3hammer',
           onDelivered: () => {
-            worldState.set('artifact3StructureVisible', 'true'); // TODO: adjust
+            worldState.set('archeryBlueVisible', 'true');
             EventBus.emit('world:refresh-decorations');
             EventBus.emit('npc-dialog', {
-              npc: 'Blue Warrior',
+              npc: 'Blue Tribe Mayor',
               portrait: 'gameAssets/bluePawnAvatar.png',
               theme: 'blue' as const,
-              text: ["..."], // TODO: adjust
+              text: [
+                "This is the last artifact! I can feel its power resonating.",
+                "With this, our archery range can be restored. The troops will have weapons once more.",
+                "You've done it, traveler. The region is in your debt.",
+              ],
             });
           },
         },
       ],
     }),
     dialogs: {
-      temp: {
+      mayor: {
         inactive: [
           "Hello there, traveler. I've been waiting for someone like you.",
           "There are ancient artifacts hidden in this region. They must not fall into the wrong hands.",
@@ -270,9 +270,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     formatProgress: (progress) => {
       const deliveredIds = (progress.deliveredIds as string[]) || [];
       const requiredItems = [
-        { id: 'artifact', label: 'Ancient Relic' },
-        { id: 'artifact2', label: 'Mysterious Totem' },
-        { id: 'artifact3', label: 'Mysterious Hammer' },
+        { id: 'artifact1sword', label: 'Sacred Sword' },
+        { id: 'artifact2shield', label: 'Holy Shield' },
+        { id: 'artifact3hammer', label: 'Demonic Hammer' },
       ];
 
       return requiredItems.map((item) => ({
@@ -285,6 +285,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
       // Ensure both structures are visible on retroactive restore (save/load)
       worldState.set('barracksBlueVisible', 'true');
       worldState.set('towerBlueVisible', 'true');
+      worldState.set('archeryBlueVisible', 'true');
       EventBus.emit('world:refresh-decorations');
       if (retroactive) return;
 

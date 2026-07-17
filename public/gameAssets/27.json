@@ -1089,7 +1089,7 @@
                 {
                  "height":0,
                  "id":85,
-                 "name":"artifact",
+                 "name":"artifact2shield",
                  "opacity":1,
                  "point":true,
                  "properties":[
@@ -1101,12 +1101,12 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"artifact1"
+                         "value":"artifact2shield"
                         }, 
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"artifact"
+                         "value":"artifact2shield"
                         }],
                  "rotation":0,
                  "type":"artifact",

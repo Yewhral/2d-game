@@ -186,7 +186,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 500,
       delay: 500,
-      stopAnimWhenCollected: 'artifact1',
+      stopAnimWhenCollected: 'artifact2shield',
     },
     'blueMonkHeal2': {
       name: 'Blue Monk',
@@ -201,7 +201,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 700,
       delay: 400,
-      stopAnimWhenCollected: 'artifact1',
+      stopAnimWhenCollected: 'artifact2shield',
     },
     'blueMonkHealReverse': {
       name: 'Blue Monk',
@@ -217,7 +217,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 1000,
       delay: 1000,
-      stopAnimWhenCollected: 'artifact1',
+      stopAnimWhenCollected: 'artifact2shield',
     },
     'blueMonkHealReverse2': {
       name: 'Blue Monk',
@@ -233,7 +233,7 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: true,
       repeatDelay: 400,
       delay: 1000,
-      stopAnimWhenCollected: 'artifact1',
+      stopAnimWhenCollected: 'artifact2shield',
     },
     'bluePawnAxeIdle': {
       name: 'Blue Pawn',
@@ -409,8 +409,8 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
   },
 
   '28-json': {
-    'temp': {
-      name: 'Blue Warrior',
+    'mayor': {
+      name: 'Blue Tribe Mayor',
       text: [
         "The ancient forces are stirring in this region.",
         "I've been stationed here to keep watch. If you find anything unusual, bring it to me.",

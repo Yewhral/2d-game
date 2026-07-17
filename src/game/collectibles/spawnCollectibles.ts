@@ -38,16 +38,16 @@ const collectEffects: Record<string, CollectEffect> = {
     });
   },
 
-  artifact: (_c) => {
-    inventory.add('artifact');
+  artifact1sword: (_c) => {
+    inventory.add('artifact1sword');
   },
 
-  artifact2: (_c) => {
-    inventory.add('artifact2');
+  artifact2shield: (_c) => {
+    inventory.add('artifact2shield');
   },
 
-  artifact3: (_c) => {
-    inventory.add('artifact3');
+  artifact3hammer: (_c) => {
+    inventory.add('artifact3hammer');
   },
 };
 
@@ -163,6 +163,7 @@ export function spawnCollectibles(
 const FLOAT_TEXT_CONFIG: Record<string, {
   getText: (c: Collectible) => string;
   color: string;
+  duration?: number;
 }> = {
   money: {
     getText: (c) => `+${(c.extra.value as number) ?? 0} 💰`,
@@ -172,13 +173,20 @@ const FLOAT_TEXT_CONFIG: Record<string, {
     getText: () => '+1 🪵',
     color: '#c4a76c',
   },
-  artifact: {
-    getText: () => '✨ Artifact found!',
-    color: '#a78bfa',
+  artifact1sword: {
+    getText: () => '✨ Sacred Sword!',
+    color: '#0aa2dfff',
+    duration: 2200,
   },
-  artifact2: {
-    getText: () => '✨ Artifact found!',
-    color: '#a78bfa',
+  artifact2shield: {
+    getText: () => '✨ Holy Shield!',
+    color: '#fff425ff',
+    duration: 2200,
+  },
+  artifact3hammer: {
+    getText: () => '✨ Demonic Hammer!',
+    color: '#d26403ff',
+    duration: 2200,
   },
 };
 
@@ -200,7 +208,7 @@ function handleCollect(scene: Phaser.Scene, collectible: Collectible): void {
   // 3. Float text (driven by config table — works for money, log, and future types)
   const ftCfg = FLOAT_TEXT_CONFIG[collectible.itemType];
   if (ftCfg) {
-    showFloatText(scene, sx, sy, ftCfg.getText(collectible), ftCfg.color);
+    showFloatText(scene, sx, sy, ftCfg.getText(collectible), ftCfg.color, ftCfg.duration);
   }
 
   // 4. Notify quest system (with both itemType and collectibleId)
@@ -233,6 +241,7 @@ function showFloatText(
   y: number,
   text: string,
   color = '#fbbf24',
+  duration = 800,
 ): void {
   const label = scene.add
     .text(x, y - 16, text, {
@@ -249,7 +258,7 @@ function showFloatText(
     targets: label,
     y: y - 50,
     alpha: 0,
-    duration: 800,
+    duration,
     ease: 'Quadratic.Out',
     onComplete: () => label.destroy(),
   });

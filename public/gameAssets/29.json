@@ -901,7 +901,7 @@
                 {
                  "height":0,
                  "id":48,
-                 "name":"artifact3",
+                 "name":"artifact3hammer",
                  "opacity":1,
                  "point":true,
                  "properties":[
@@ -913,12 +913,12 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"artifact3"
+                         "value":"artifact3hammer"
                         }, 
                         {
                          "name":"type",
                          "type":"string",
-                         "value":"artifact3"
+                         "value":"artifact3hammer"
                         }],
                  "rotation":0,
                  "type":"artifact",
