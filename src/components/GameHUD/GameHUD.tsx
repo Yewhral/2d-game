@@ -8,6 +8,7 @@
 import { EventBus } from "@/game/EventBus";
 import { useGameEvent } from "@/hooks/useGameEvent";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react";
 import styles from "./GameHUD.module.css";
 import { QuestLogModal, type Quest } from "./QuestLogModal";
 import { inventory } from "@/game/inventory";
@@ -322,17 +323,40 @@ export function GameHUD() {
 function Joystick({ onMove, onEnd }: { onMove: (pos: { x: number; y: number }) => void; onEnd: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
+  const joystickRectRef = useRef<DOMRect | null>(null);
+  const pendingMoveRef = useRef({ x: 0, y: 0 });
+  const animationFrameRef = useRef<number | null>(null);
+  const isDraggingRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
 
-  const handleStart = () => {
+  const emitMove = useCallback(() => {
+    animationFrameRef.current = null;
+    onMove(pendingMoveRef.current);
+  }, [onMove]);
+
+  const scheduleMove = useCallback((pos: { x: number; y: number }) => {
+    pendingMoveRef.current = pos;
+    if (animationFrameRef.current === null) {
+      animationFrameRef.current = window.requestAnimationFrame(emitMove);
+    }
+  }, [emitMove]);
+
+  const handleStart = (e: ReactTouchEvent<HTMLDivElement> | ReactMouseEvent<HTMLDivElement>) => {
+    if ("touches" in e) e.preventDefault();
+    joystickRectRef.current = containerRef.current?.getBoundingClientRect() ?? null;
+    isDraggingRef.current = true;
     setIsDragging(true);
   };
 
   const handleMove = useCallback((e: TouchEvent | MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDraggingRef.current) return;
+    if ('touches' in e) {
+      e.preventDefault();
+      if (e.touches.length === 0) return;
+    }
 
-    const rect = containerRef.current.getBoundingClientRect();
+    const rect = joystickRectRef.current;
+    if (!rect) return;
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
@@ -350,13 +374,23 @@ function Joystick({ onMove, onEnd }: { onMove: (pos: { x: number; y: number }) =
       dy = (dy / distance) * radius;
     }
 
-    setPos({ x: dx, y: dy });
-    onMove({ x: dx / radius, y: dy / radius });
-  }, [isDragging, onMove]);
+    if (thumbRef.current) {
+      thumbRef.current.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
+    scheduleMove({ x: dx / radius, y: dy / radius });
+  }, [scheduleMove]);
 
   const handleEnd = useCallback(() => {
+    isDraggingRef.current = false;
+    joystickRectRef.current = null;
+    if (animationFrameRef.current !== null) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
     setIsDragging(false);
-    setPos({ x: 0, y: 0 });
+    if (thumbRef.current) {
+      thumbRef.current.style.transform = "translate(0px, 0px)";
+    }
     onEnd();
   }, [onEnd]);
 
@@ -375,6 +409,14 @@ function Joystick({ onMove, onEnd }: { onMove: (pos: { x: number; y: number }) =
     };
   }, [isDragging, handleMove, handleEnd]);
 
+  useEffect(() => {
+    return () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div 
       ref={containerRef} 
@@ -385,9 +427,7 @@ function Joystick({ onMove, onEnd }: { onMove: (pos: { x: number; y: number }) =
       <div 
         ref={thumbRef}
         className={styles.joystickThumb}
-        style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
       />
     </div>
   );
 }
-

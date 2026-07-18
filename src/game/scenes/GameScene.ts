@@ -1536,12 +1536,13 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
     const nearestNpc = this.cachedNearestNpc;
     const nearestCol = this.cachedNearestCollectible;
     const canInteract = !!(nearest || nearestNpc || nearestCol);
+    let nextCanInteract = false;
 
     // If we are in range OF something OR a dialog is already open
     if (canInteract || this.activeDialogNpc) {
       if (this.activeDialogNpc) {
         this.hint.setVisible(false);
-        this.canInteract = true;
+        nextCanInteract = true;
       } else {
         const label = nearestNpc ? 'talk' : nearestCol ? 'pick up' : 'interact';
         const verb = this.isTouchDevice ? 'Tap' : 'Press [E]';
@@ -1549,17 +1550,19 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
         
         // Show hint on desktop, but on mobile we use the button visibility instead
         this.hint.setVisible(!this.isTouchDevice);
-        this.canInteract = true;
+        nextCanInteract = true;
       }
     } else {
       this.hint?.setText('');
       this.hint.setVisible(false);
-      this.canInteract = false;
     }
 
     // Sync interaction state to React if it changed
-    if (this.isTouchDevice) {
-      EventBus.emit("mobile-interact-possible", this.canInteract);
+    if (this.canInteract !== nextCanInteract) {
+      this.canInteract = nextCanInteract;
+      if (this.isTouchDevice) {
+        EventBus.emit("mobile-interact-possible", this.canInteract);
+      }
     }
   }
 
