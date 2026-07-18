@@ -32,6 +32,15 @@ export const FX_REGISTRY: Record<
       npc: "Narrator"
     },
   },
+  shakeDuck: {
+    shake: { duration: 400, intensity: 0.010 },
+    dialog: {
+      text: "As the duck looks at you, her eyes become green. You've been accepted.",
+      theme: 'red',
+      npc: "The Mighty Duck",
+      portrait: 'gameAssets/duck.png',
+    },
+  },
   walkBack: {
     shake: { duration: 150, intensity: 0.005 },
     dialog: {

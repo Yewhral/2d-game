@@ -860,7 +860,7 @@
                         {
                          "name":"effectType",
                          "type":"string",
-                         "value":"shake"
+                         "value":"shakeDuck"
                         }],
                  "rotation":0,
                  "type":"effect",

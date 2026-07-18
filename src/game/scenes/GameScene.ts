@@ -224,8 +224,8 @@ export class GameScene extends Phaser.Scene {
     this.hint = this.add
       .text(width / 2, height - 24, "", {
         fontFamily: "monospace",
-        fontSize: "13px",
-        color: "#888899",
+        fontSize: "14px",
+        color: "#ffffff",
         backgroundColor: "#0f0f1388",
         padding: { x: 8, y: 4 },
       })

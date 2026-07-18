@@ -428,9 +428,10 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
 
   '29-json': {
     'duck': {
-      name: 'Magic Duck',
+      name: 'The Mighty Duck',
       text: [
-        "Quack",
+        "Quack. Quack. Help the Blue Mayor. Quickly.",
+        'Quack.'
       ],
       spriteKey: 'duck',
       frame: 0,
@@ -443,7 +444,6 @@ export const NPC_REGISTRY: Record<string, Record<string, NpcData>> = {
       animated: false,
       repeatDelay: 200,
       delay: 200,
-      
     },
     'sheep2': {
       name: 'Sheep',
