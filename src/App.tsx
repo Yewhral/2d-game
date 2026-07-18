@@ -10,14 +10,13 @@
  * ready. GameHUD shows only during gameplay.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./App.module.css";
 import { GameHUD } from "./components/GameHUD/GameHUD";
 import { MainMenuOverlay } from "./components/MainMenuOverlay/MainMenuOverlay";
 import { PhaserCanvas } from "./components/PhaserCanvas/PhaserCanvas";
 import { useGameEvent } from "./hooks/useGameEvent";
 import { Loader } from "./components/MainMenuOverlay/Loader";
-import { useEffect } from "react";
 import { NPC_REGISTRY } from "./game/scenes/npcs";
 
 const getAssetPath = (path: string) => {
@@ -56,19 +55,28 @@ function getNpcPortraitPaths(): string[] {
   return [...portraits];
 }
 
-const REACT_ASSETS_TO_PRELOAD = [
-  ...UI_ASSETS_TO_PRELOAD,
-  ...getNpcPortraitPaths(),
-];
+function preloadImage(src: string): Promise<void> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve();
+    img.src = getAssetPath(src);
+    void img.decode?.().then(resolve, resolve);
+  });
+}
 
 export default function App() {
   const [scene, setScene] = useState("Boot");
+  const [ribbonAssetsReady, setRibbonAssetsReady] = useState(false);
 
   // Preload React-rendered assets in the browser cache.
   useEffect(() => {
-    for (const src of REACT_ASSETS_TO_PRELOAD) {
-      const img = new Image();
-      img.src = getAssetPath(src);
+    void Promise.all(UI_ASSETS_TO_PRELOAD.map(preloadImage)).then(() => {
+      setRibbonAssetsReady(true);
+    });
+
+    for (const src of getNpcPortraitPaths()) {
+      void preloadImage(src);
     }
   }, []);
 
@@ -77,7 +85,7 @@ export default function App() {
     useCallback(({ scene }) => setScene(scene), []),
   );
 
-  const isLoading = scene === "Boot" || scene === "Preloader";
+  const isLoading = scene === "Boot" || scene === "Preloader" || (scene === "MainMenu" && !ribbonAssetsReady);
 
   return (
     <div className={styles.app}>

@@ -71,8 +71,15 @@
   pointer-events: none;
 }
 
-.ribbonWrapper::before { left:  0; }
-.ribbonWrapper::after  { right: 0; }
+.ribbonWrapper::before {
+  left:  0;
+  background-image: var(--ribbon-left);
+}
+
+.ribbonWrapper::after {
+  right: 0;
+  background-image: var(--ribbon-right);
+}
 
 /* ── Inner span (middle ribbon tile, stateless) ── */
 .ribbonBtn {
@@ -95,63 +102,7 @@
   letter-spacing: 0.04em;
   color: #000;
   image-rendering: pixelated;
+  background-image: var(--ribbon-middle);
 
   pointer-events: none; /* wrapper handles all pointer events */
-}
-
-/* ── Ribbon variants ── */
-
-/* Purple rounded (Continue / Start Game) */
-.purple .ribbonBtn {
-  background-image: url('/UI/ribbon_08_purple_rounded_middle.png');
-}
-.purple::before {
-  background-image: url('/UI/ribbon_08_purple_rounded_left.png');
-}
-.purple::after {
-  background-image: url('/UI/ribbon_08_purple_rounded_right.png');
-}
-
-/* Teal rounded (New Game – default) */
-.teal .ribbonBtn {
-  background-image: url('/UI/ribbon_02_teal_rounded_middle.png');
-}
-.teal::before {
-  background-image: url('/UI/ribbon_02_teal_rounded_left.png');
-}
-.teal::after {
-  background-image: url('/UI/ribbon_02_teal_rounded_right.png');
-}
-
-/* Red rounded (New Game – confirming state) */
-.red .ribbonBtn {
-  background-image: url('/UI/ribbon_04_red_rounded_middle.png');
-}
-.red::before {
-  background-image: url('/UI/ribbon_04_red_rounded_left.png');
-}
-.red::after {
-  background-image: url('/UI/ribbon_04_red_rounded_right.png');
-}
-
-/* Yellow rounded (Credits) */
-.yellow .ribbonBtn {
-  background-image: url('/UI/ribbon_06_yellow_rounded_middle.png');
-}
-.yellow::before {
-  background-image: url('/UI/ribbon_06_yellow_rounded_left.png');
-}
-.yellow::after {
-  background-image: url('/UI/ribbon_06_yellow_rounded_right.png');
-}
-
-/* Slate rounded (Credits alternative) */
-.slate .ribbonBtn {
-  background-image: url('/UI/ribbon_10_slate_rounded_middle.png');
-}
-.slate::before {
-  background-image: url('/UI/ribbon_10_slate_rounded_left.png');
-}
-.slate::after {
-  background-image: url('/UI/ribbon_10_slate_rounded_right.png');
 }
