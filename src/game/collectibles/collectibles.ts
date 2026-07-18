@@ -26,7 +26,7 @@ export const ITEM_REGISTRY: Record<string, ItemConfig> = {
     scale: 0.8,
     bob: true,
     collides: true,
-    textureKey: 'money-img',
+    textureKey: 'sword-img',
     hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
   'artifact2shield': {
@@ -34,14 +34,14 @@ export const ITEM_REGISTRY: Record<string, ItemConfig> = {
     scale: 0.8,
     bob: true,
     collides: true,
-    textureKey: 'money-img',
+    textureKey: 'shield-img',
     hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
   'artifact3hammer': {
     scale: 0.8,
     bob: true,
     collides: true,
-    textureKey: 'money-img',
+    textureKey: 'hammer-img',
     hitbox: { width: 44, height: 26, offsetX: 12, offsetY: 20 },
   },
 };

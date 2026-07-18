@@ -32,6 +32,9 @@ export class Preloader extends Phaser.Scene {
     this.load.image('waterRocks2-img', 'waterRocks2.png');
     this.load.image('waterRocks4-img', 'waterRocks4.png');
     this.load.image('woodLog-img', 'woodLog.png');
+    this.load.image('hammer-img', 'hammer.png');
+    this.load.image('sword-img', 'sword.png');
+    this.load.image('shield-img', 'shield.png');
     this.load.image('money-img', 'money.png');
     this.load.image('barracks-img', 'barracks.png');
     this.load.image('cursor4-img', 'cursor4.png');
