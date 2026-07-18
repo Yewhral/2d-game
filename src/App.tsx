@@ -18,6 +18,13 @@ import { PhaserCanvas } from "./components/PhaserCanvas/PhaserCanvas";
 import { useGameEvent } from "./hooks/useGameEvent";
 import { Loader } from "./components/MainMenuOverlay/Loader";
 import { useEffect } from "react";
+import { NPC_REGISTRY } from "./game/scenes/npcs";
+
+const getAssetPath = (path: string) => {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${p}`;
+};
 
 const UI_ASSETS_TO_PRELOAD = [
   "/UI/ribbon_08_purple_rounded_left.png",
@@ -37,15 +44,32 @@ const UI_ASSETS_TO_PRELOAD = [
   "/UI/ribbon_10_slate_rounded_right.png",
 ];
 
+function getNpcPortraitPaths(): string[] {
+  const portraits = new Set<string>();
+
+  for (const npcsById of Object.values(NPC_REGISTRY)) {
+    for (const npc of Object.values(npcsById)) {
+      if (npc.portrait) portraits.add(npc.portrait);
+    }
+  }
+
+  return [...portraits];
+}
+
+const REACT_ASSETS_TO_PRELOAD = [
+  ...UI_ASSETS_TO_PRELOAD,
+  ...getNpcPortraitPaths(),
+];
+
 export default function App() {
   const [scene, setScene] = useState("Boot");
 
-  // Preload UI assets in the background
+  // Preload React-rendered assets in the browser cache.
   useEffect(() => {
-    UI_ASSETS_TO_PRELOAD.forEach((src) => {
+    for (const src of REACT_ASSETS_TO_PRELOAD) {
       const img = new Image();
-      img.src = src;
-    });
+      img.src = getAssetPath(src);
+    }
   }, []);
 
   useGameEvent(
