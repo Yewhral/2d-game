@@ -11,10 +11,11 @@
 
 import Phaser from "phaser";
 import { EventBus } from "../EventBus";
+import type { GameEvents } from "../EventBus";
 import { questManager } from "../quests/QuestManager";
 import { saveManager } from "../saveManager";
 import { QUEST_DEFINITIONS } from "../quests/definitions";
-import { Collectible } from "../collectibles/Collectible";
+import type { Collectible } from "../collectibles/Collectible";
 import { spawnCollectibles } from "../collectibles/spawnCollectibles";
 import { 
   DEPTHS, 
@@ -135,6 +136,109 @@ export class GameScene extends Phaser.Scene {
   private cachedNearestNpc: NpcObject | null = null;
   private cachedNearestCollectible: Collectible | null = null;
 
+  // --- EventBus handlers -----------------------------------------------------
+  private readonly handleMobileMove = (vec: GameEvents["mobile-move"]) => {
+    this.mobileMoveVector = vec;
+  };
+
+  private readonly handleMobileInteract = (pressed: GameEvents["mobile-interact"]) => {
+    this.mobileInteractPressed = pressed;
+  };
+
+  private readonly handleQuestRemoveTiles = ({
+    mapKey,
+    layer,
+    tileIds,
+  }: GameEvents["quest:remove-tiles"]) => {
+    if (mapKey !== this.currentMapKey) return;
+    const tilemapLayer =
+      layer === LAYERS.OBSTACLES ? this.obstaclesLayer :
+      layer === LAYERS.BARRIERS ? this.barriersLayer : null;
+    if (!tilemapLayer) return;
+
+    const tileIdSet = new Set(tileIds);
+    tilemapLayer.forEachTile((tile) => {
+      if (tileIdSet.has(tile.index)) {
+        tilemapLayer.removeTileAt(tile.x, tile.y);
+      }
+    });
+  };
+
+  private readonly handleQuestFadeLayer = ({
+    mapKey,
+    layer,
+  }: GameEvents["quest:fade-layer"]) => {
+    if (mapKey !== this.currentMapKey) return;
+
+    const tilemapLayer =
+      layer === LAYERS.OBSTACLES ? this.obstaclesLayer :
+      layer === LAYERS.BARRIERS ? this.barriersLayer : null;
+
+    if (!tilemapLayer) return;
+
+    // Persist so returning to this map skips the animation
+    const stateKey = `hiddenLayer_${mapKey}_${layer}`;
+    if (worldState.get(stateKey)) return; // already hidden
+    worldState.set(stateKey, 'hidden');
+
+    this.tweens.add({
+      targets: tilemapLayer,
+      alpha: 0,
+      duration: 800,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        this.hideLayer(tilemapLayer);
+      },
+    });
+  };
+
+  private readonly handleRefreshDecorations = () => {
+    this.refreshWorldDecorations();
+  };
+
+  private readonly handleQuestShowLayer = ({
+    mapKey,
+    layer,
+  }: GameEvents["quest:show-layer"]) => {
+    if (mapKey !== this.currentMapKey) return;
+
+    const tilemapLayer =
+      layer === LAYERS.PASSAGES ? this.passagesLayer : null;
+
+    if (!tilemapLayer) return;
+
+    // Persist so returning to this map shows it immediately
+    const stateKey = `shownLayer_${mapKey}_${layer}`;
+    if (worldState.get(stateKey)) return; // already shown
+    worldState.set(stateKey, 'shown');
+
+    tilemapLayer.setAlpha(0);
+    tilemapLayer.setVisible(true);
+    this.tweens.add({
+      targets: tilemapLayer,
+      alpha: 1,
+      duration: 800,
+      ease: 'Sine.easeIn',
+    });
+  };
+
+  private readonly handleSpawnFx = ({ type, x, y }: GameEvents["fx:spawn"]) => {
+    this.spawnEffect(type, x, y);
+  };
+
+  private readonly handleNpcDialog = (payload: GameEvents["npc-dialog"]) => {
+    if (!payload) this.activeDialogNpc = null;
+  };
+
+  private readonly handleItemCollected = ({ id }: GameEvents["item-collected"]) => {
+    for (const npc of this.npcs) {
+      if (npc.data?.stopAnimWhenCollected === id) {
+        npc.sprite.anims.stop();
+        npc.sprite.setFrame(npc.data.frame);
+      }
+    }
+  };
+
   constructor() {
     super("GameScene");
   }
@@ -145,6 +249,8 @@ export class GameScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------------------
   create() {
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
+
     const { width, height } = this.scale;
     this.cameras.main.setBackgroundColor(GAME_BG_COLOR);
 
@@ -247,101 +353,9 @@ export class GameScene extends Phaser.Scene {
 
     // ---- mobile controls (touch devices only) --------------------------------
     this.isTouchDevice = this.sys.game.device.input.touch;
-    
-    // Listen for mobile control events from React
-    EventBus.on("mobile-move", (vec) => {
-      this.mobileMoveVector = vec;
-    });
-
-    EventBus.on("mobile-interact", (pressed) => {
-      this.mobileInteractPressed = pressed;
-    });
 
     // ---- EventBus (React → Phaser) ------------------------------------------
-
-    EventBus.on("quest:remove-tiles", ({ mapKey, layer, tileIds }) => {
-      if (mapKey !== this.currentMapKey) return;
-      const tilemapLayer =
-        layer === LAYERS.OBSTACLES ? this.obstaclesLayer :
-        layer === LAYERS.BARRIERS ? this.barriersLayer : null;
-      if (!tilemapLayer) return;
-
-      const tileIdSet = new Set(tileIds);
-      tilemapLayer.forEachTile((tile) => {
-        if (tileIdSet.has(tile.index)) {
-          tilemapLayer.removeTileAt(tile.x, tile.y);
-        }
-      });
-    });
-
-    EventBus.on("quest:fade-layer", ({ mapKey, layer }) => {
-      if (mapKey !== this.currentMapKey) return;
-
-      const tilemapLayer =
-        layer === LAYERS.OBSTACLES ? this.obstaclesLayer :
-        layer === LAYERS.BARRIERS ? this.barriersLayer : null;
-
-      if (!tilemapLayer) return;
-
-      // Persist so returning to this map skips the animation
-      const stateKey = `hiddenLayer_${mapKey}_${layer}`;
-      if (worldState.get(stateKey)) return; // already hidden
-      worldState.set(stateKey, 'hidden');
-
-      this.tweens.add({
-        targets: tilemapLayer,
-        alpha: 0,
-        duration: 800,
-        ease: "Sine.easeOut",
-        onComplete: () => {
-          this.hideLayer(tilemapLayer);
-        },
-      });
-    });
-
-    EventBus.on("world:refresh-decorations", () => {
-      this.refreshWorldDecorations();
-    });
-
-    EventBus.on("quest:show-layer", ({ mapKey, layer }) => {
-      if (mapKey !== this.currentMapKey) return;
-
-      const tilemapLayer =
-        layer === LAYERS.PASSAGES ? this.passagesLayer : null;
-
-      if (!tilemapLayer) return;
-
-      // Persist so returning to this map shows it immediately
-      const stateKey = `shownLayer_${mapKey}_${layer}`;
-      if (worldState.get(stateKey)) return; // already shown
-      worldState.set(stateKey, 'shown');
-
-      tilemapLayer.setAlpha(0);
-      tilemapLayer.setVisible(true);
-      this.tweens.add({
-        targets: tilemapLayer,
-        alpha: 1,
-        duration: 800,
-        ease: 'Sine.easeIn',
-      });
-    });
-
-    EventBus.on("fx:spawn", ({ type, x, y }) => {
-      this.spawnEffect(type, x, y);
-    });
-
-    EventBus.on("npc-dialog", (payload) => {
-      if (!payload) this.activeDialogNpc = null;
-    });
-
-    EventBus.on('item-collected', ({ id }) => {
-      this.npcs.forEach(npc => {
-        if (npc.data?.stopAnimWhenCollected === id) {
-          npc.sprite.anims.stop();
-          npc.sprite.setFrame(npc.data.frame);
-        }
-      });
-    });
+    this.registerEventBusHandlers();
 
     // ---- initial React sync -------------------------------------------------
     EventBus.emit("scene-changed", { scene: "GameScene" });
@@ -388,15 +402,27 @@ export class GameScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------------------
   shutdown() {
-    EventBus.off("quest:remove-tiles");
-    EventBus.off("quest:fade-layer");
-    EventBus.off("world:refresh-decorations");
-    EventBus.off("fx:spawn");
-    EventBus.off("npc-dialog");
-    EventBus.off("quest:show-layer");
-    EventBus.off("mobile-move");
-    EventBus.off("mobile-interact");
-    EventBus.off("item-collected");
+    EventBus.off("quest:remove-tiles", this.handleQuestRemoveTiles);
+    EventBus.off("quest:fade-layer", this.handleQuestFadeLayer);
+    EventBus.off("world:refresh-decorations", this.handleRefreshDecorations);
+    EventBus.off("fx:spawn", this.handleSpawnFx);
+    EventBus.off("npc-dialog", this.handleNpcDialog);
+    EventBus.off("quest:show-layer", this.handleQuestShowLayer);
+    EventBus.off("mobile-move", this.handleMobileMove);
+    EventBus.off("mobile-interact", this.handleMobileInteract);
+    EventBus.off("item-collected", this.handleItemCollected);
+  }
+
+  private registerEventBusHandlers() {
+    EventBus.on("mobile-move", this.handleMobileMove);
+    EventBus.on("mobile-interact", this.handleMobileInteract);
+    EventBus.on("quest:remove-tiles", this.handleQuestRemoveTiles);
+    EventBus.on("quest:fade-layer", this.handleQuestFadeLayer);
+    EventBus.on("world:refresh-decorations", this.handleRefreshDecorations);
+    EventBus.on("quest:show-layer", this.handleQuestShowLayer);
+    EventBus.on("fx:spawn", this.handleSpawnFx);
+    EventBus.on("npc-dialog", this.handleNpcDialog);
+    EventBus.on("item-collected", this.handleItemCollected);
   }
 
   // ---- map management -------------------------------------------------------
