@@ -207,9 +207,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
               portrait: 'gameAssets/bluePawnAvatar.png',
               theme: 'blue' as const,
               text: [
-                "This is one of the lost artifacts! I can already feel its power resonating.",
-                "With this, our barracks can be restored. The troops will have shelter once more.",
-                "Bring me the other artifact when you find it. Every piece matters.",
+                "This is one of our magic artifacts!",
+                "With this blade, our barracks can be restored. The troops will have shelter once more.",
+                "Bring me any other artifact that you find. Every piece matters.",
               ],
             });
           },
@@ -241,7 +241,7 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
               portrait: 'gameAssets/bluePawnAvatar.png',
               theme: 'blue' as const,
               text: [
-                "This is the last artifact! I can feel its power resonating.",
+                "Hammer of Doom!",
                 "With this, our archery range can be restored. The troops will have weapons once more.",
                 "You've done it, traveler. The region is in your debt.",
               ],
@@ -253,17 +253,18 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     dialogs: {
       mayor: {
         inactive: [
-          "Hello there, traveler. I've been waiting for someone like you.",
-          "There are ancient artifacts hidden in this region. They must not fall into the wrong hands.",
-          "Find them and bring them to me — you needn't carry them all at once. I'll take each one as you find it.",
+          "Hello there, traveler. A messenger informed us about the danger coming from the west.",
+          "Help us prepare our small town. We cannot fall!",
+          "There are 3 ancient artifacts hidden in this region. Bring them to me.",
+          "Make haste, or we're all doomed!",
         ],
         active: [
           "You're making progress — {delivered} of {required} artifacts delivered so far.",
-          "The others are still out there. Seek them in the wetlands to the north.",
+          "The others are still out there. We need all {required} to prepare our defenses!",
         ],
         complete: [
-          "You've done it. All the artifacts are safe.",
-          "The ancient power is restored. This region owes you a great debt, traveler.",
+          "You've done it. Our town is ready.",
+          "This region owes you a great debt, traveler.",
         ],
       },
     },
