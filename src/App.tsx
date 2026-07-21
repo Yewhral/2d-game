@@ -18,6 +18,7 @@ import { PhaserCanvas } from "./components/PhaserCanvas/PhaserCanvas";
 import { useGameEvent } from "./hooks/useGameEvent";
 import { Loader } from "./components/MainMenuOverlay/Loader";
 import { NPC_REGISTRY } from "./game/scenes/npcs";
+import { IntroModal } from "./components/IntroModal/IntroModal";
 
 const getAssetPath = (path: string) => {
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -68,6 +69,7 @@ function preloadImage(src: string): Promise<void> {
 export default function App() {
   const [scene, setScene] = useState("Boot");
   const [ribbonAssetsReady, setRibbonAssetsReady] = useState(false);
+  const [introOpen, setIntroOpen] = useState(false);
 
   // Preload React-rendered assets in the browser cache.
   useEffect(() => {
@@ -83,6 +85,13 @@ export default function App() {
   useGameEvent(
     "scene-changed",
     useCallback(({ scene }) => setScene(scene), []),
+  );
+
+  useGameEvent(
+    "menu:start-game",
+    useCallback(({ newGame }: { newGame: boolean }) => {
+      if (newGame) setIntroOpen(true);
+    }, []),
   );
 
   const isLoading = scene === "Boot" || scene === "Preloader" || (scene === "MainMenu" && !ribbonAssetsReady);
@@ -101,6 +110,7 @@ export default function App() {
       )}
       {scene === "MainMenu" && <MainMenuOverlay />}
       {scene === "GameScene" && <GameHUD />}
+      {scene === "GameScene" && <IntroModal isOpen={introOpen} onClose={() => setIntroOpen(false)} />}
     </div>
   );
 }
