@@ -1,6 +1,6 @@
 export const GAME_BG_COLOR = "#47aba9";
 
-export const PLAYER_SPEED = 180;
+export const PLAYER_SPEED = 160;
 export const INTERACT_RADIUS = 50;
 export const NPC_EXIT_RADIUS = 90;
 export const LAYERS = {
