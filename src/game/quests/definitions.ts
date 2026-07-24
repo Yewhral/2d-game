@@ -186,9 +186,9 @@ export const QUEST_DEFINITIONS: QuestDefinition[] = [
     title: 'Echoes of the Ancient',
     description: {
       active:
-        "The Blue Tribe asked you to collect their ancient artifacts scattered across the region.\\n\\nBring each one back when you find it — you don't need to collect them all at once.\\n\\nArtifacts delivered: {delivered} / {required}",
+        "The Blue Tribe asked you to collect their ancient artifacts scattered across the region.\n\nBring each one back when you find it — you don't need to collect them all at once.\n\nArtifacts delivered: {delivered} / {required}",
       done: // 'done' is never reached with DeliverQuestHandler (goes active→complete)
-        "You have gathered all the artifacts.\\n\\nReturn to the Blue Tribe Mayor to claim your reward.",
+        "You have gathered all the artifacts.\n\nReturn to the Blue Tribe Mayor to claim your reward.",
       complete:
         "Thanks to your help, we can defend our land. You're amazing, traveller!",
       failed:

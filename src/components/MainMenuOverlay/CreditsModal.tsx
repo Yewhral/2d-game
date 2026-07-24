@@ -41,6 +41,9 @@ export function CreditsModal({ isOpen, onClose }: CreditsModalProps) {
             <p className={styles.paragraph}>
               Player Sprite: <a href="https://axulart.itch.io/small-8-direction-characters" target="_blank" rel="noopener noreferrer">Small 8-direction characters by AxulArt</a>
             </p>
+            <p className={styles.paragraph}>
+              Bg music: <a href="https://xdeviruchi.itch.io/16-bit-fantasy-adventure-music-pack" target="_blank" rel="noopener noreferrer">16-bit Fantasy Adventure Music Pack by xDeviruchi</a>
+            </p>
           </div>
           <div className={styles.textSection}>
             <h3>Technology</h3>

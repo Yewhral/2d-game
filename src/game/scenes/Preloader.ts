@@ -193,6 +193,7 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 192,
       frameHeight: 192,
     });
+    this.load.audio('music', 'music.ogg');
   }
 
   create() {

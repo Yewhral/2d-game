@@ -42,6 +42,7 @@ export function GameHUD() {
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [mobileInteractPossible, setMobileInteractPossible] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Refs to avoid stale closures in the advance handler
   const dialogRef = useRef(dialog);
@@ -67,8 +68,12 @@ export function GameHUD() {
     "npc-dialog",
     useCallback((payload) => {
       setDialog(payload ?? null);
-      setDialogPage(0);
+        setDialogPage(0);
     }, []),
+  );
+  useGameEvent(
+    "music:state-changed",
+    useCallback(({ isPlaying }) => setIsMusicPlaying(isPlaying), [])
   );
   useGameEvent(
     "quest-updated",
@@ -189,19 +194,29 @@ export function GameHUD() {
       {/* Top-right: controls */}
       <div className={styles.controls}>
         {(
-          <button 
-            className={`${styles.btn} ${styles.questLogBtn} ${hasUnseenQuests ? styles.hasNotification : ''}`}
-            onClick={() => {
-              setIsQuestLogOpen(true);
-              setHasUnseenQuests(false);
-              if (!selectedQuestId && quests.length > 0) {
-                setSelectedQuestId(quests[0].questId);
-              }
-            }}
-            title="Quest Log (Q)"
-          >
-            Q
-          </button>
+          <>
+            <button
+              className={`${styles.btn} ${styles.questLogBtn}`}
+              onClick={() => EventBus.emit("music:toggle", undefined)}
+              title={isMusicPlaying ? "Mute Music" : "Play Music"}
+              style={{ opacity: isMusicPlaying ? 1 : 0.5 }}
+            >
+              ♫
+            </button>
+            <button 
+              className={`${styles.btn} ${styles.questLogBtn} ${hasUnseenQuests ? styles.hasNotification : ''}`}
+              onClick={() => {
+                setIsQuestLogOpen(true);
+                setHasUnseenQuests(false);
+                if (!selectedQuestId && quests.length > 0) {
+                  setSelectedQuestId(quests[0].questId);
+                }
+              }}
+              title="Quest Log (Q)"
+            >
+              Q
+            </button>
+          </>
         )}
       </div>
 

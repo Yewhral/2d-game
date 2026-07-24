@@ -94,6 +94,12 @@ export type GameEvents = {
 
   /** Phaser → React: asset loading progress (0.0 to 1.0). */
   "loading-progress": { progress: number };
+
+  /** React → Phaser: toggle music playback. */
+  "music:toggle": undefined;
+
+  /** Phaser → React: music playback state changed. */
+  "music:state-changed": { isPlaying: boolean };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

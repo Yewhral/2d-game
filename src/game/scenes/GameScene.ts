@@ -113,6 +113,7 @@ export class GameScene extends Phaser.Scene {
   private collectibleOverlap: Phaser.Physics.Arcade.Collider | null = null;
   private hint!: Phaser.GameObjects.Text;
   private activeDialogNpc: NpcObject | null = null;
+  private bgMusic: Phaser.Sound.BaseSound | null = null;
 
   // --- input -----------------------------------------------------------------
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -237,6 +238,16 @@ export class GameScene extends Phaser.Scene {
         npc.sprite.setFrame(npc.data.frame);
       }
     }
+  };
+
+  private readonly handleMusicToggle = () => {
+    if (!this.bgMusic) return;
+    if (this.bgMusic.isPlaying) {
+      this.bgMusic.pause();
+    } else {
+      this.bgMusic.resume();
+    }
+    EventBus.emit("music:state-changed", { isPlaying: this.bgMusic.isPlaying });
   };
 
   constructor() {
@@ -365,6 +376,18 @@ export class GameScene extends Phaser.Scene {
     setTimeout(() => {
       questManager.emitAllStates();
     }, 100);
+
+    // ---- music --------------------------------------------------------------
+    let existingMusic = this.sound.get('music');
+    if (Array.isArray(existingMusic)) existingMusic = existingMusic[0];
+    
+    if (!existingMusic) {
+      this.bgMusic = this.sound.add('music', { loop: true, volume: 0.05 });
+      this.bgMusic.play();
+    } else {
+      this.bgMusic = existingMusic as Phaser.Sound.BaseSound;
+    }
+    EventBus.emit("music:state-changed", { isPlaying: this.bgMusic.isPlaying });
   }
 
   // ---------------------------------------------------------------------------
@@ -411,6 +434,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("mobile-move", this.handleMobileMove);
     EventBus.off("mobile-interact", this.handleMobileInteract);
     EventBus.off("item-collected", this.handleItemCollected);
+    EventBus.off("music:toggle", this.handleMusicToggle);
   }
 
   private registerEventBusHandlers() {
@@ -423,6 +447,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.on("fx:spawn", this.handleSpawnFx);
     EventBus.on("npc-dialog", this.handleNpcDialog);
     EventBus.on("item-collected", this.handleItemCollected);
+    EventBus.on("music:toggle", this.handleMusicToggle);
   }
 
   // ---- map management -------------------------------------------------------
