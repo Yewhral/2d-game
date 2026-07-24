@@ -43,6 +43,7 @@ export function GameHUD() {
   const [isTouch, setIsTouch] = useState(false);
   const [mobileInteractPossible, setMobileInteractPossible] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(true);
+  const [isSfxPlaying, setIsSfxPlaying] = useState(true);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Refs to avoid stale closures in the advance handler
   const dialogRef = useRef(dialog);
@@ -74,6 +75,10 @@ export function GameHUD() {
   useGameEvent(
     "music:state-changed",
     useCallback(({ isPlaying }) => setIsMusicPlaying(isPlaying), [])
+  );
+  useGameEvent(
+    "sfx:state-changed",
+    useCallback(({ isPlaying }) => setIsSfxPlaying(isPlaying), [])
   );
   useGameEvent(
     "quest-updated",
@@ -171,9 +176,6 @@ export function GameHUD() {
   }, []);
 
 
-
-
-
   return (
     <div className={`${styles.hud}${isTouch ? ` ${styles.hasMobileControls}` : ''}`}>
       {/* Top-left: inventory */}
@@ -195,6 +197,14 @@ export function GameHUD() {
       <div className={styles.controls}>
         {(
           <>
+           <button
+              className={`${styles.btn} ${styles.questLogBtn}`}
+              onClick={() => EventBus.emit("sfx:toggle", undefined)}
+              title={isSfxPlaying ? "Mute Effects" : "Play Effects"}
+              style={{ opacity: isSfxPlaying ? 1 : 0.5 }}
+            >
+              ♪⋆
+            </button>
             <button
               className={`${styles.btn} ${styles.questLogBtn}`}
               onClick={() => EventBus.emit("music:toggle", undefined)}

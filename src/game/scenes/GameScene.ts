@@ -114,6 +114,7 @@ export class GameScene extends Phaser.Scene {
   private hint!: Phaser.GameObjects.Text;
   private activeDialogNpc: NpcObject | null = null;
   private bgMusic: Phaser.Sound.BaseSound | null = null;
+  private isSfxEnabled = true;
 
   // --- input -----------------------------------------------------------------
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -228,7 +229,13 @@ export class GameScene extends Phaser.Scene {
   };
 
   private readonly handleNpcDialog = (payload: GameEvents["npc-dialog"]) => {
-    if (!payload) this.activeDialogNpc = null;
+    if (!payload) {
+      this.activeDialogNpc = null;
+    } else {
+      if (this.isSfxEnabled) {
+        this.sound.play('woodBlock3', { volume: 0.15 });
+      }
+    }
   };
 
   private readonly handleItemCollected = ({ id }: GameEvents["item-collected"]) => {
@@ -248,6 +255,11 @@ export class GameScene extends Phaser.Scene {
       this.bgMusic.resume();
     }
     EventBus.emit("music:state-changed", { isPlaying: this.bgMusic.isPlaying });
+  };
+
+  private readonly handleSfxToggle = () => {
+    this.isSfxEnabled = !this.isSfxEnabled;
+    EventBus.emit("sfx:state-changed", { isPlaying: this.isSfxEnabled });
   };
 
   constructor() {
@@ -388,6 +400,7 @@ export class GameScene extends Phaser.Scene {
       this.bgMusic = existingMusic as Phaser.Sound.BaseSound;
     }
     EventBus.emit("music:state-changed", { isPlaying: this.bgMusic.isPlaying });
+    EventBus.emit("sfx:state-changed", { isPlaying: this.isSfxEnabled });
   }
 
   // ---------------------------------------------------------------------------
@@ -435,6 +448,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off("mobile-interact", this.handleMobileInteract);
     EventBus.off("item-collected", this.handleItemCollected);
     EventBus.off("music:toggle", this.handleMusicToggle);
+    EventBus.off("sfx:toggle", this.handleSfxToggle);
   }
 
   private registerEventBusHandlers() {
@@ -448,6 +462,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.on("npc-dialog", this.handleNpcDialog);
     EventBus.on("item-collected", this.handleItemCollected);
     EventBus.on("music:toggle", this.handleMusicToggle);
+    EventBus.on("sfx:toggle", this.handleSfxToggle);
   }
 
   // ---- map management -------------------------------------------------------
@@ -1008,17 +1023,21 @@ private spawnDecoration(obj: any, id: string, worldStateId: string | null) {
         x: fx.movePlayer ? this.player.x : x,
         y: fx.movePlayer ? this.player.y : y,
         name: fx.dialog.npc || 'System',
-        onInteract: () => {}
+        onInteract: () => {} 
       };
-
+      
       const fxPages = Array.isArray(fx.dialog.text) ? fx.dialog.text : [fx.dialog.text];
-
+      
       EventBus.emit('npc-dialog', {
         npc: fx.dialog.npc || '',
         text: fxPages,
         portrait: fx.dialog.portrait || '',
         theme: fx.dialog.theme || 'purple',
       });
+    }
+
+    if (fx.audio && this.isSfxEnabled) {
+      this.sound.play(fx.audio, { volume: 0.15 });
     }
 
     if (fx.spriteKey && fx.animKey && x !== undefined && y !== undefined) {

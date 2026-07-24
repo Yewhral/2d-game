@@ -100,6 +100,12 @@ export type GameEvents = {
 
   /** Phaser → React: music playback state changed. */
   "music:state-changed": { isPlaying: boolean };
+
+  /** React → Phaser: toggle sfx playback. */
+  "sfx:toggle": undefined;
+
+  /** Phaser → React: sfx playback state changed. */
+  "sfx:state-changed": { isPlaying: boolean };
 };
 
 export const EventBus: Emitter<GameEvents> = mitt<GameEvents>();

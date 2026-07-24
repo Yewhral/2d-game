@@ -194,6 +194,7 @@ export class Preloader extends Phaser.Scene {
       frameHeight: 192,
     });
     this.load.audio('music', 'music.ogg');
+    this.load.audio('woodBlock3', 'WoodBlock3.mp3');
   }
 
   create() {
